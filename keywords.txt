@@ -1,0 +1,18 @@
+#######################################
+# Datatypes
+#######################################
+
+pinStatus_t	KEYWORD1
+
+#######################################
+# Methods and Functions
+#######################################
+
+analogWrite	KEYWORD2
+analogWriteFrequency	KEYWORD2
+analogWriteResolution	KEYWORD2
+
+#######################################
+# Constants
+#######################################
+
