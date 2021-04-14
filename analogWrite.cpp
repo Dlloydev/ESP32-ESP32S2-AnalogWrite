@@ -15,17 +15,20 @@ pinStatus_t pinsStatus[16] = {
 };
 
 void analogWrite(int8_t pin, int32_t value) {
-  int8_t ch = getChannel(pin);
-  if (ch >= 0) {
-    if (value == -1) { //detach pin
-      pinsStatus[ch / 2].pin = -1;
-      pinsStatus[ch / 2].frequency = 5000;
-      pinsStatus[ch / 2].resolution = 13;
-      ledcDetachPin(pinsStatus[ch / 2].pin);
-      REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
-    } else {
-      int32_t valueMax = (pow(2, pinsStatus[ch / 2].resolution)) - 1;
-      if (pin != DAC1 &&  pin != DAC2) { //pwm pin
+  if (pin == DAC1 ||  pin == DAC2) { //dac
+    if (value > 255) value = 255;
+    dacWrite(pin, value);
+  } else { //pwm
+    int8_t ch = getChannel(pin);
+    if (ch >= 0) {
+      if (value == -1) { //detach pin
+        pinsStatus[ch / 2].pin = -1;
+        pinsStatus[ch / 2].frequency = 5000;
+        pinsStatus[ch / 2].resolution = 13;
+        ledcDetachPin(pinsStatus[ch / 2].pin);
+        REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
+      } else {
+        int32_t valueMax = (pow(2, pinsStatus[ch / 2].resolution)) - 1;
         if (value > valueMax) {
           value = valueMax + 1;
           ledcDetachPin(pin);
@@ -36,10 +39,6 @@ void analogWrite(int8_t pin, int32_t value) {
           ledcWrite(ch, value);
         }
         pinsStatus[ch / 2].value = value;
-      } else { //dac pin
-        if (pinsStatus[ch / 2].resolution > 8) value = value >> (pinsStatus[ch / 2].resolution - 8);
-        if (value > 255) value = 255;
-        dacWrite(pin, value);
       }
     }
   }
