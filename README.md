@@ -2,6 +2,8 @@
 
 ## analogWrite()
 
+
+
 ![image](https://user-images.githubusercontent.com/63488701/114644288-36ed7280-9ca5-11eb-808b-c0bdbacd1daf.png)
 
 ### Description
@@ -26,7 +28,7 @@ analogWrite(pin, value);
 ### Parameters
 
 `pin`: The GPIO pin to write to.  Allowed data types: `int`.
-`value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). With default 13-bit resolution, 8192 is always on.  This function automatically attaches the pin to the next available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. If you need to release a pin that analogWrite has previously used, just use  `analogWrite(pin, -1);`
+`value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). With default 13-bit resolution, 8192 is always on.  This function automatically attaches the pin to the next available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. If you need to release a pin that analogWrite has previously used, just use the command `analogWrite(pin, -1);`
 
 ### Returns
 
