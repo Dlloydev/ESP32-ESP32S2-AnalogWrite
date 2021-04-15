@@ -1,10 +1,8 @@
 
 
-## analogWrite()
+## analogWrite()    [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)
 
-
-
-![image](https://user-images.githubusercontent.com/63488701/114644288-36ed7280-9ca5-11eb-808b-c0bdbacd1daf.png)
+![image](https://user-images.githubusercontent.com/63488701/114867299-9db47e00-9dc2-11eb-953c-7004a92e8a18.png)
 
 ### Description
 
