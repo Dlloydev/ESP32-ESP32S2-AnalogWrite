@@ -27,14 +27,14 @@ void analogWrite(int8_t pin, int32_t value) {
         pinsStatus[ch / 2].resolution = 13;
         ledcDetachPin(pinsStatus[ch / 2].pin);
         REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
-      } else {
+      } else { // attached
         int32_t valueMax = (pow(2, pinsStatus[ch / 2].resolution)) - 1;
-        if (value > valueMax) {
+        if (value > valueMax) { // full ON
           value = valueMax + 1;
           ledcDetachPin(pin);
           pinMode(pin, OUTPUT);
           digitalWrite(pin, HIGH);
-        } else {
+        } else { // write PWM
           ledcSetup(ch, pinsStatus[ch / 2].frequency, pinsStatus[ch / 2].resolution);
           ledcWrite(ch, value);
         }

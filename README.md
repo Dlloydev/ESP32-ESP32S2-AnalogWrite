@@ -64,28 +64,8 @@ This function prints the available PWM pins to choose from and a formatted outpu
 
 ### Example Code
 
-Sets the output to the LED proportional to the value read from the potentiometer.
-
-```c++
-#include "analogWrite.h"
-#define LED_BUILTIN 2
-
-int brightness = 0;
-int step = 1;
-
-void setup() {
-  Serial.begin(115200);
-  analogWriteResolution(LED_BUILTIN, 10);
-}
-
-void loop() {
-  analogWrite(LED_BUILTIN, brightness);
-  brightness += step;
-  if ( brightness >= 1023) step = -1;
-  if ( brightness <= 0) step = 1;
-  delay(1);
-}
-```
+- [AnalogWriteTest](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/AnalogWriteTest/AnalogWriteTest.ino)
+- [Fade](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/tree/main/examples/Fade)
 
 ### Notes and Warnings
 
