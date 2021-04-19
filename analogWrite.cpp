@@ -1,5 +1,5 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 1.0.0
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 1.1.0
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
@@ -7,12 +7,23 @@
 #include <Arduino.h>
 #include "analogWrite.h"
 
-pinStatus_t pinsStatus[16] = {
-  { 1, -1, 5000, 13, 0 }, { 3, -1, 5000, 13, 0 },
-  { 5, -1, 5000, 13, 0 }, { 7, -1, 5000, 13, 0 },
-  { 9, -1, 5000, 13, 0 }, {11, -1, 5000, 13, 0 },
-  {13, -1, 5000, 13, 0 }, {15, -1, 5000, 13, 0 }
+#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+pinStatus_t pinsStatus[8] = {
+  {0, -1, 5000, 13, 0 }, {2, -1, 5000, 13, 0 },
+  {4, -1, 5000, 13, 0 }, {6, -1, 5000, 13, 0 },
+  {1, -1, 5000, 13, 0 }, {3, -1, 5000, 13, 0 },
+  {5, -1, 5000, 13, 0 }, {7, -1, 5000, 13, 0 }
 };
+const uint8_t chd = 1;
+#else //ESP32
+pinStatus_t pinsStatus[8] = {
+  { 0, -1, 5000, 13, 0 }, { 2, -1, 5000, 13, 0 },
+  { 4, -1, 5000, 13, 0 }, { 6, -1, 5000, 13, 0 },
+  { 8, -1, 5000, 13, 0 }, {10, -1, 5000, 13, 0 },
+  {12, -1, 5000, 13, 0 }, {14, -1, 5000, 13, 0 }
+};
+const uint8_t chd = 2;
+#endif
 
 void analogWrite(int8_t pin, int32_t value) {
   if (pin == DAC1 ||  pin == DAC2) { //dac
@@ -22,23 +33,23 @@ void analogWrite(int8_t pin, int32_t value) {
     int8_t ch = getChannel(pin);
     if (ch >= 0) {
       if (value == -1) { //detach pin
-        pinsStatus[ch / 2].pin = -1;
-        pinsStatus[ch / 2].frequency = 5000;
-        pinsStatus[ch / 2].resolution = 13;
-        ledcDetachPin(pinsStatus[ch / 2].pin);
+        pinsStatus[ch / chd].pin = -1;
+        pinsStatus[ch / chd].frequency = 5000;
+        pinsStatus[ch / chd].resolution = 13;
+        ledcDetachPin(pinsStatus[ch / chd].pin);
         REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
       } else { // attached
-        int32_t valueMax = (pow(2, pinsStatus[ch / 2].resolution)) - 1;
+        int32_t valueMax = (pow(2, pinsStatus[ch / chd].resolution)) - 1;
         if (value > valueMax) { // full ON
           value = valueMax + 1;
           ledcDetachPin(pin);
           pinMode(pin, OUTPUT);
           digitalWrite(pin, HIGH);
         } else { // write PWM
-          ledcSetup(ch, pinsStatus[ch / 2].frequency, pinsStatus[ch / 2].resolution);
+          ledcSetup(ch, pinsStatus[ch / chd].frequency, pinsStatus[ch / chd].resolution);
           ledcWrite(ch, value);
         }
-        pinsStatus[ch / 2].value = value;
+        pinsStatus[ch / chd].value = value;
       }
     }
   }
@@ -47,10 +58,12 @@ void analogWrite(int8_t pin, int32_t value) {
 float analogWriteFrequency(int8_t pin, float frequency) {
   int8_t ch = getChannel(pin);
   if (ch >= 0) {
-    pinsStatus[ch / 2].frequency = frequency;
-    pinsStatus[ch / 2].pin = pin;
-    ledcSetup(ch, frequency, pinsStatus[ch / 2].resolution);
-    ledcWrite(ch, pinsStatus[ch / 2].value);
+    if ((pinsStatus[ch / chd].pin) > 47) return -1;
+    pinsStatus[ch / chd].pin = pin;
+    pinsStatus[ch / chd].frequency = frequency;
+    //ledcChangeFrequency(ch, frequency, pinsStatus[ch / chd].resolution);
+    ledcSetup(ch, frequency, pinsStatus[ch / chd].resolution);
+    ledcWrite(ch, pinsStatus[ch / chd].value);
   }
   return ledcReadFreq(ch);
 }
@@ -58,36 +71,45 @@ float analogWriteFrequency(int8_t pin, float frequency) {
 int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
   int8_t ch = getChannel(pin);
   if (ch >= 0) {
-    pinsStatus[ch / 2].resolution = resolution;
-    pinsStatus[ch / 2].pin = pin;
-    ledcSetup(ch, pinsStatus[ch].frequency, resolution);
-    ledcWrite(ch, pinsStatus[ch].value);
+    if ((pinsStatus[ch / chd].pin) > 47) return -1;
+    pinsStatus[ch / chd].pin = pin;
+    pinsStatus[ch / chd].resolution = resolution;
+    ledcSetup(ch, pinsStatus[ch / chd].frequency, resolution);
+    ledcWrite(ch, pinsStatus[ch / chd].value);
   }
   return pow(2, resolution);
 }
 
 int8_t getChannel(int8_t pin) {
-  if ((pinMask >> pin) & 1) { //valid pin number?
-    if (REG_GET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL)) { //gpio pin function?
-      for (int8_t i = 0; i < 8; i++) { //search channels for the pin
-        if (pinsStatus[i].pin == pin) { //pin found
-          return pinsStatus[i].channel;
-          break;
-        }
-      }
-      return -99; //pin is being used externally
-    } else { //pin is not used
-      for (int8_t i = 0; i < 8; i++) { //search for free channel
-        if (pinsStatus[i].pin == -1) { //channel is free
-          pinsStatus[i].pin = pin;
-          ledcAttachPin(pin, pinsStatus[i].channel);
-          return pinsStatus[i].channel;
-          break;
-        }
-      }
+  if (!((pinMask >> pin) & 1)) return -1; //not pwm pin
+  for (int8_t i = 0; i < 8; i++) {
+    int8_t ch = pinsStatus[i].channel;
+    if (pinsStatus[ch / chd].pin == pin) {
+      return ch;
+      break;
     }
   }
-  return -88; //no available resources
+  for (int8_t i = 0; i < 8; i++) {
+    int8_t ch = pinsStatus[i].channel;
+    if ((REG_GET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL)) == 0) { //free pin
+      if (pinsStatus[ch / chd].pin == -1) { //free channel
+        if ((ledcRead(ch) < 1) && (ledcReadFreq(ch) < 1)) { //free timer
+          pinsStatus[ch / chd].pin = pin;
+          ledcAttachPin(pin, ch);
+          return ch;
+          break;
+        } else {
+          pinsStatus[ch / chd].pin = 88; //occupied timer
+          return -1;
+          break;
+        }
+      }
+    } else {
+      return -1; //occupied pin
+      break;
+    }
+  }
+  return -1;
 }
 
 void printPinsStatus() {
@@ -95,34 +117,33 @@ void printPinsStatus() {
   for (int i = 0; i < muxSize; i++) {
     if ((pinMask >> i) & 1) {
       Serial.print(i); Serial.print(", ");
-      if (i == 18) Serial.println();
-      if (i == 18) Serial.print("          ");
     }
   }
   Serial.println();
+
   Serial.println();
   for (int i = 0; i < 8; i++) {
-    Serial.print("ch"); Serial.print(pinsStatus[i].channel); Serial.print("  ");
-    if (pinsStatus[i].channel < 10) Serial.print(" ");
-    if (pinsStatus[i].pin == -1) {
-      Serial.print(pinsStatus[i].pin); Serial.print("    ");
-    } else {
-      Serial.print("pin"); Serial.print(pinsStatus[i].pin); Serial.print("  ");
-    }
-    if (pinsStatus[i].pin < 10) Serial.print(" ");
-    if (pinsStatus[i].frequency < 10000) Serial.print(" ");
-    if (pinsStatus[i].frequency < 1000) Serial.print(" ");
-    if (pinsStatus[i].frequency < 100) Serial.print(" ");
-    if (pinsStatus[i].frequency < 10) Serial.print(" ");
-    Serial.print(pinsStatus[i].frequency); Serial.print(" Hz  ");
-    if (pinsStatus[i].resolution < 10) Serial.print(" ");
-    Serial.print(pinsStatus[i].resolution); Serial.print("-bit  ");
-    Serial.print("val ");
-    if (pinsStatus[i].value < 10000) Serial.print(" ");
-    if (pinsStatus[i].value < 1000) Serial.print(" ");
-    if (pinsStatus[i].value < 100) Serial.print(" ");
-    if (pinsStatus[i].value < 10) Serial.print(" ");
-    Serial.print(pinsStatus[i].value);
+    int ch = pinsStatus[i].channel;
+    Serial.print("ch: ");
+    if (ch < 10) Serial.print(" "); Serial.print(ch); Serial.print("  ");
+    Serial.print("Pin: ");
+    if ((pinsStatus[ch / chd].pin >= 0) && (pinsStatus[ch / chd].pin < 10)) Serial.print(" ");
+    Serial.print(pinsStatus[ch / chd].pin); Serial.print("  ");
+    Serial.print("Hz: ");
+    if (ledcReadFreq(ch) < 10000) Serial.print(" ");
+    if (ledcReadFreq(ch) < 1000) Serial.print(" ");
+    if (ledcReadFreq(ch) < 100) Serial.print(" ");
+    if (ledcReadFreq(ch) < 10) Serial.print(" ");
+    Serial.print(ledcReadFreq(ch)); Serial.print("  ");
+    Serial.print("Bits: ");
+    if (pinsStatus[ch / chd].resolution < 10) Serial.print(" ");
+    Serial.print(pinsStatus[ch / chd].resolution); Serial.print("  ");
+    Serial.print("Duty: ");
+    if (pinsStatus[ch / chd].value < 10000) Serial.print(" ");
+    if (pinsStatus[ch / chd].value < 1000) Serial.print(" ");
+    if (pinsStatus[ch / chd].value < 100) Serial.print(" ");
+    if (pinsStatus[ch / chd].value < 10) Serial.print(" ");
+    Serial.print(pinsStatus[ch / chd].value);
     Serial.println();
   }
 }

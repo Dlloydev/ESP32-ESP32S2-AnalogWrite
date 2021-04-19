@@ -3,49 +3,42 @@
 #include "analogWrite.h"
 
 void setup() {
+
   Serial.begin(115200);
-
-  analogWriteFrequency(23, 2300);
-  analogWrite(23, 10);
-
-  analogWriteFrequency(22, 125);
-  analogWriteResolution(22, 3);
-  analogWrite(22, 6);
-
-  analogWriteFrequency(21, 125);
-  analogWriteResolution(21, 3);
-  analogWrite(21, 7);
-
-  analogWriteFrequency(19, 125);
-  analogWriteResolution(19, 3);
-  analogWrite(19, 8);
-
-  analogWriteFrequency(18, 1800);
-  analogWriteResolution(18, 8);
-  analogWrite(18, 4000);
-
-  analogWriteFrequency(5, 500);
-  analogWriteResolution(5, 12);
-  analogWrite(5, 5000);
-
-  analogWriteFrequency(17, 1700);
-  analogWrite(17, 6000);
-
-  pinMode(16, INPUT); //comment out to allow analogWrite on pin16
-  analogWriteResolution(16, 10);
-  analogWriteFrequency(16, 1600);
-  analogWrite(16, 7000);
-
-  pinMode(4, INPUT); //comment out to allow analogWrite on pin4
-  analogWriteFrequency(4, 400);
-  analogWriteResolution(4, 11);
-  analogWrite(4, 8000);
-
-  pinMode(2, INPUT); //comment out to allow analogWrite on pin2
-  analogWriteFrequency(2, 200);
-  analogWrite(2, 8191);
-
   Serial.println();
+
+  analogWriteFrequency(5, 4800);
+  analogWriteResolution(5, 10);
+  analogWrite(5, 950);
+
+  analogWrite(2, 100);
+  analogWriteFrequency(2, 1);
+  analogWriteResolution(2, 10);
+
+  analogWriteFrequency(21, 10000);
+  analogWriteResolution(21, 8);
+  analogWrite(21, 31);
+
+  analogWriteFrequency(12, 50);
+  analogWriteResolution(12, 5);
+  analogWrite(12, 20);
+
+  analogWriteFrequency(13, 3333);
+  analogWriteResolution(13, 11);
+  analogWrite(13, 1000);
+
+  pinMode(19, INPUT);
+  analogWriteFrequency(19, 100);
+  analogWriteResolution(19, 6);
+  analogWrite(19, 44);
+
+  analogWrite(22, 500);
+  analogWriteFrequency(22, 1200);
+  analogWriteResolution(22, 11);
+
+  analogWriteFrequency(33, 60);
+  analogWriteResolution(33, 10);
+  analogWrite(33, 650);
 
   printPinsStatus();
 }

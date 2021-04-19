@@ -22,7 +22,7 @@ The use of this function is similar to the Arduino method as its resource manage
 ### Syntax
 
 ```c++
-analogWrite(pin, value);
+void analogWrite(pin, value);
 ```
 
 ### Parameters
@@ -58,9 +58,13 @@ void printPinsStatus();
 
 This function prints the available PWM pins to choose from and a formatted output showing the PWM pins that are in use (attached) and the channels that are available (-1). Resource management is handled automatically and transparently. There is no requirement to have any function in the setup loop. PWM resolution and frequency can be changed at any time in the main loop. If you enter a higher duty value than the limit, the status output will show the max value that has effect.
 
+| ESP32 Dev Board                                              | ESP32S2-Saola-1M                                             |
+| :----------------------------------------------------------- | ------------------------------------------------------------ |
+| ![esp32-pinsStatus-large](https://user-images.githubusercontent.com/63488701/115168460-f9b02880-a088-11eb-8c65-debeee7a7858.png) | ![esp32-s2 pinsStatus-large](https://user-images.githubusercontent.com/63488701/115168504-26644000-a089-11eb-93f1-476fdf1b4418.png) |
+| All 8 channels offer independent resolution bits, duty cycle value and frequency . | All 8 channels offer independent resolution bits, duty cycle value. Four independant frequencies on chanels (0,1), (2,3), (4,5) and (6,7) |
+| `const uint64_t pinMask = 0x27FE00207FFE;`                   | `const uint64_t pinMask = 0x308EFF034;`                      |
 
-
-![printPinsStatus](https://user-images.githubusercontent.com/63488701/114637054-719bde80-9c96-11eb-972d-49e38b16ec4a.png)
+The  the available PWM pins are determined by a pinMask constant. It might be necessary to alter the pimMask to match your board  or to customize for your design.
 
 ### Example Code
 
