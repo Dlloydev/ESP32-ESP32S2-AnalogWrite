@@ -9,15 +9,15 @@ void setup() {
 
   analogWriteFrequency(5, 4800);
   analogWriteResolution(5, 10);
-  analogWrite(5, 950);
+  analogWrite(5, 9999);
 
   analogWrite(2, 100);
   analogWriteFrequency(2, 1);
   analogWriteResolution(2, 10);
 
-  analogWriteFrequency(21, 10000);
   analogWriteResolution(21, 8);
-  analogWrite(21, 31);
+  analogWriteFrequency(21, 10000);
+  analogWrite(21, 254);
 
   analogWriteFrequency(12, 50);
   analogWriteResolution(12, 5);
@@ -36,9 +36,9 @@ void setup() {
   analogWriteFrequency(22, 1200);
   analogWriteResolution(22, 11);
 
-  analogWriteFrequency(33, 60);
-  analogWriteResolution(33, 10);
   analogWrite(33, 650);
+  analogWriteResolution(33, 10);
+  analogWriteFrequency(33, 60);
 
   printPinsStatus();
 }

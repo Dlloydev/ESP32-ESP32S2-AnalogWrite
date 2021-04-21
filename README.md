@@ -12,12 +12,14 @@ The `analogWrite()` function writes a duty cycle value to a ([PWM wave](http://a
 
 The use of this function is similar to the Arduino method as its resource management is handled transparently (you do not need to call `pinMode()`prior to use). The `analogWriteResolution()` and `analogWriteFrequency()` functions are provided to give independent control over bit width configuration and PWM frequency.
 
+### PWM Wave
 
+Arduino's reference for [`analogWrite()`](https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/) describes the PWM wave characteristics for various hardware architecture.  The general operational characteristic is  8-bit duty cycle control where the output will be **always off** for value 0 and **always on** for value 255. With the various devices and timer modes, sometimes a bit correction is required to achieve full off or on. The ESP8266 follows this mode of operation, but with the different timer architecture on the ESP32 devices, the LEDc PWM operates in a different manner, where duty value 0 is always off, but duty value 255 will give an output that's 255/256 duty cycle (not fully on). This happens for any setting for bit resolution. As of version 1.2.0, this condition is detected and corrected, where the hardware is programmed with `2^resolution (bits)^`, which drives the output signal fully on.
 
 | Board   | PWM Pins                          | DAC Pins   | PWM Frequency   | Resolution              |
 | ------- | --------------------------------- | ---------- | --------------- | ----------------------- |
 | ESP32   | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
-| ESP32S2 | 1- 14, 21, 33-42                  | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
+| ESP32S2 | 1- 14, 21, 33-42, 45              | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
 
 ### Syntax
 
@@ -28,11 +30,7 @@ void analogWrite(pin, value);
 ### Parameters
 
 `pin`: The GPIO pin to write to.  Allowed data types: `int`.
-`value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). With default 13-bit resolution, 8192 is always on.  This function automatically attaches the pin to the next available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. If you need to release a pin that analogWrite has previously used, just use the command `analogWrite(pin, -1);`
-
-### Returns
-
-Nothing
+`value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). With default 13-bit resolution, 8192 is always on.  This function automatically attaches the pin to the next available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. If you need to release a pin that analogWrite has previously used, just use the command `analogWrite(pin, -1);` There is no return value.
 
 ### analogWriteFrequency()
 
@@ -61,7 +59,7 @@ This function prints the available PWM pins to choose from and a formatted outpu
 | ESP32 Dev Board                                              | ESP32S2-Saola-1M                                             |
 | :----------------------------------------------------------- | ------------------------------------------------------------ |
 | ![esp32-pinsStatus-large](https://user-images.githubusercontent.com/63488701/115168460-f9b02880-a088-11eb-8c65-debeee7a7858.png) | ![esp32-s2 pinsStatus-large](https://user-images.githubusercontent.com/63488701/115168504-26644000-a089-11eb-93f1-476fdf1b4418.png) |
-| All 8 channels offer independent resolution bits, duty cycle value and frequency . | All 8 channels offer independent resolution bits, duty cycle value. Four independant frequencies on chanels (0,1), (2,3), (4,5) and (6,7) |
+| All 8 channels offer independent resolution bits, duty cycle value and frequency . | All 8 channels offer independent resolution bits, duty cycle value. Four independant frequencies on channels (0,1), (2,3), (4,5) and (6,7) |
 | `const uint64_t pinMask = 0x27FE00207FFE;`                   | `const uint64_t pinMask = 0x308EFF034;`                      |
 
 The  the available PWM pins are determined by a pinMask constant. It might be necessary to alter the pimMask to match your board  or to customize for your design.

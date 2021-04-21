@@ -1,5 +1,5 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 1.1.0
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 1.2.0
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
@@ -29,7 +29,7 @@ void analogWrite(int8_t pin, int32_t value) {
   if (pin == DAC1 ||  pin == DAC2) { //dac
     if (value > 255) value = 255;
     dacWrite(pin, value);
-  } else { //pwm
+  } else {
     int8_t ch = getChannel(pin);
     if (ch >= 0) {
       if (value == -1) { //detach pin
@@ -38,18 +38,14 @@ void analogWrite(int8_t pin, int32_t value) {
         pinsStatus[ch / chd].resolution = 13;
         ledcDetachPin(pinsStatus[ch / chd].pin);
         REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
-      } else { // attached
-        int32_t valueMax = (pow(2, pinsStatus[ch / chd].resolution)) - 1;
-        if (value > valueMax) { // full ON
-          value = valueMax + 1;
-          ledcDetachPin(pin);
-          pinMode(pin, OUTPUT);
-          digitalWrite(pin, HIGH);
-        } else { // write PWM
-          ledcSetup(ch, pinsStatus[ch / chd].frequency, pinsStatus[ch / chd].resolution);
-          ledcWrite(ch, value);
-        }
+      } else { // write PWM
+        ledcSetup(ch, pinsStatus[ch / chd].frequency, pinsStatus[ch / chd].resolution);
+        /*constrain value to upper limit*/
+        if (value > ((1 << pinsStatus[ch / chd].resolution) - 1)) value = ((1 << pinsStatus[ch / chd].resolution) - 1);
         pinsStatus[ch / chd].value = value;
+        /*if value is at upper limit, keep PWM high*/
+        if (value == ((1 << pinsStatus[ch / chd].resolution) - 1)) value = (1 << pinsStatus[ch / chd].resolution);
+        ledcWrite(ch, value);
       }
     }
   }
@@ -73,11 +69,11 @@ int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
   if (ch >= 0) {
     if ((pinsStatus[ch / chd].pin) > 47) return -1;
     pinsStatus[ch / chd].pin = pin;
-    pinsStatus[ch / chd].resolution = resolution;
+    pinsStatus[ch / chd].resolution = resolution & 0xF;
     ledcSetup(ch, pinsStatus[ch / chd].frequency, resolution);
     ledcWrite(ch, pinsStatus[ch / chd].value);
   }
-  return pow(2, resolution);
+  return 1 << resolution & 0xF;
 }
 
 int8_t getChannel(int8_t pin) {
