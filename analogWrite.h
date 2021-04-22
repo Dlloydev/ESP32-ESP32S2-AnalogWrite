@@ -6,17 +6,22 @@
 #if (defined(ESP32) || defined(ARDUINO_ARCH_ESP32))
 
 #if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+
+#include "esp32-hal-ledc.h" //temporary fix for issue #5050
+
 #define NUM_OUTPUT_PINS  45
 #define DAC1             17
 #define DAC2             18
 const uint8_t muxSize =  48;
 const uint64_t pinMask = 0x27FE00207FFE; //PWM
-#else
+
+#else //ESP32
 #define NUM_OUTPUT_PINS  34
 #define DAC1             25
 #define DAC2             26
 const uint8_t muxSize =  40;
 const uint64_t pinMask = 0x308EFF034; //PWM
+
 #endif
 
 typedef struct pinStatus {

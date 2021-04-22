@@ -7,25 +7,25 @@ void setup() {
   Serial.begin(115200);
   Serial.println();
 
-  analogWriteFrequency(5, 4800);
+  analogWriteFrequency(5, 100);
   analogWriteResolution(5, 10);
-  analogWrite(5, 9999);
+  analogWrite(5, 512);
 
   analogWrite(2, 100);
   analogWriteFrequency(2, 1);
   analogWriteResolution(2, 10);
 
   analogWriteResolution(21, 8);
-  analogWriteFrequency(21, 10000);
+  analogWriteFrequency(21, 2500);
   analogWrite(21, 254);
 
   analogWriteFrequency(12, 50);
   analogWriteResolution(12, 5);
   analogWrite(12, 20);
 
-  analogWriteFrequency(13, 3333);
-  analogWriteResolution(13, 11);
-  analogWrite(13, 1000);
+  analogWriteFrequency(13, 250);
+  analogWriteResolution(13, 10);
+  analogWrite(13, 511);
 
   pinMode(19, INPUT);
   analogWriteFrequency(19, 100);

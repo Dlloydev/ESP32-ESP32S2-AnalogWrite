@@ -1,5 +1,5 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 1.2.0
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 1.2.1
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
@@ -39,12 +39,11 @@ void analogWrite(int8_t pin, int32_t value) {
         ledcDetachPin(pinsStatus[ch / chd].pin);
         REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
       } else { // write PWM
-        ledcSetup(ch, pinsStatus[ch / chd].frequency, pinsStatus[ch / chd].resolution);
-        /*constrain value to upper limit*/
-        if (value > ((1 << pinsStatus[ch / chd].resolution) - 1)) value = ((1 << pinsStatus[ch / chd].resolution) - 1);
+        uint8_t bits = pinsStatus[ch / chd].resolution;
+        ledcSetup(ch, pinsStatus[ch / chd].frequency, bits);
+        if (value > ((1 << bits) - 1)) value = (1 << bits); //constrain
+        if ((bits > 7) && (value == ((1 << bits) - 1))) value = (1 << bits); //keep PWM high
         pinsStatus[ch / chd].value = value;
-        /*if value is at upper limit, keep PWM high*/
-        if (value == ((1 << pinsStatus[ch / chd].resolution) - 1)) value = (1 << pinsStatus[ch / chd].resolution);
         ledcWrite(ch, value);
       }
     }
@@ -57,7 +56,6 @@ float analogWriteFrequency(int8_t pin, float frequency) {
     if ((pinsStatus[ch / chd].pin) > 47) return -1;
     pinsStatus[ch / chd].pin = pin;
     pinsStatus[ch / chd].frequency = frequency;
-    //ledcChangeFrequency(ch, frequency, pinsStatus[ch / chd].resolution);
     ledcSetup(ch, frequency, pinsStatus[ch / chd].resolution);
     ledcWrite(ch, pinsStatus[ch / chd].value);
   }

@@ -14,7 +14,11 @@ The use of this function is similar to the Arduino method as its resource manage
 
 ### PWM Wave
 
-Arduino's reference for [`analogWrite()`](https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/) describes the PWM wave characteristics for various hardware architecture.  The general operational characteristic is  8-bit duty cycle control where the output will be **always off** for value 0 and **always on** for value 255. With the various devices and timer modes, sometimes a bit correction is required to achieve full off or on. The ESP8266 follows this mode of operation, but with the different timer architecture on the ESP32 devices, the LEDc PWM operates in a different manner, where duty value 0 is always off, but duty value 255 will give an output that's 255/256 duty cycle (not fully on). This happens for any setting for bit resolution. As of version 1.2.0, this condition is detected and corrected, where the hardware is programmed with `2^resolution (bits)^`, which drives the output signal fully on.
+Arduino's reference for [`analogWrite()`](https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/) describes the PWM wave characteristics for various hardware architecture.  The general operational characteristic is  8-bit duty cycle control where the output will be **always off** for value 0 and **always on** for value 255. With the various devices and timer modes, sometimes a bit correction is required to achieve full off or on. The ESP8266 follows this mode of operation, but with the different timer architecture on the ESP32 devices, the **LEDc** PWM operates in a different manner, where duty value 0 is always off, but duty value 255 will give an output that's 255/256 duty cycle (not fully on).
+
+As of version 1.2.1, this condition is detected and corrected, where the hardware is programmed with `2^resolution (bits)^`, which drives the output signal fully on for 8-bit and higher resolution settings. This full 0-100% control will now completely turn on/off both common anode and common cathode LED devices. For 1-7 bit resolution settings, the max value correction is not made and AnalogWrite works the same as the LEDc PWM control functions.
+
+When using ESP32S2 devices, this version offers a temporary fix for ***ESP32-S2 PWM for a Servo pulse issue #5050*** but with limited frequency range. Tested range is 8-bit: 4Hz to 2.5kHz, 13-bit 0.2Hz to 120Hz.
 
 | Board   | PWM Pins                          | DAC Pins   | PWM Frequency   | Resolution              |
 | ------- | --------------------------------- | ---------- | --------------- | ----------------------- |
@@ -69,7 +73,7 @@ The  the available PWM pins are determined by a pinMask constant. It might be ne
 - [AnalogWriteTest](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/AnalogWriteTest/AnalogWriteTest.ino)
 - [Fade](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/tree/main/examples/Fade)
 
-### Notes and Warnings
+### Notes
 
 Both timer resolution and PWM frequency should be calculated to get expected results. Refer to [Supported Range of Frequency and Duty Resolution](https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution) as a reference. 
 
