@@ -8,17 +8,36 @@
 
 ### Description
 
-The `analogWrite()` function writes a duty cycle value to a ([PWM wave](http://arduino.cc/en/Tutorial/PWM)) on a digital pin or an analog value to a DAC pin.  It wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 8 PWM channels plus it works with the 2 DAC pins.  A unique feature is its friendly and co-operative pin management where it will not attach to and use a pin that has been previously accessed by other code including any of the Arduino pin I/O functions. 
+The `analogWrite()` function writes a duty cycle value to a ([PWM wave](http://arduino.cc/en/Tutorial/PWM)) on a digital pin or an analog value to a DAC pin.  It wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 8 PWM channels and works with the 2 DAC pins.  A unique feature is its friendly and co-operative pin management where it will not attach to and use a pin that has been previously accessed by other code including any of the Arduino pin I/O functions. The use of this function is similar to the Arduino method as its resource management is handled transparently (you do not need to call `pinMode()`prior to use).
 
-The use of this function is similar to the Arduino method as its resource management is handled transparently (you do not need to call `pinMode()`prior to use). The `analogWriteResolution()` and `analogWriteFrequency()` functions are provided to give independent control over bit width configuration and PWM frequency.
+Now analogWrite can assign a pin and contol PWM duty value, frequency, resolution and **phase** all from one function. This function now returns the PWM frequency reported from the ledc framework.
+
+### Variations
+
+```c++
+float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution, uint32_t phase);
+float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution);
+float analogWrite(int8_t pin, int32_t value, float frequency);
+float analogWrite(int8_t pin, int32_t value);
+```
+
+### 3-phase PWM Example
+
+Details: 3-pins (4, 5 and 12), 10-bit PWM split in 3 equal ON-periods of 341. Frequency is 100Hz. Signal 5 is phase delayed by 341, signal 12 is delayed by 682.
+
+```apl
+  analogWrite(4, 341, 100, 10, 0);
+  analogWrite(5, 341, 100, 10, 341);
+  analogWrite(12, 341, 100, 10, 682);
+```
+
+![image](https://user-images.githubusercontent.com/63488701/115972875-1207c380-a51f-11eb-8051-c7d39b9144ab.png)
 
 ### PWM Wave
 
-Arduino's reference for [`analogWrite()`](https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/) describes the PWM wave characteristics for various hardware architecture.  The general operational characteristic is  8-bit duty cycle control where the output will be **always off** for value 0 and **always on** for value 255. With the various devices and timer modes, sometimes a bit correction is required to achieve full off or on. The ESP8266 follows this mode of operation, but with the different timer architecture on the ESP32 devices, the **LEDc** PWM operates in a different manner, where duty value 0 is always off, but duty value 255 will give an output that's 255/256 duty cycle (not fully on).
+Arduino's reference for [`analogWrite()`](https://www.arduino.cc/reference/en/language/functions/analog-io/analogwrite/) describes the PWM wave characteristics for various hardware architecture.  The general operational characteristic is  8-bit duty cycle control where the output will be **always off** for value 0 and **always on** for value 255.  The ESP32's LEDc PWM does not turn fully on at the max duty value, i.e. for 8-bit resolution, the maximim duty is 255/256, but now this is corrected in software for 8-bits and higher resolution. For 1-7 bit resolution settings, the correction is not made and AnalogWrite works the same as the LEDc PWM control functions.
 
-As of version 1.2.1, this condition is detected and corrected, where the hardware is programmed with `2^resolution (bits)^`, which drives the output signal fully on for 8-bit and higher resolution settings. This full 0-100% control will now completely turn on/off both common anode and common cathode LED devices. For 1-7 bit resolution settings, the max value correction is not made and AnalogWrite works the same as the LEDc PWM control functions.
-
-When using ESP32S2 devices, this version offers a temporary fix for ***ESP32-S2 PWM for a Servo pulse issue #5050*** but with limited frequency range. Tested range is 8-bit: 4Hz to 2.5kHz, 13-bit 0.2Hz to 120Hz.
+When using ESP32S2 devices, the core is in early development and the max frequency and bit resolutions are somewhat limited. On these devices, tested range is 8-bit: 4Hz to 2.5kHz, 13-bit 0.2Hz to 120Hz.
 
 | Board   | PWM Pins                          | DAC Pins   | PWM Frequency   | Resolution              |
 | ------- | --------------------------------- | ---------- | --------------- | ----------------------- |
@@ -28,13 +47,13 @@ When using ESP32S2 devices, this version offers a temporary fix for ***ESP32-S2 
 ### Syntax
 
 ```c++
-void analogWrite(pin, value);
+float analogWrite(pin, value);
 ```
 
 ### Parameters
 
 `pin`: The GPIO pin to write to.  Allowed data types: `int`.
-`value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). With default 13-bit resolution, 8192 is always on.  This function automatically attaches the pin to the next available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. If you need to release a pin that analogWrite has previously used, just use the command `analogWrite(pin, -1);` There is no return value.
+`value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). With default 13-bit resolution, 8192 is always on.  This function automatically attaches the pin to the next available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. If you need to release a pin that analogWrite has previously used, just use the command `analogWrite(pin, -1);` The return value is the PWM frequency reported by the LEDc methods. Various overload functions are provided (shown above) allowing the user to use only the parameters needed at any time.
 
 ### analogWriteFrequency()
 

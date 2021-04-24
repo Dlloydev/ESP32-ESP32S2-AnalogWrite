@@ -4,11 +4,10 @@
 #include <Arduino.h>
 
 #if (defined(ESP32) || defined(ARDUINO_ARCH_ESP32))
+#include "driver/ledc.h"
 
 #if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
-
-#include "esp32-hal-ledc.h" //temporary fix for issue #5050
-
+#include "esp32-hal-ledc.h"
 #define NUM_OUTPUT_PINS  45
 #define DAC1             17
 #define DAC2             18
@@ -21,7 +20,6 @@ const uint64_t pinMask = 0x27FE00207FFE; //PWM
 #define DAC2             26
 const uint8_t muxSize =  40;
 const uint64_t pinMask = 0x308EFF034; //PWM
-
 #endif
 
 typedef struct pinStatus {
@@ -34,7 +32,10 @@ typedef struct pinStatus {
 
 float analogWriteFrequency(int8_t pin, float frequency = 5000);
 int32_t analogWriteResolution(int8_t pin, uint8_t resolution = 13);
-void analogWrite(int8_t pin, int32_t value = 0);
+float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution, uint32_t phase);
+float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution);
+float analogWrite(int8_t pin, int32_t value, float frequency);
+float analogWrite(int8_t pin, int32_t value);
 int8_t getChannel(int8_t pin);
 void printPinsStatus(void);
 
