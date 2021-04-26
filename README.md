@@ -86,7 +86,7 @@ This function prints the available PWM pins to choose from and a formatted outpu
 
 | ESP32 Dev Board                                              | ESP32S2-Saola-1M                                             |
 | :----------------------------------------------------------- | ------------------------------------------------------------ |
-| ![image](https://user-images.githubusercontent.com/63488701/116158380-92176000-a6bc-11eb-901d-87a7cfb8ba93.png) | ![image-20210426182847176](../../../AppData/Roaming/Typora/typora-user-images/image-20210426182847176.png) |
+| ![image](https://user-images.githubusercontent.com/63488701/116158380-92176000-a6bc-11eb-901d-87a7cfb8ba93.png) | ![image](https://user-images.githubusercontent.com/63488701/116162591-1e795100-a6c4-11eb-9717-6f63a3abca06.png) |
 | All 8 channels offer independent resolution bits, duty cycle value and frequency . | All 8 channels offer independent resolution bits, duty cycle value. Four independant frequencies on channels (0,1), (2,3), (4,5) and (6,7) |
 | `const uint64_t pinMask = 0x27FE00207FFE;`                   | `const uint64_t pinMask = 0x308EFF034;`                      |
 
