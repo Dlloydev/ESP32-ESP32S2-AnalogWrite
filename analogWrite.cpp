@@ -1,5 +1,5 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.0
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.1
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
@@ -9,22 +9,21 @@
 
 #if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
 pinStatus_t pinsStatus[8] = {
-  {0, -1, 5000, 13, 0 }, {2, -1, 5000, 13, 0 },
-  {4, -1, 5000, 13, 0 }, {6, -1, 5000, 13, 0 },
-  {1, -1, 5000, 13, 0 }, {3, -1, 5000, 13, 0 },
-  {5, -1, 5000, 13, 0 }, {7, -1, 5000, 13, 0 }
+  {0, -1, 5000, 13, 0, 0 }, {2, -1, 5000, 13, 0, 0 },
+  {4, -1, 5000, 13, 0, 0 }, {6, -1, 5000, 13, 0, 0 },
+  {1, -1, 5000, 13, 0, 0 }, {3, -1, 5000, 13, 0, 0 },
+  {5, -1, 5000, 13, 0, 0 }, {7, -1, 5000, 13, 0, 0 }
 };
 const uint8_t chd = 1;
 #else //ESP32
 pinStatus_t pinsStatus[8] = {
-  { 0, -1, 5000, 13, 0 }, { 2, -1, 5000, 13, 0 },
-  { 4, -1, 5000, 13, 0 }, { 6, -1, 5000, 13, 0 },
-  { 8, -1, 5000, 13, 0 }, {10, -1, 5000, 13, 0 },
-  {12, -1, 5000, 13, 0 }, {14, -1, 5000, 13, 0 }
+  { 0, -1, 5000, 13, 0, 0 }, { 2, -1, 5000, 13, 0, 0 },
+  { 4, -1, 5000, 13, 0, 0 }, { 6, -1, 5000, 13, 0, 0 },
+  { 8, -1, 5000, 13, 0, 0 }, {10, -1, 5000, 13, 0, 0 },
+  {12, -1, 5000, 13, 0, 0 }, {14, -1, 5000, 13, 0, 0 }
 };
 const uint8_t chd = 2;
 #endif
-
 
 float analogWrite(int8_t pin, int32_t value) {
   if (pin == DAC1 ||  pin == DAC2) { //dac
@@ -41,14 +40,14 @@ float analogWrite(int8_t pin, int32_t value) {
         REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
       } else { // write PWM
         uint8_t bits = pinsStatus[ch / chd].resolution;
-        ledcSetup(ch, pinsStatus[ch / chd].frequency, bits);
+        awLedcSetup(ch, pinsStatus[ch / chd].frequency, bits);
         if (value > ((1 << bits) - 1)) value = (1 << bits); //constrain
         if ((bits > 7) && (value == ((1 << bits) - 1))) value = (1 << bits); //keep PWM high
         pinsStatus[ch / chd].value = value;
         ledcWrite(ch, value);
       }
     }
-    return ledcReadFreq(ch);
+    return awLedcReadFreq(ch);
   }
   return 0;
 }
@@ -70,14 +69,14 @@ float analogWrite(int8_t pin, int32_t value, float frequency) {
       } else { // write PWM
         pinsStatus[ch / chd].frequency = frequency;
         uint8_t bits = pinsStatus[ch / chd].resolution;
-        ledcSetup(ch, frequency, bits);
+        awLedcSetup(ch, frequency, bits);
         if (value > ((1 << bits) - 1)) value = (1 << bits); //constrain
         if ((bits > 7) && (value == ((1 << bits) - 1))) value = (1 << bits); //keep PWM high
         pinsStatus[ch / chd].value = value;
         ledcWrite(ch, value);
       }
     }
-    return ledcReadFreq(ch);
+    return awLedcReadFreq(ch);
   }
   return 0;
 }
@@ -100,14 +99,14 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
         pinsStatus[ch / chd].frequency = frequency;
         pinsStatus[ch / chd].resolution = resolution & 0xF;
         uint8_t bits = resolution & 0xF;
-        ledcSetup(ch, frequency, bits);
+        awLedcSetup(ch, frequency, bits);
         if (value > ((1 << bits) - 1)) value = (1 << bits); //constrain
         if ((bits > 7) && (value == ((1 << bits) - 1))) value = (1 << bits); //keep PWM high
         pinsStatus[ch / chd].value = value;
         ledcWrite(ch, value);
       }
     }
-    return ledcReadFreq(ch);
+    return awLedcReadFreq(ch);
   }
   return 0;
 }
@@ -130,13 +129,13 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
         pinsStatus[ch / chd].frequency = frequency;
         pinsStatus[ch / chd].resolution = resolution & 0xF;
         uint8_t bits = resolution & 0xF;
-        ledcSetup(ch, frequency, bits);
+        awLedcSetup(ch, frequency, bits);
         if (value > ((1 << bits) - 1)) value = (1 << bits); //constrain
         if ((bits > 7) && (value == ((1 << bits) - 1))) value = (1 << bits); //keep PWM high
         pinsStatus[ch / chd].value = value;
         uint32_t group = (ch / 8), timer = ((ch / 2) % 4);
         ledc_channel_config_t ledc_channel {
-          pin,
+          (uint8_t)pin,
           (ledc_mode_t)group,
           (ledc_channel_t)ch,
           LEDC_INTR_DISABLE,
@@ -144,12 +143,13 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
           (uint32_t)value,
           (int)phase,
         };
+        pinsStatus[ch / chd].phase = phase;
         ledc_channel_config(&ledc_channel);
         ledc_set_duty_with_hpoint((ledc_mode_t)group, (ledc_channel_t)ch, value, phase);
         ledcWrite(ch, value);
       }
     }
-    return ledcReadFreq(ch);
+    return awLedcReadFreq(ch);
   }
   return 0;
 }
@@ -160,10 +160,10 @@ float analogWriteFrequency(int8_t pin, float frequency) {
     if ((pinsStatus[ch / chd].pin) > 47) return -1;
     pinsStatus[ch / chd].pin = pin;
     pinsStatus[ch / chd].frequency = frequency;
-    ledcSetup(ch, frequency, pinsStatus[ch / chd].resolution);
+    awLedcSetup(ch, frequency, pinsStatus[ch / chd].resolution);
     ledcWrite(ch, pinsStatus[ch / chd].value);
   }
-  return ledcReadFreq(ch);
+  return awLedcReadFreq(ch);
 }
 
 int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
@@ -172,10 +172,27 @@ int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
     if ((pinsStatus[ch / chd].pin) > 47) return -1;
     pinsStatus[ch / chd].pin = pin;
     pinsStatus[ch / chd].resolution = resolution & 0xF;
-    ledcSetup(ch, pinsStatus[ch / chd].frequency, resolution & 0xF);
+    awLedcSetup(ch, pinsStatus[ch / chd].frequency, resolution & 0xF);
     ledcWrite(ch, pinsStatus[ch / chd].value);
   }
   return 1 << resolution & 0xF;
+}
+
+float awLedcSetup(uint8_t ch, double frequency, uint8_t bits) {
+#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+  frequency *= 80; //workaround for issue 5050
+  return ledcSetup(ch, frequency, bits) / 80;
+#else //ESP32
+  return ledcSetup(ch, frequency, bits);
+#endif
+}
+
+float awLedcReadFreq(uint8_t ch) {
+#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+  return ledcReadFreq(ch) / 80; //workaround for issue 5050
+#else //ESP32
+  return ledcReadFreq(ch);
+#endif
 }
 
 int8_t getChannel(int8_t pin) {
@@ -228,11 +245,11 @@ void printPinsStatus() {
     if ((pinsStatus[ch / chd].pin >= 0) && (pinsStatus[ch / chd].pin < 10)) Serial.print(" ");
     Serial.print(pinsStatus[ch / chd].pin); Serial.print("  ");
     Serial.print("Hz: ");
-    if (ledcReadFreq(ch) < 10000) Serial.print(" ");
-    if (ledcReadFreq(ch) < 1000) Serial.print(" ");
-    if (ledcReadFreq(ch) < 100) Serial.print(" ");
-    if (ledcReadFreq(ch) < 10) Serial.print(" ");
-    Serial.print(ledcReadFreq(ch)); Serial.print("  ");
+    if (awLedcReadFreq(ch) < 10000) Serial.print(" ");
+    if (awLedcReadFreq(ch) < 1000) Serial.print(" ");
+    if (awLedcReadFreq(ch) < 100) Serial.print(" ");
+    if (awLedcReadFreq(ch) < 10) Serial.print(" ");
+    Serial.print(awLedcReadFreq(ch)); Serial.print("  ");
     Serial.print("Bits: ");
     if (pinsStatus[ch / chd].resolution < 10) Serial.print(" ");
     Serial.print(pinsStatus[ch / chd].resolution); Serial.print("  ");
@@ -241,7 +258,12 @@ void printPinsStatus() {
     if (pinsStatus[ch / chd].value < 1000) Serial.print(" ");
     if (pinsStatus[ch / chd].value < 100) Serial.print(" ");
     if (pinsStatus[ch / chd].value < 10) Serial.print(" ");
-    Serial.print(pinsStatus[ch / chd].value);
+    Serial.print(pinsStatus[ch / chd].value); Serial.print("  ");
+    Serial.print("Ø: ");
+    if (pinsStatus[ch / chd].phase < 1000) Serial.print(" ");
+    if (pinsStatus[ch / chd].phase < 100) Serial.print(" ");
+    if (pinsStatus[ch / chd].phase < 10) Serial.print(" ");
+    Serial.print(pinsStatus[ch / chd].phase);
     Serial.println();
   }
 }

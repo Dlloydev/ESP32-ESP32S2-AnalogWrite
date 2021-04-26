@@ -5,7 +5,7 @@
 void setup() {
 
   Serial.begin(115200);
-  Serial.println("--------------");
+  Serial.println("----------------");
 
   // 3-phase PWM
   analogWrite(4, 341, 100, 10, 0);

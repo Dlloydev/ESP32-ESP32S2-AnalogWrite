@@ -4,7 +4,12 @@
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)
 
-![image](https://user-images.githubusercontent.com/63488701/114867299-9db47e00-9dc2-11eb-953c-7004a92e8a18.png)
+![image](https://user-images.githubusercontent.com/63488701/116161369-a4e06380-a6c1-11eb-995a-55f2ff7393c0.png)
+
+### ESP32 Installation Instructions
+
+This library was tested using using the [ESP32 Arduino IDE Boards Manager](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/boards_manager.md) Development release link, where `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json` 
+is added to the *Additional Boards Manager URLs* in the preferences menu. 
 
 ### Description
 
@@ -12,18 +17,9 @@ The `analogWrite()` function writes a duty cycle value to a ([PWM wave](http://a
 
 Now analogWrite can assign a pin and contol PWM duty value, frequency, resolution and **phase** all from one function. This function now returns the PWM frequency reported from the ledc framework.
 
-### Variations
-
-```c++
-float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution, uint32_t phase);
-float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution);
-float analogWrite(int8_t pin, int32_t value, float frequency);
-float analogWrite(int8_t pin, int32_t value);
-```
-
 ### 3-phase PWM Example
 
-Details: 3-pins (4, 5 and 12), 10-bit PWM split in 3 equal ON-periods of 341. Frequency is 100Hz. Signal 5 is phase delayed by 341, signal 12 is delayed by 682.
+Details: 3-pins (4, 5 and 12), 10-bit PWM split into 3 equal ON-periods  of 341. Frequency is 100Hz. Signal on pin 5 is phase shifted by 341  steps, signal on pin 12 is shifted by 682 steps.
 
 ```apl
   analogWrite(4, 341, 100, 10, 0);
@@ -44,7 +40,16 @@ When using ESP32S2 devices, the core is in early development and the max frequen
 | ESP32   | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
 | ESP32S2 | 1- 14, 21, 33-42, 45              | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
 
-### Syntax
+### AnalogWrite  Function Overloading
+
+```c++
+float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution, uint32_t phase);
+float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution);
+float analogWrite(int8_t pin, int32_t value, float frequency);
+float analogWrite(int8_t pin, int32_t value);
+```
+
+### Basic Syntax
 
 ```c++
 float analogWrite(pin, value);
@@ -81,7 +86,7 @@ This function prints the available PWM pins to choose from and a formatted outpu
 
 | ESP32 Dev Board                                              | ESP32S2-Saola-1M                                             |
 | :----------------------------------------------------------- | ------------------------------------------------------------ |
-| ![esp32-pinsStatus-large](https://user-images.githubusercontent.com/63488701/115168460-f9b02880-a088-11eb-8c65-debeee7a7858.png) | ![esp32-s2 pinsStatus-large](https://user-images.githubusercontent.com/63488701/115168504-26644000-a089-11eb-93f1-476fdf1b4418.png) |
+| ![image](https://user-images.githubusercontent.com/63488701/116158380-92176000-a6bc-11eb-901d-87a7cfb8ba93.png) | ![image-20210426182847176](../../../AppData/Roaming/Typora/typora-user-images/image-20210426182847176.png) |
 | All 8 channels offer independent resolution bits, duty cycle value and frequency . | All 8 channels offer independent resolution bits, duty cycle value. Four independant frequencies on channels (0,1), (2,3), (4,5) and (6,7) |
 | `const uint64_t pinMask = 0x27FE00207FFE;`                   | `const uint64_t pinMask = 0x308EFF034;`                      |
 
