@@ -8,8 +8,13 @@
 
 ### ESP32 Installation Instructions
 
-This library was tested using using the [ESP32 Arduino IDE Boards Manager](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/boards_manager.md) Development release link, where `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json` 
-is added to the *Additional Boards Manager URLs* in the preferences menu. 
+This library was tested using using the [ESP32 Arduino IDE Boards Manager](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/boards_manager.md) installation method.
+
+- Stable release link: (tested with ESP32 Dev Module)
+
+  `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`
+
+- Development release link: (tested with ESP32 Dev Module and ESP32-S2 Dev Module) `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json`
 
 ### Description
 
