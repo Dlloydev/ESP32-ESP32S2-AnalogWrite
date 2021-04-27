@@ -10,11 +10,9 @@
 
 This library was tested using using the [ESP32 Arduino IDE Boards Manager](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/boards_manager.md) installation method.
 
-- Stable release link: (tested with ESP32 Dev Module)
+- Stable release link:  tested with ESP32 Dev Module
 
-  `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`
-
-- Development release link: (tested with ESP32 Dev Module and ESP32-S2 Dev Module) `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_dev_index.json`
+- Development release link: Tested with ESP32 Dev Module and ESP32-S2 Dev Module
 
 ### Description
 
