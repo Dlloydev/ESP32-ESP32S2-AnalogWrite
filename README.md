@@ -11,7 +11,6 @@
 This library was tested using using the [ESP32 Arduino IDE Boards Manager](https://github.com/espressif/arduino-esp32/blob/master/docs/arduino-ide/boards_manager.md) installation method.
 
 - Stable release link:  tested with ESP32 Dev Module
-
 - Development release link: Tested with ESP32 Dev Module and ESP32-S2 Dev Module
 
 ### Description
@@ -43,7 +42,7 @@ When using ESP32S2 devices, the core is in early development and the max frequen
 | ESP32   | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
 | ESP32S2 | 1- 14, 21, 33-42, 45              | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
 
-### AnalogWrite  Function Overloading
+### AnalogWrite Options
 
 ```c++
 float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution, uint32_t phase);
