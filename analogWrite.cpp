@@ -107,7 +107,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
           awLedcSetup(ch, frequency, bits);
           ledcWrite(ch, value);
           pinsStatus[ch / chd].frequency = frequency;
-          pinsStatus[ch / chd].resolution = resolution & 0xF;
+          pinsStatus[ch / chd].resolution = bits;
         }
         if (ledcRead(ch) != value) {
           ledcWrite(ch, value);
@@ -175,9 +175,11 @@ float analogWriteFrequency(int8_t pin, float frequency) {
   if (ch >= 0) {
     if ((pinsStatus[ch / chd].pin) > 47) return -1;
     pinsStatus[ch / chd].pin = pin;
-    pinsStatus[ch / chd].frequency = frequency;
-    awLedcSetup(ch, frequency, pinsStatus[ch / chd].resolution);
-    ledcWrite(ch, pinsStatus[ch / chd].value);
+    if (pinsStatus[ch / chd].frequency != frequency) {
+      awLedcSetup(ch, frequency, pinsStatus[ch / chd].resolution);
+      ledcWrite(ch, pinsStatus[ch / chd].value);
+      pinsStatus[ch / chd].frequency = frequency;
+    }
   }
   return awLedcReadFreq(ch);
 }
@@ -187,9 +189,11 @@ int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
   if (ch >= 0) {
     if ((pinsStatus[ch / chd].pin) > 47) return -1;
     pinsStatus[ch / chd].pin = pin;
-    pinsStatus[ch / chd].resolution = resolution & 0xF;
-    awLedcSetup(ch, pinsStatus[ch / chd].frequency, resolution & 0xF);
-    ledcWrite(ch, pinsStatus[ch / chd].value);
+    if (pinsStatus[ch / chd].resolution != resolution) {
+      awLedcSetup(ch, pinsStatus[ch / chd].frequency, resolution & 0xF);
+      ledcWrite(ch, pinsStatus[ch / chd].value);
+      pinsStatus[ch / chd].resolution = resolution & 0xF;
+    }
   }
   return 1 << resolution & 0xF;
 }
