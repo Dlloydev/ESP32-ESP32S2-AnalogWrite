@@ -1,5 +1,5 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.3
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.4
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
@@ -74,7 +74,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency) {
           ledcWrite(ch, value);
           pinsStatus[ch / chd].frequency = frequency;
         }
-        if (ledcRead(ch) != value) {
+        if (pinsStatus[ch / chd].value != value) {
           ledcWrite(ch, value);
           pinsStatus[ch / chd].value = value;
         }
@@ -109,7 +109,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
           pinsStatus[ch / chd].frequency = frequency;
           pinsStatus[ch / chd].resolution = bits;
         }
-        if (ledcRead(ch) != value) {
+        if (pinsStatus[ch / chd].value != value) {
           ledcWrite(ch, value);
           pinsStatus[ch / chd].value = value;
         }
@@ -159,7 +159,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
           ledc_set_duty_with_hpoint((ledc_mode_t)group, (ledc_channel_t)ch, value, phase);
           pinsStatus[ch / chd].phase = phase;
         }
-        if (ledcRead(ch) != value) {
+        if (pinsStatus[ch / chd].value != value) {
           ledcWrite(ch, value);
           pinsStatus[ch / chd].value = value;
         }
@@ -174,7 +174,6 @@ float analogWriteFrequency(int8_t pin, float frequency) {
   int8_t ch = getChannel(pin);
   if (ch >= 0) {
     if ((pinsStatus[ch / chd].pin) > 47) return -1;
-    pinsStatus[ch / chd].pin = pin;
     if (pinsStatus[ch / chd].frequency != frequency) {
       awLedcSetup(ch, frequency, pinsStatus[ch / chd].resolution);
       ledcWrite(ch, pinsStatus[ch / chd].value);
@@ -188,7 +187,6 @@ int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
   int8_t ch = getChannel(pin);
   if (ch >= 0) {
     if ((pinsStatus[ch / chd].pin) > 47) return -1;
-    pinsStatus[ch / chd].pin = pin;
     if (pinsStatus[ch / chd].resolution != resolution) {
       awLedcSetup(ch, pinsStatus[ch / chd].frequency, resolution & 0xF);
       ledcWrite(ch, pinsStatus[ch / chd].value);
