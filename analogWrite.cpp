@@ -1,5 +1,5 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.5
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.6
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
@@ -11,18 +11,18 @@ namespace aw {
 
 #if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
 pinStatus_t pinsStatus[8] = {
-  {0, -1, 5000, 13, 0, 0 }, {2, -1, 5000, 13, 0, 0 },
-  {4, -1, 5000, 13, 0, 0 }, {6, -1, 5000, 13, 0, 0 },
-  {1, -1, 5000, 13, 0, 0 }, {3, -1, 5000, 13, 0, 0 },
-  {5, -1, 5000, 13, 0, 0 }, {7, -1, 5000, 13, 0, 0 }
+  {0, -1, 980, 8, 0, 0 }, {2, -1, 980, 8, 0, 0 },
+  {4, -1, 980, 8, 0, 0 }, {6, -1, 980, 8, 0, 0 },
+  {1, -1, 980, 8, 0, 0 }, {3, -1, 980, 8, 0, 0 },
+  {5, -1, 980, 8, 0, 0 }, {7, -1, 980, 8, 0, 0 }
 };
 const uint8_t chd = 1;
 #else //ESP32
 pinStatus_t pinsStatus[8] = {
-  { 0, -1, 5000, 13, 0, 0 }, { 2, -1, 5000, 13, 0, 0 },
-  { 4, -1, 5000, 13, 0, 0 }, { 6, -1, 5000, 13, 0, 0 },
-  { 8, -1, 5000, 13, 0, 0 }, {10, -1, 5000, 13, 0, 0 },
-  {12, -1, 5000, 13, 0, 0 }, {14, -1, 5000, 13, 0, 0 }
+  { 0, -1, 980, 8, 0, 0 }, { 2, -1, 980, 8, 0, 0 },
+  { 4, -1, 980, 8, 0, 0 }, { 6, -1, 980, 8, 0, 0 },
+  { 8, -1, 980, 8, 0, 0 }, {10, -1, 980, 8, 0, 0 },
+  {12, -1, 980, 8, 0, 0 }, {14, -1, 980, 8, 0, 0 }
 };
 const uint8_t chd = 2;
 #endif
@@ -38,9 +38,9 @@ float awLedcSetup(uint8_t ch, double frequency, uint8_t bits) {
 
 void awDetachPin(uint8_t pin, uint8_t ch) {
   pinsStatus[ch / chd].pin = -1;
-  pinsStatus[ch / chd].frequency = 5000;
-  pinsStatus[ch / chd].resolution = 13;
   pinsStatus[ch / chd].value = 0;
+  pinsStatus[ch / chd].frequency = 980;
+  pinsStatus[ch / chd].resolution = 8;
   pinsStatus[ch / chd].phase = 0;
   ledcWrite(ch / chd, 0);
   ledcSetup(ch / chd, 0, 0);
@@ -240,6 +240,15 @@ int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
     }
   }
   return 1 << resolution & 0xF;
+}
+
+void setPinsStatusDefaults(int32_t value, float frequency, uint8_t resolution, uint32_t phase) {
+  for (int8_t i = 0; i < 8; i++) {
+    aw::pinsStatus[i].value = value;
+    aw::pinsStatus[i].frequency = frequency;
+    aw::pinsStatus[i].resolution = resolution;
+    aw::pinsStatus[i].phase = phase;
+  }
 }
 
 void printPinsStatus() {

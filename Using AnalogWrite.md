@@ -5,8 +5,8 @@ Using analogWrite is very easy as much is done transparently. Initializing a pin
 | Parameter       | Default | Description                            |
 | --------------- | ------- | -------------------------------------- |
 | pin             | -1      | default is no pin attached             |
-| frequency       | 5000    | pwm frequency (Hz)                     |
-| resolution      | 13      | bit width                              |
+| frequency       | 980     | pwm frequency (Hz)                     |
+| resolution      | 8       | bit width                              |
 | value           | 0       | output low                             |
 | phase           | 0       | no phase shift                         |
 | returned value: | 0       | returns actual timer frequency (float) |
@@ -33,11 +33,11 @@ const int ledPin = 5;   // LED connected to digital pin 5
 Then in setup() or loop() as desired. Unspecified parameters will be at default:
 
 ```c++
-analogWrite(ledPin, 4095);   // 50% duty, default 5000 Hz, default 13-bit, default 0 phase shift
+analogWrite(ledPin, 127);   // 50% duty, default 980 Hz, default 8-bit, default 0 phase shift
 ```
 
 ```c++
-analogWrite(ledPin, 2047, 1000);   // 50% duty, 1000 Hz, default 13-bit, default 0 phase shift
+analogWrite(ledPin, 127, 5000);   // 50% duty, 5000 Hz, default 8-bit, default 0 phase shift
 ```
 
 ```c++

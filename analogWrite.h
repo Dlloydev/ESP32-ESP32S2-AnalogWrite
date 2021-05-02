@@ -41,12 +41,13 @@ int8_t awGetChannel(int8_t pin);
 
 } //namespace aw
 
-float analogWriteFrequency(int8_t pin, float frequency = 5000);
-int32_t analogWriteResolution(int8_t pin, uint8_t resolution = 13);
+float analogWriteFrequency(int8_t pin, float frequency = 980);
+int32_t analogWriteResolution(int8_t pin, uint8_t resolution = 8);
 float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution, uint32_t phase);
 float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution);
 float analogWrite(int8_t pin, int32_t value, float frequency);
 float analogWrite(int8_t pin, int32_t value);
+void setPinsStatusDefaults(int32_t value = 0, float frequency = 980, uint8_t resolution = 8, uint32_t phase = 0);
 void printPinsStatus(void);
 
 #endif //ESP32 or ARDUINO_ARCH_ESP32

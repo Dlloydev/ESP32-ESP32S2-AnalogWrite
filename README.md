@@ -39,10 +39,10 @@ Arduino's reference for [`analogWrite()`](https://www.arduino.cc/reference/en/la
 
 When using ESP32S2 devices, the core is in early development and the max frequency and bit resolutions are somewhat limited. On these devices, tested range is 8-bit: 4Hz to 2.5kHz, 13-bit 0.2Hz to 120Hz.
 
-| Board   | PWM Pins                          | DAC Pins   | PWM Frequency   | Resolution              |
-| ------- | --------------------------------- | ---------- | --------------- | ----------------------- |
-| ESP32   | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
-| ESP32S2 | 1- 14, 21, 33-42, 45              | DAC1, DAC2 | 5000 Hz default | 1-16 bit PWM, 8-bit DAC |
+| Board   | PWM Pins                          | DAC Pins   | PWM Frequency  | Resolution                  |
+| ------- | --------------------------------- | ---------- | -------------- | --------------------------- |
+| ESP32   | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | DAC1, DAC2 | 980 Hz default | 1-16 bit PWM, 8-bit default |
+| ESP32S2 | 1- 14, 21, 33-42, 45              | DAC1, DAC2 | 980 Hz default | 1-16 bit PWM, 8-bit default |
 
 ### AnalogWrite Options
 
@@ -62,7 +62,7 @@ float analogWrite(pin, value);
 ### Parameters
 
 `pin`: The GPIO pin to write to.  Allowed data types: `int`.
-`value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). With default 13-bit resolution, 8192 is always on.  This function automatically attaches the pin to the next available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. If you need to release a pin that analogWrite has previously used, just use the command `analogWrite(pin, -1);` The return value is the PWM frequency reported by the LEDc methods. Various overload functions are provided (shown above) allowing the user to use only the parameters needed at any time.
+`value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). This function automatically attaches the pin to the first available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. If you need to release a pin that analogWrite has previously used, just use the command `analogWrite(pin, -1);` The return value is the PWM frequency reported by the LEDc methods. Various overload functions are provided (shown above) allowing the user to use only the parameters needed at any time.
 
 ### analogWriteFrequency()
 
@@ -70,7 +70,7 @@ float analogWrite(pin, value);
 float analogWriteFrequency(int8_t pin, float frequency);
 ```
 
-Sets the PWM frequency (default 5000Hz) on any PWM pin. Returns the exact hardware frequency used by the timer.
+Sets the PWM frequency (default 980Hz) on any PWM pin. Returns the exact hardware frequency used by the timer.
 
 ### analogWriteResolution()
 
@@ -78,7 +78,15 @@ Sets the PWM frequency (default 5000Hz) on any PWM pin. Returns the exact hardwa
 int32_t analogWriteResolution(int8_t pin, uint8_t resolution);
 ```
 
-The PWM resolution for any PWM pin can be set from 1-bit to 16-bit. This has no effect on the DAC pins which are 8-bit only. Returns the maximum value that will be always on for the selected resolution: `pow(2, resolution)`
+The PWM resolution for any PWM pin can be set from 1-bit to 16-bit (default 8-bit). This has no effect on the DAC pins which are 8-bit only. Returns the maximum value that will be always on for the selected resolution: `pow(2, resolution)`
+
+### setPinsStatusDefaults()
+
+```c++
+void setPinsStatusDefaults(int32_t value = 0, float frequency = 980, uint8_t resolution = 8, uint32_t phase = 0);
+```
+
+This function sets the default PWM value, frequency, resolution and phase for all 8 channels. If called with no arguments, the defaults are as shown above, which matches the Arduino UNO PWM defaults.  This is also the same as the startup defaults, so it's not a requirement to call this function unless new defaults are required.
 
 ### printPinsStatus()
 
