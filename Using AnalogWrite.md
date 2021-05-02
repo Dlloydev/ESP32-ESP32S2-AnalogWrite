@@ -56,7 +56,5 @@ analogWrite(DAC1, 127);   // DAC1 pin set at VCC/2 volts
 analogWrite(ledPin, -1);   // detaches ledPin (floating) and timer channel cleared
 ```
 
-```c++
-analogWrite(DAC1, 127);   // DAC1 pin set at VCC/2 volts 
-```
+
 
