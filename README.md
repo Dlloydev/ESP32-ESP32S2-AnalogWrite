@@ -19,6 +19,8 @@ The `analogWrite()` function writes a duty cycle value to a ([PWM wave](http://a
 
 Now analogWrite can assign a pin and contol PWM duty value, frequency, resolution and **phase** all from one function. This function now returns the PWM frequency reported from the ledc framework.
 
+### [Using AnalogWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/master/Using-AnalogWrite.md)
+
 ### 3-phase PWM Example
 
 Details: 3-pins (4, 5 and 12), 10-bit PWM split into 3 equal ON-periods  of 341. Frequency is 100Hz. Signal on pin 5 is phase shifted by 341  steps, signal on pin 12 is shifted by 682 steps.

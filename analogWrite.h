@@ -4,9 +4,13 @@
 #include <Arduino.h>
 
 #if (defined(ESP32) || defined(ARDUINO_ARCH_ESP32))
+
+namespace aw {
+
 #include "driver/ledc.h"
 
 #if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+
 #define NUM_OUTPUT_PINS  45
 #define DAC1             17
 #define DAC2             18
@@ -30,16 +34,19 @@ typedef struct pinStatus {
   uint32_t phase;
 } pinStatus_t;
 
+float awLedcSetup(uint8_t ch, double frequency, uint8_t bits);
+void awDetachPin(uint8_t pin, uint8_t ch);
+float awLedcReadFreq(uint8_t ch);
+int8_t awGetChannel(int8_t pin);
+
+} //namespace aw
+
 float analogWriteFrequency(int8_t pin, float frequency = 5000);
 int32_t analogWriteResolution(int8_t pin, uint8_t resolution = 13);
 float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution, uint32_t phase);
 float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution);
 float analogWrite(int8_t pin, int32_t value, float frequency);
 float analogWrite(int8_t pin, int32_t value);
-float awLedcSetup(uint8_t ch, double frequency, uint8_t bits);
-float awLedcReadFreq(uint8_t ch);
-int8_t getChannel(int8_t pin);
-
 void printPinsStatus(void);
 
 #endif //ESP32 or ARDUINO_ARCH_ESP32
