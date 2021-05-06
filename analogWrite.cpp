@@ -1,10 +1,11 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.6
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.7
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
-
 #include <Arduino.h>
+
+#if (defined(ESP32) || defined(ARDUINO_ARCH_ESP32))
 #include "analogWrite.h"
 
 namespace aw {
@@ -18,6 +19,7 @@ pinStatus_t pinsStatus[8] = {
 };
 const uint8_t chd = 1;
 #else //ESP32
+
 pinStatus_t pinsStatus[8] = {
   { 0, -1, 980, 8, 0, 0 }, { 2, -1, 980, 8, 0, 0 },
   { 4, -1, 980, 8, 0, 0 }, { 6, -1, 980, 8, 0, 0 },
@@ -291,3 +293,4 @@ void printPinsStatus() {
     Serial.println();
   }
 }
+#endif //ESP32
