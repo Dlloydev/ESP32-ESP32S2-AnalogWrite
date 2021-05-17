@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _ESP32_ESP32S2_ANALOG_WRITE_
 #define _ESP32_ESP32S2_ANALOG_WRITE_
 

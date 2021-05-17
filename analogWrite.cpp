@@ -241,7 +241,7 @@ int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
       aw::pinsStatus[ch / aw::chd].resolution = resolution & 0xF;
     }
   }
-  return 1 << resolution & 0xF;
+  return 1 << (resolution & 0xF);
 }
 
 void setPinsStatusDefaults(int32_t value, float frequency, uint8_t resolution, uint32_t phase) {
