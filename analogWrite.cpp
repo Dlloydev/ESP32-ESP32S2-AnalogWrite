@@ -1,5 +1,5 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.7
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.8
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
