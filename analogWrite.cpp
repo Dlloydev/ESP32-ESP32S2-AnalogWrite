@@ -236,7 +236,9 @@ int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
   if (ch >= 0) {
     if ((aw::pinsStatus[ch / aw::chd].pin) > 47) return -1;
     if (aw::pinsStatus[ch / aw::chd].resolution != resolution) {
+      ledcDetachPin(pin);
       aw::awLedcSetup(ch, aw::pinsStatus[ch / aw::chd].frequency, resolution & 0xF);
+      ledcAttachPin(pin, ch);
       ledcWrite(ch, aw::pinsStatus[ch / aw::chd].value);
       aw::pinsStatus[ch / aw::chd].resolution = resolution & 0xF;
     }
