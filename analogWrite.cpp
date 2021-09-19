@@ -1,5 +1,5 @@
 /**********************************************************************************
-   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.8
+   AnalogWrite Library for ESP32-ESP32S2 Arduino core - Version 2.0.9
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  **********************************************************************************/
@@ -29,15 +29,6 @@ pinStatus_t pinsStatus[8] = {
 const uint8_t chd = 2;
 #endif
 
-float awLedcSetup(uint8_t ch, double frequency, uint8_t bits) {
-#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
-  frequency *= 80; //workaround for issue 5050
-  return ledcSetup(ch, frequency, bits) / 80;
-#else //ESP32
-  return ledcSetup(ch, frequency, bits);
-#endif
-}
-
 void awDetachPin(uint8_t pin, uint8_t ch) {
   pinsStatus[ch / chd].pin = -1;
   pinsStatus[ch / chd].value = 0;
@@ -48,14 +39,6 @@ void awDetachPin(uint8_t pin, uint8_t ch) {
   ledcSetup(ch / chd, 0, 0);
   ledcDetachPin(pinsStatus[ch / chd].pin);
   REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
-}
-
-float awLedcReadFreq(uint8_t ch) {
-#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
-  return ledcReadFreq(ch) / 80; //workaround for issue 5050
-#else //ESP32
-  return ledcReadFreq(ch);
-#endif
 }
 
 int8_t awGetChannel(int8_t pin) {
@@ -73,7 +56,7 @@ int8_t awGetChannel(int8_t pin) {
       if (pinsStatus[ch / chd].pin == -1) { //free channel
         if ((ledcRead(ch) < 1) && (ledcReadFreq(ch) < 1)) { //free timer
           pinsStatus[ch / chd].pin = pin;
-          aw::awLedcSetup(ch, pinsStatus[ch / chd].frequency, pinsStatus[ch / chd].resolution);
+          ledcSetup(ch, pinsStatus[ch / chd].frequency, pinsStatus[ch / chd].resolution);
           ledcAttachPin(pin, ch);
           return ch;
           break;
@@ -109,7 +92,7 @@ float analogWrite(int8_t pin, int32_t value) {
         aw::pinsStatus[ch / aw::chd].value = value;
       }
     }
-    return aw::awLedcReadFreq(ch);
+    return ledcReadFreq(ch);
   }
   return 0;
 }
@@ -128,7 +111,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency) {
         if (value > ((1 << bits) - 1)) value = (1 << bits); //constrain
         if ((bits > 7) && (value == ((1 << bits) - 1))) value = (1 << bits); //keep PWM high
         if (aw::pinsStatus[ch / aw::chd].frequency != frequency) {
-          aw::awLedcSetup(ch, frequency, bits);
+          ledcSetup(ch, frequency, bits);
           ledcWrite(ch, value);
           aw::pinsStatus[ch / aw::chd].frequency = frequency;
         }
@@ -138,7 +121,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency) {
         }
       }
     }
-    return aw::awLedcReadFreq(ch);
+    return ledcReadFreq(ch);
   }
   return 0;
 }
@@ -157,7 +140,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
         if (value > ((1 << bits) - 1)) value = (1 << bits); //constrain
         if ((bits > 7) && (value == ((1 << bits) - 1))) value = (1 << bits); //keep PWM high
         if ((aw::pinsStatus[ch / aw::chd].frequency != frequency) || (aw::pinsStatus[ch / aw::chd].resolution != bits)) {
-          aw::awLedcSetup(ch, frequency, bits);
+          ledcSetup(ch, frequency, bits);
           ledcWrite(ch, value);
           aw::pinsStatus[ch / aw::chd].frequency = frequency;
           aw::pinsStatus[ch / aw::chd].resolution = bits;
@@ -168,7 +151,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
         }
       }
     }
-    return aw::awLedcReadFreq(ch);
+    return ledcReadFreq(ch);
   }
   return 0;
 }
@@ -187,7 +170,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
         if (value > ((1 << bits) - 1)) value = (1 << bits); //constrain
         if ((bits > 7) && (value == ((1 << bits) - 1))) value = (1 << bits); //keep PWM high
         if ((aw::pinsStatus[ch / aw::chd].frequency != frequency) || (aw::pinsStatus[ch / aw::chd].resolution != bits)) {
-          aw::awLedcSetup(ch, frequency, bits);
+          ledcSetup(ch, frequency, bits);
           ledcWrite(ch, value);
           aw::pinsStatus[ch / aw::chd].frequency = frequency;
           aw::pinsStatus[ch / aw::chd].resolution = bits;
@@ -213,7 +196,7 @@ float analogWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution
         }
       }
     }
-    return aw::awLedcReadFreq(ch);
+    return ledcReadFreq(ch);
   }
   return 0;
 }
@@ -223,12 +206,12 @@ float analogWriteFrequency(int8_t pin, float frequency) {
   if (ch >= 0) {
     if ((aw::pinsStatus[ch / aw::chd].pin) > 47) return -1;
     if (aw::pinsStatus[ch / aw::chd].frequency != frequency) {
-      aw::awLedcSetup(ch, frequency, aw::pinsStatus[ch / aw::chd].resolution);
+      ledcSetup(ch, frequency, aw::pinsStatus[ch / aw::chd].resolution);
       ledcWrite(ch, aw::pinsStatus[ch / aw::chd].value);
       aw::pinsStatus[ch / aw::chd].frequency = frequency;
     }
   }
-  return aw::awLedcReadFreq(ch);
+  return ledcReadFreq(ch);
 }
 
 int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
@@ -237,7 +220,7 @@ int32_t analogWriteResolution(int8_t pin, uint8_t resolution) {
     if ((aw::pinsStatus[ch / aw::chd].pin) > 47) return -1;
     if (aw::pinsStatus[ch / aw::chd].resolution != resolution) {
       ledcDetachPin(pin);
-      aw::awLedcSetup(ch, aw::pinsStatus[ch / aw::chd].frequency, resolution & 0xF);
+      ledcSetup(ch, aw::pinsStatus[ch / aw::chd].frequency, resolution & 0xF);
       ledcAttachPin(pin, ch);
       ledcWrite(ch, aw::pinsStatus[ch / aw::chd].value);
       aw::pinsStatus[ch / aw::chd].resolution = resolution & 0xF;
@@ -256,10 +239,10 @@ void setPinsStatusDefaults(int32_t value, float frequency, uint8_t resolution, u
 }
 
 void printPinsStatus() {
-  Serial.print("PWM pins: ");
+  Serial.print(F("PWM pins: "));
   for (int i = 0; i < aw::muxSize; i++) {
     if ((aw::pinMask >> i) & 1) {
-      Serial.print(i); Serial.print(", ");
+      Serial.print(i); Serial.print(F(", "));
     }
   }
   Serial.println();
@@ -267,30 +250,30 @@ void printPinsStatus() {
   Serial.println();
   for (int i = 0; i < 8; i++) {
     int ch = aw::pinsStatus[i].channel;
-    Serial.print("ch: ");
-    if (ch < 10) Serial.print(" "); Serial.print(ch); Serial.print("  ");
-    Serial.print("Pin: ");
-    if ((aw::pinsStatus[ch / aw::chd].pin >= 0) && (aw::pinsStatus[ch / aw::chd].pin < 10)) Serial.print(" ");
-    Serial.print(aw::pinsStatus[ch / aw::chd].pin); Serial.print("  ");
-    Serial.print("Hz: ");
-    if (aw::awLedcReadFreq(ch) < 10000) Serial.print(" ");
-    if (aw::awLedcReadFreq(ch) < 1000) Serial.print(" ");
-    if (aw::awLedcReadFreq(ch) < 100) Serial.print(" ");
-    if (aw::awLedcReadFreq(ch) < 10) Serial.print(" ");
-    Serial.print(aw::awLedcReadFreq(ch)); Serial.print("  ");
-    Serial.print("Bits: ");
-    if (aw::pinsStatus[ch / aw::chd].resolution < 10) Serial.print(" ");
-    Serial.print(aw::pinsStatus[ch / aw::chd].resolution); Serial.print("  ");
-    Serial.print("Duty: ");
-    if (aw::pinsStatus[ch / aw::chd].value < 10000) Serial.print(" ");
-    if (aw::pinsStatus[ch / aw::chd].value < 1000) Serial.print(" ");
-    if (aw::pinsStatus[ch / aw::chd].value < 100) Serial.print(" ");
-    if (aw::pinsStatus[ch / aw::chd].value < 10) Serial.print(" ");
-    Serial.print(aw::pinsStatus[ch / aw::chd].value); Serial.print("  ");
-    Serial.print("Ø: ");
-    if (aw::pinsStatus[ch / aw::chd].phase < 1000) Serial.print(" ");
-    if (aw::pinsStatus[ch / aw::chd].phase < 100) Serial.print(" ");
-    if (aw::pinsStatus[ch / aw::chd].phase < 10) Serial.print(" ");
+    Serial.print(F("ch: "));
+    if (ch < 10) Serial.print(F(" ")); Serial.print(ch); Serial.print(F("  "));
+    Serial.print(F("Pin: "));
+    if ((aw::pinsStatus[ch / aw::chd].pin >= 0) && (aw::pinsStatus[ch / aw::chd].pin < 10)) Serial.print(F(" "));
+    Serial.print(aw::pinsStatus[ch / aw::chd].pin); Serial.print(F("  "));
+    Serial.print(F("Hz: "));
+    if (ledcReadFreq(ch) < 10000) Serial.print(F(" "));
+    if (ledcReadFreq(ch) < 1000) Serial.print(F(" "));
+    if (ledcReadFreq(ch) < 100) Serial.print(F(" "));
+    if (ledcReadFreq(ch) < 10) Serial.print(F(" "));
+    Serial.print(ledcReadFreq(ch)); Serial.print(F("  "));
+    Serial.print(F("Bits: "));
+    if (aw::pinsStatus[ch / aw::chd].resolution < 10) Serial.print(F(" "));
+    Serial.print(aw::pinsStatus[ch / aw::chd].resolution); Serial.print(F("  "));
+    Serial.print(F("Duty: "));
+    if (aw::pinsStatus[ch / aw::chd].value < 10000) Serial.print(F(" "));
+    if (aw::pinsStatus[ch / aw::chd].value < 1000) Serial.print(F(" "));
+    if (aw::pinsStatus[ch / aw::chd].value < 100) Serial.print(F(" "));
+    if (aw::pinsStatus[ch / aw::chd].value < 10) Serial.print(F(" "));
+    Serial.print(aw::pinsStatus[ch / aw::chd].value); Serial.print(F("  "));
+    Serial.print(F("Ø: "));
+    if (aw::pinsStatus[ch / aw::chd].phase < 1000) Serial.print(F(" "));
+    if (aw::pinsStatus[ch / aw::chd].phase < 100) Serial.print(F(" "));
+    if (aw::pinsStatus[ch / aw::chd].phase < 10) Serial.print(F(" "));
     Serial.print(aw::pinsStatus[ch / aw::chd].phase);
     Serial.println();
   }

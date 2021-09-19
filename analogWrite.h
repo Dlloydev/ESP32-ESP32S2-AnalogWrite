@@ -35,9 +35,7 @@ typedef struct pinStatus {
   uint32_t phase;
 } pinStatus_t;
 
-float awLedcSetup(uint8_t ch, double frequency, uint8_t bits);
 void awDetachPin(uint8_t pin, uint8_t ch);
-float awLedcReadFreq(uint8_t ch);
 int8_t awGetChannel(int8_t pin);
 
 } //namespace aw
