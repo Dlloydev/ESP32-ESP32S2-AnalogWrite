@@ -1,6 +1,6 @@
 ## pwmWrite()
 
-[![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)
+[![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  [![PlatformIO Registry](https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg)](https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite)
 
 ![image](https://user-images.githubusercontent.com/63488701/116161369-a4e06380-a6c1-11eb-995a-55f2ff7393c0.png)
 
