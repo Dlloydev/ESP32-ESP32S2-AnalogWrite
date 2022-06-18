@@ -2,15 +2,18 @@
 # Datatypes
 #######################################
 
+Pwm	KEYWORD1
+pwm	KEYWORD1
 pinStatus_t	KEYWORD1
 
 #######################################
 # Methods and Functions
 #######################################
 
-analogWrite	KEYWORD2
-analogWriteFrequency	KEYWORD2
-analogWriteResolution	KEYWORD2
+write	KEYWORD2
+writeFrequency	KEYWORD2
+writeResolution	KEYWORD2
+printPinsStatus	KEYWORD2
 
 #######################################
 # Constants
