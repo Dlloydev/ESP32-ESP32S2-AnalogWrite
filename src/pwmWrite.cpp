@@ -1,11 +1,12 @@
 /*******************************************************************
-   pwmWrite Library for ESP32 Arduino core, Version 3.0.0
+   pwmWrite Library for ESP32 Arduino core, Version 3.0.1
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
 
 #include <Arduino.h>
 #include "pwmWrite.h"
+#include <stdlib.h>
 
 Pwm::Pwm() {}
 
@@ -126,132 +127,106 @@ void Pwm::printPinsStatus() {
 }
 
 float Pwm::write(uint8_t pin, int32_t duty) {
-  if (pin == DAC1 ||  pin == DAC2) { //dac
-    if (duty > 255) duty = 255;
-    dacWrite(pin, duty);
-  } else {
-    uint8_t ch = getChannel(pin);
-    if (ch >= 0) {
-      if (duty == 255) detachPin(pin, ch);
-      else { // write PWM
-        uint8_t bits = pinsStatus[ch / chd].resolution;
-        if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
-        if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
-        if (ledcRead(ch) != duty) ledcWrite(ch, duty);
-        pinsStatus[ch / chd].duty = duty;
-      }
-    }
-    return ledcReadFreq(ch);
+  uint8_t ch = getChannel(pin);
+  if (ch >= 0) { // write PWM
+    if ((pinsStatus[ch / chd].pin) > 47) return 255;
+    uint8_t bits = pinsStatus[ch / chd].resolution;
+    if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
+    if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
+    if (ledcRead(ch) != duty) ledcWrite(ch, duty);
+    pinsStatus[ch / chd].duty = duty;
   }
-  return 0;
+  return pinsStatus[ch / chd].frequency;
 }
 
 float Pwm::write(uint8_t pin, int32_t duty, float frequency) {
-  if (pin == DAC1 ||  pin == DAC2) { //dac
-    if (duty > 255) duty = 255;
-    dacWrite(pin, duty);
-  } else {
-    uint8_t ch = getChannel(pin);
-    if (ch >= 0) {
-      if ((pinsStatus[ch / chd].pin) > 47) return 255;
-      if (duty == 255) detachPin(pin, ch);
-      else { // write PWM
-        uint8_t bits = pinsStatus[ch / chd].resolution;
-        if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
-        if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
-        if (pinsStatus[ch / chd].frequency != frequency) {
-          ledcSetup(ch, frequency, bits);
-          ledcWrite(ch, duty);
-          pinsStatus[ch / chd].frequency = frequency;
-        }
-        if (pinsStatus[ch / chd].duty != duty) {
-          ledcWrite(ch, duty);
-          pinsStatus[ch / chd].duty = duty;
-        }
-      }
+  uint8_t ch = getChannel(pin);
+  if (ch >= 0) { // write PWM
+    if ((pinsStatus[ch / chd].pin) > 47) return 255;
+    uint8_t bits = pinsStatus[ch / chd].resolution;
+    if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
+    if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
+    if (pinsStatus[ch / chd].frequency != frequency) {
+#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+      bits = ((bits - 1) & 0xF);
+#endif
+      ledcSetup(ch, frequency, bits);
+      ledcWrite(ch, duty);
+      pinsStatus[ch / chd].frequency = frequency;
     }
-    return ledcReadFreq(ch);
+    if (pinsStatus[ch / chd].duty != duty) {
+      ledcWrite(ch, duty);
+      pinsStatus[ch / chd].duty = duty;
+    }
   }
-  return 0;
+  return pinsStatus[ch / chd].frequency;
 }
 
 float Pwm::write(uint8_t pin, int32_t duty, float frequency, uint8_t resolution) {
-  if (pin == DAC1 ||  pin == DAC2) { //dac
-    if (duty > 255) duty = 255;
-    dacWrite(pin, duty);
-  } else {
-    uint8_t ch = getChannel(pin);
-    if (ch >= 0) {
-      if ((pinsStatus[ch / chd].pin) > 47) return 255;
-      if (duty == 255) detachPin(pin, ch);
-      else { // write PWM
-        uint8_t bits = resolution & 0xF;
-        if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
-        if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
-        if ((pinsStatus[ch / chd].frequency != frequency) || (pinsStatus[ch / chd].resolution != bits)) {
-          ledcSetup(ch, frequency, bits);
-          ledcWrite(ch, duty);
-          pinsStatus[ch / chd].frequency = frequency;
-          pinsStatus[ch / chd].resolution = bits;
-        }
-        if (pinsStatus[ch / chd].duty != duty) {
-          ledcWrite(ch, duty);
-          pinsStatus[ch / chd].duty = duty;
-        }
-      }
+  uint8_t ch = getChannel(pin);
+  if (ch >= 0) { // write PWM
+    if ((pinsStatus[ch / chd].pin) > 47) return 255;
+    uint8_t bits = resolution & 0xF;
+    if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
+    if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
+    if ((pinsStatus[ch / chd].frequency != frequency) || (pinsStatus[ch / chd].resolution != bits)) {
+#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+      bits = ((bits - 1) & 0xF);
+#endif
+      ledcSetup(ch, frequency, bits);
+      ledcWrite(ch, duty);
+      pinsStatus[ch / chd].frequency = frequency;
+      pinsStatus[ch / chd].resolution = bits;
     }
-    return ledcReadFreq(ch);
+    if (pinsStatus[ch / chd].duty != duty) {
+      ledcWrite(ch, duty);
+      pinsStatus[ch / chd].duty = duty;
+    }
   }
-  return 0;
+  return pinsStatus[ch / chd].frequency;
 }
 
 float Pwm::write(uint8_t pin, int32_t duty, float frequency, uint8_t resolution, uint32_t phase) {
-  if (pin == DAC1 ||  pin == DAC2) { //dac
-    if (duty > 255) duty = 255;
-    dacWrite(pin, duty);
-  } else {
-    uint8_t ch = getChannel(pin);
-    if (ch >= 0) {
-      if ((pinsStatus[ch / chd].pin) > 47) return 255;
-      if (duty == 255) detachPin(pin, ch);
-      else { // write PWM
-        uint8_t bits = resolution & 0xF;
-        if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
-        if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
-        if ((pinsStatus[ch / chd].frequency != frequency) || (pinsStatus[ch / chd].resolution != bits)) {
-          ledcSetup(ch, frequency, bits);
-          ledcWrite(ch, duty);
-          pinsStatus[ch / chd].frequency = frequency;
-          pinsStatus[ch / chd].resolution = bits;
-        }
-        if (pinsStatus[ch / chd].phase != phase) {
-          uint32_t group = (pinsStatus[ch / chd].group);
-          uint32_t timer = (pinsStatus[ch / chd].timer);
-
-          ledc_channel_config_t ledc_channel = {
-            .gpio_num       = (pinsStatus[ch / chd].pin),
-            .speed_mode     = (ledc_mode_t) group,
-            .channel        = (ledc_channel_t) ch,
-            .intr_type      = (ledc_intr_type_t) LEDC_INTR_DISABLE,
-            .timer_sel      = (ledc_timer_t) timer,
-            .duty           = 0,
-            .hpoint         = 0,
-            .flags = {
-              .output_invert = 0
-            }
-          };
-          ledc_channel_config(&ledc_channel);
-          ledc_set_duty_with_hpoint((ledc_mode_t)group, (ledc_channel_t)ch, duty, phase);
-
-          pinsStatus[ch / chd].phase = phase;
-        }
-        if (pinsStatus[ch / chd].duty != duty) {
-          ledcWrite(ch, duty);
-          pinsStatus[ch / chd].duty = duty;
-        }
-      }
+  uint8_t ch = getChannel(pin);
+  if (ch >= 0) { // write PWM
+    if ((pinsStatus[ch / chd].pin) > 47) return 255;
+    uint8_t bits = resolution & 0xF;
+    if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
+    if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
+    if ((pinsStatus[ch / chd].frequency != frequency) || (pinsStatus[ch / chd].resolution != bits)) {
+#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+      bits = ((bits - 1) & 0xF);
+#endif
+      ledcSetup(ch, frequency, bits);
+      ledcWrite(ch, duty);
+      pinsStatus[ch / chd].frequency = frequency;
+      pinsStatus[ch / chd].resolution = bits;
     }
-    return ledcReadFreq(ch);
+    if (pinsStatus[ch / chd].phase != phase) {
+      uint32_t group = (pinsStatus[ch / chd].group);
+      uint32_t timer = (pinsStatus[ch / chd].timer);
+
+      ledc_channel_config_t ledc_channel = {
+        .gpio_num       = (pinsStatus[ch / chd].pin),
+        .speed_mode     = (ledc_mode_t) group,
+        .channel        = (ledc_channel_t) ch,
+        .intr_type      = (ledc_intr_type_t) LEDC_INTR_DISABLE,
+        .timer_sel      = (ledc_timer_t) timer,
+        .duty           = 0,
+        .hpoint         = 0,
+        .flags = {
+          .output_invert = 0
+        }
+      };
+      ledc_channel_config(&ledc_channel);
+      ledc_set_duty_with_hpoint((ledc_mode_t)group, (ledc_channel_t)ch, duty, phase);
+
+      pinsStatus[ch / chd].phase = phase;
+    }
+    if (pinsStatus[ch / chd].duty != duty) {
+      ledcWrite(ch, duty);
+      pinsStatus[ch / chd].duty = duty;
+    }
   }
-  return 0;
+  return pinsStatus[ch / chd].frequency;
 }
