@@ -26,10 +26,10 @@ Details: 3-pins (4, 5 and 12), 10-bit PWM split into 3 equal ON-periods  of 341.
 
 ![image](https://user-images.githubusercontent.com/63488701/115972875-1207c380-a51f-11eb-8051-c7d39b9144ab.png)
 
-| Board   | PWM Pins                          | DAC Pins   | PWM Frequency   | Resolution                  |
-| ------- | --------------------------------- | ---------- | --------------- | --------------------------- |
-| ESP32   | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | DAC1, DAC2 | 1000 Hz default | 1-16 bit PWM, 8-bit default |
-| ESP32S2 | 1- 14, 21, 33-42, 45              | DAC1, DAC2 | 1000 Hz default | 1-16 bit PWM, 8-bit default |
+| Board   | PWM Pins                          | PWM Frequency   | Resolution                  |
+| ------- | --------------------------------- | --------------- | --------------------------- |
+| ESP32   | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | 1000 Hz default | 1-16 bit PWM, 8-bit default |
+| ESP32S2 | 1- 14, 21, 33-42, 45              | 1000 Hz default | 1-16 bit PWM, 8-bit default |
 
 ### pwmWrite Options
 
