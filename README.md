@@ -51,7 +51,7 @@ float pwmWrite(pin, value);
 `pin`: The GPIO pin to write to.  Allowed data types: `int`.
 `value`: The duty cycle between 0 (always off) and `pow(2, resolution)` (always on). This function automatically attaches the pin to the first available channel. To avoid conflicts with other code, the chosen pin will not be available if it was previously accessed by other code. Various overload functions are provided (shown above) allowing the user to use only the parameters needed at any time.
 
-### pwmWriteFrequency()
+### writeFrequency()
 
 ```c++
 float writeFrequency(int8_t pin, float frequency);
@@ -59,7 +59,7 @@ float writeFrequency(int8_t pin, float frequency);
 
 Sets the PWM frequency (default 980Hz) on any PWM pin. Returns the exact hardware frequency used by the timer.
 
-### pwmWriteResolution()
+### writeResolution()
 
 ```c++
 int32_t writeResolution(int8_t pin, uint8_t resolution);
