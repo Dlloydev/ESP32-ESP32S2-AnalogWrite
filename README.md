@@ -1,8 +1,14 @@
+
+
+
+
 ## pwmWrite()
 
-[![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>![image](https://user-images.githubusercontent.com/63488701/116161369-a4e06380-a6c1-11eb-995a-55f2ff7393c0.png)
+[![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>
 
-##### *Wokwi phase shift [example](https://wokwi.com/projects/334722465700774482)*
+![image](https://user-images.githubusercontent.com/63488701/174445314-c7945015-f295-4cba-917c-cc4ead8d534a.png)
+
+#### *Wokwi phase shift [example](https://wokwi.com/projects/334722465700774482)*
 
 ### Description
 
@@ -10,19 +16,17 @@ The `pwmWrite()` function writes a duty cycle value to a ([PWM wave](http://ardu
 
 Now pwmWrite can assign a pin and contol PWM duty value, frequency, resolution and **phase** all from one function.
 
-### [Using pwmWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/Using%20pwmWrite.md)
+#### [Using pwmWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/Using%20pwmWrite.md)
 
 ### 3-phase PWM Example
 
-Details: 3-pins (4, 5 and 12), 10-bit PWM split into 3 equal ON-periods  of 341. Frequency is 100Hz. Signal on pin 5 is phase shifted by 341  steps, signal on pin 12 is shifted by 682 steps.
-
 ```apl
-  pwmWrite(4, 341, 100, 10, 0);
-  pwmWrite(5, 341, 100, 10, 341);
+  pwmWrite(14, 341, 100, 10, 0);
+  pwmWrite(13, 341, 100, 10, 341);
   pwmWrite(12, 341, 100, 10, 682);
 ```
 
-![image](https://user-images.githubusercontent.com/63488701/115972875-1207c380-a51f-11eb-8051-c7d39b9144ab.png)
+Details: 3-pins (14, 13 and 12), 10-bit PWM split into 3 equal ON-periods  of 341. Frequency is 100Hz. Signal on pin 13 is phase shifted by 341  steps, signal on pin 12 is shifted by 682 steps.
 
 | Board   | PWM Pins                          | PWM Frequency   | Resolution                  |
 | ------- | --------------------------------- | --------------- | --------------------------- |
