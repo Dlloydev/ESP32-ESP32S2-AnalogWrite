@@ -12,11 +12,7 @@
 
 ### Description
 
-`pwm.write()` wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 8 PWM channels.  A unique feature is its friendly and co-operative pin management where it will not attach to and use a pin that has been previously accessed by other code including any of the Arduino pin I/O functions. The resource management is handled transparently. You do not need to call `pinMode()`prior to use.
-
-Now pwmWrite can assign a pin and contol PWM duty value, frequency, resolution and **phase** all from one function.
-
-#### [Using pwm.write()](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/Using%20pwmWrite.md)
+`pwm.write()` wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 8 PWM channels.  A unique feature is its friendly and co-operative pin management where it will not attach to and use a pin that has been previously accessed by other code including any of the Arduino pin I/O functions. The resource management is handled transparently. You do not need to call `pinMode()`prior to use. This function can assign a pin and contol PWM duty value, frequency, resolution and **phase** all from one function.
 
 | Board    | PWM Pins                          | PWM Frequency   | Resolution                  |
 | -------- | --------------------------------- | --------------- | --------------------------- |
@@ -24,19 +20,21 @@ Now pwmWrite can assign a pin and contol PWM duty value, frequency, resolution a
 | ESP32-S2 | 1- 14, 21, 33-42, 45              | 1000 Hz default | 1-16 bit PWM, 8-bit default |
 | ESP32-C3 | 0- 9, 18, 19                      | 1000 Hz default | 1-16 bit PWM, 8-bit default |
 
-### pwmWrite Options
+### pwm.write() Options
 
 ```c++
-float pwmWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution, uint32_t phase);
-float pwmWrite(int8_t pin, int32_t value, float frequency, uint8_t resolution);
-float pwmWrite(int8_t pin, int32_t value, float frequency);
-float pwmWrite(int8_t pin, int32_t value);
+float write(int8_t pin, int32_t duty, float frequency, uint8_t resolution, uint32_t phase);
+float write(int8_t pin, int32_t duty, float frequency, uint8_t resolution);
+float write(int8_t pin, int32_t duty, float frequency);
+float write(int8_t pin, int32_t duty);
 ```
+
+### [Using pwm.write()](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/Using%20pwmWrite.md)
 
 ### Basic Syntax
 
 ```c++
-float pwmWrite(pin, value);
+pwm.write(pin, duty);
 ```
 
 ### Parameters
