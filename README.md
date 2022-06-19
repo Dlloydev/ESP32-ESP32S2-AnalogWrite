@@ -8,7 +8,7 @@
 
 ![image](https://user-images.githubusercontent.com/63488701/174445314-c7945015-f295-4cba-917c-cc4ead8d534a.png)
 
-#### *Wokwi phase shift examples ... [ESP32](https://wokwi.com/projects/334722465700774482) ... [ESP32-S2](https://wokwi.com/projects/334722465700774482) ... [ESP32-C3](https://wokwi.com/projects/334856585002091092)*
+#### *Wokwi phase shift examples ... [ESP32](https://wokwi.com/projects/334722465700774482) ... [ESP32-S2](https://wokwi.com/projects/334765722024542804) ... [ESP32-C3](https://wokwi.com/projects/334856585002091092)*
 
 ### Description
 
