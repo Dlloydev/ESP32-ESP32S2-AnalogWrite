@@ -2,7 +2,7 @@
 
 
 
-# pwmWrite()
+# pwm.write()
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>
 
@@ -12,11 +12,11 @@
 
 ### Description
 
-The `pwmWrite()` function writes a duty cycle value to a ([PWM wave](http://arduino.cc/en/Tutorial/PWM)) on a digital pin.  It wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 8 PWM channels.  A unique feature is its friendly and co-operative pin management where it will not attach to and use a pin that has been previously accessed by other code including any of the Arduino pin I/O functions. The resource management is handled transparently (you do not need to call `pinMode()`prior to use).
+`pwm.write()` wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 8 PWM channels.  A unique feature is its friendly and co-operative pin management where it will not attach to and use a pin that has been previously accessed by other code including any of the Arduino pin I/O functions. The resource management is handled transparently. You do not need to call `pinMode()`prior to use.
 
 Now pwmWrite can assign a pin and contol PWM duty value, frequency, resolution and **phase** all from one function.
 
-#### [Using pwmWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/Using%20pwmWrite.md)
+#### [Using pwm.write()](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/Using%20pwmWrite.md)
 
 | Board    | PWM Pins                          | PWM Frequency   | Resolution                  |
 | -------- | --------------------------------- | --------------- | --------------------------- |
@@ -88,9 +88,6 @@ The  the available PWM pins are determined by a pinMask constant. It might be ne
 
 - Both timer resolution and PWM frequency should be calculated to get expected results.
 -  Refer to [Supported Range of Frequency and Duty Resolution](https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution) as a reference. 
-- Up to 8 PWM channels and pins are managed transparently
-
-- To co-operate with other code, `pwmWrite()` will not work with any pin that has been previously accessed 
 
 ```
 This Library is licensed under the MIT License
