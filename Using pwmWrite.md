@@ -28,8 +28,6 @@ Beginning of sketch:
 const int ledPin = 5;   // LED connected to digital pin 5
 ```
 
-
-
 Then in setup() or loop() as desired. Unspecified parameters will be at default:
 
 ```c++
@@ -46,10 +44,6 @@ pwmWrite(ledPin, 63, 500, 8);   // 25% duty, 500 Hz, 8-bit, default 0 phase shif
 
 ```c++
 pwmWrite(ledPin, 255, 500, 10, 255);   // 25% duty, 500 Hz, 10-bit, 25% phase shift
-```
-
-```c++
-pwmWrite(DAC1, 127);   // DAC1 pin set at VCC/2 volts 
 ```
 
 ```c++

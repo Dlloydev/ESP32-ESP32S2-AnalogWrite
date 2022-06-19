@@ -21,10 +21,14 @@ class Pwm {
       uint32_t phase;
     } pinStatus_t;
 
-#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
+#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3 || CONFIG_IDF_TARGET_ESP32C3)
 #define NUM_OUTPUT_PINS  45
     const uint8_t muxSize =  48;
+#if (CONFIG_IDF_TARGET_ESP32C3)
+    const uint64_t pinMask = 0xC03FF; // pwm pins
+#else
     const uint64_t pinMask = 0x27FE00207FFE; // pwm pins
+#endif
     pinStatus_t pinsStatus[8] = {
       {0, 0, 0, 255, 1000, 8, 0, 0 }, {2, 1, 0, 255, 1000, 8, 0, 0 },
       {4, 2, 0, 255, 1000, 8, 0, 0 }, {6, 3, 0, 255, 1000, 8, 0, 0 },

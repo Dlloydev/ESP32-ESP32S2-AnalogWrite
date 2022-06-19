@@ -2,13 +2,13 @@
 
 
 
-## pwmWrite()
+# pwmWrite()
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>
 
 ![image](https://user-images.githubusercontent.com/63488701/174445314-c7945015-f295-4cba-917c-cc4ead8d534a.png)
 
-#### *Wokwi phase shift [example](https://wokwi.com/projects/334722465700774482)*
+#### *Wokwi phase shift examples:   [ESP32](https://wokwi.com/projects/334722465700774482)   [ESP32-S2](https://wokwi.com/projects/334722465700774482)   [ESP32-C3](https://wokwi.com/projects/334856585002091092)*
 
 ### Description
 
@@ -18,20 +18,11 @@ Now pwmWrite can assign a pin and contol PWM duty value, frequency, resolution a
 
 #### [Using pwmWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/Using%20pwmWrite.md)
 
-### 3-phase PWM Example
-
-```apl
-  pwmWrite(14, 341, 100, 10, 0);
-  pwmWrite(13, 341, 100, 10, 341);
-  pwmWrite(12, 341, 100, 10, 682);
-```
-
-Details: 3-pins (14, 13 and 12), 10-bit PWM split into 3 equal ON-periods  of 341. Frequency is 100Hz. Signal on pin 13 is phase shifted by 341  steps, signal on pin 12 is shifted by 682 steps.
-
-| Board   | PWM Pins                          | PWM Frequency   | Resolution                  |
-| ------- | --------------------------------- | --------------- | --------------------------- |
-| ESP32   | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | 1000 Hz default | 1-16 bit PWM, 8-bit default |
-| ESP32S2 | 1- 14, 21, 33-42, 45              | 1000 Hz default | 1-16 bit PWM, 8-bit default |
+| Board    | PWM Pins                          | PWM Frequency   | Resolution                  |
+| -------- | --------------------------------- | --------------- | --------------------------- |
+| ESP32    | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | 1000 Hz default | 1-16 bit PWM, 8-bit default |
+| ESP32-S2 | 1- 14, 21, 33-42, 45              | 1000 Hz default | 1-16 bit PWM, 8-bit default |
+| ESP32-C3 | 0- 9, 18, 19                      | 1000 Hz default | 1-16 bit PWM, 8-bit default |
 
 ### pwmWrite Options
 
@@ -59,7 +50,7 @@ float pwmWrite(pin, value);
 float writeFrequency(int8_t pin, float frequency);
 ```
 
-Sets the PWM frequency (default 980Hz) on any PWM pin. Returns the exact hardware frequency used by the timer.
+Sets the PWM frequency (default 1000Hz) on any PWM pin. Returns the exact hardware frequency used by the timer.
 
 ### writeResolution()
 
@@ -67,7 +58,7 @@ Sets the PWM frequency (default 980Hz) on any PWM pin. Returns the exact hardwar
 int32_t writeResolution(int8_t pin, uint8_t resolution);
 ```
 
-The PWM resolution for any PWM pin can be set from 1-bit to 16-bit (default 8-bit). This has no effect on the DAC pins which are 8-bit only. Returns the maximum value that will be always on for the selected resolution: `pow(2, resolution)`
+The PWM resolution for any PWM pin can be set from 1-bit to 16-bit (default 8-bit). Returns the maximum value that will be always on for the selected resolution: `pow(2, resolution)`
 
 ### setPinsStatusDefaults()
 
@@ -93,16 +84,12 @@ This function prints the available PWM pins to choose from and a formatted outpu
 
 The  the available PWM pins are determined by a pinMask constant. It might be necessary to alter the pimMask to match your board  or to customize for your design.
 
-### Example Code
-
-- [pwmWritePhaseShift](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/pwmWritePhaseShift/pwmWritePhaseShift.ino)
-- [Fade](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/tree/main/examples/Fade)
-
 ### Notes
 
-Both timer resolution and PWM frequency should be calculated to get expected results. Refer to [Supported Range of Frequency and Duty Resolution](https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution) as a reference. 
+- Both timer resolution and PWM frequency should be calculated to get expected results.
+-  Refer to [Supported Range of Frequency and Duty Resolution](https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution) as a reference. 
+- Up to 8 PWM channels and pins are managed transparently
 
-- Up to 8 PWM channels and 2 DAC pins are managed transparently
 - To co-operate with other code, `pwmWrite()` will not work with any pin that has been previously accessed 
 
 ```

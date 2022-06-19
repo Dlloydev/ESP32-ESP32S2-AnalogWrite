@@ -1,4 +1,4 @@
-/*******************************************************************
+ /******************************************************************
   pwmWrite Phase Shift Example:
   This example demonstrates phase shifting PWM signals.
   Note: The LEDC hardware cannot precisely synchronize the timmers,
@@ -6,13 +6,14 @@
   the MCPWM hardware timers.
   Try on Wokwi ESP32: https://wokwi.com/projects/334722465700774482
             ESP32-S2: https://wokwi.com/projects/334765722024542804
+            ESP32-C3: https://wokwi.com/projects/334856585002091092
   ******************************************************************/
 
 #include <pwmWrite.h>
 
-const byte phaseA = 14;
-const byte phaseB = 13;
-const byte phaseC = 12;
+const byte phaseA = 2;
+const byte phaseB = 4;
+const byte phaseC = 5;
 const float freq = 100;
 const byte resolution = 10;
 
@@ -24,7 +25,6 @@ void setup() {
   pwm.write(phaseA, 341, freq, resolution, 0);
   pwm.write(phaseB, 341, freq, resolution, 341);
   pwm.write(phaseC, 341, freq, resolution, 682);
-
   pwm.printPinsStatus();
 }
 
