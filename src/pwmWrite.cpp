@@ -1,5 +1,5 @@
 /*******************************************************************
-   pwmWrite Library for ESP32 Arduino core, Version 3.0.2
+   pwmWrite Library for ESP32 Arduino core, Version 3.0.3
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
@@ -147,9 +147,6 @@ float Pwm::write(uint8_t pin, int32_t duty, float frequency) {
     if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
     if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
     if (pinsStatus[ch / chd].frequency != frequency) {
-#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3 || CONFIG_IDF_TARGET_ESP32C3)
-      bits = ((bits - 1) & 0xF);
-#endif
       ledcSetup(ch, frequency, bits);
       ledcWrite(ch, duty);
       pinsStatus[ch / chd].frequency = frequency;
@@ -170,9 +167,6 @@ float Pwm::write(uint8_t pin, int32_t duty, float frequency, uint8_t resolution)
     if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
     if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
     if ((pinsStatus[ch / chd].frequency != frequency) || (pinsStatus[ch / chd].resolution != bits)) {
-#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3 || CONFIG_IDF_TARGET_ESP32C3)
-      bits = ((bits - 1) & 0xF);
-#endif
       ledcSetup(ch, frequency, bits);
       ledcWrite(ch, duty);
       pinsStatus[ch / chd].frequency = frequency;
@@ -194,9 +188,6 @@ float Pwm::write(uint8_t pin, int32_t duty, float frequency, uint8_t resolution,
     if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
     if ((bits > 7) && (duty == ((1 << bits) - 1))) duty = (1 << bits); //keep PWM high
     if ((pinsStatus[ch / chd].frequency != frequency) || (pinsStatus[ch / chd].resolution != bits)) {
-#if (CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3 || CONFIG_IDF_TARGET_ESP32C3)
-      bits = ((bits - 1) & 0xF);
-#endif
       ledcSetup(ch, frequency, bits);
       ledcWrite(ch, duty);
       pinsStatus[ch / chd].frequency = frequency;

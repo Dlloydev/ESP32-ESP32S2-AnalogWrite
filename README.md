@@ -8,7 +8,7 @@
 
 ![image](https://user-images.githubusercontent.com/63488701/174445314-c7945015-f295-4cba-917c-cc4ead8d534a.png)
 
-#### *Wokwi phase shift examples ... [ESP32](https://wokwi.com/projects/334722465700774482) ... [ESP32-S2](https://wokwi.com/projects/334765722024542804) ... [ESP32-C3](https://wokwi.com/projects/334856585002091092)*
+#### *Wokwi phase shift examples ... [ESP32](https://wokwi.com/projects/334722465700774482) ... [ESP32-S2](https://wokwi.com/projects/334765722024542804)*
 
 ### Description
 
@@ -61,10 +61,10 @@ The PWM resolution for any PWM pin can be set from 1-bit to 16-bit (default 8-bi
 ### setPinsStatusDefaults()
 
 ```c++
-void setPinsStatusDefaults(int32_t value = 0, float frequency = 1000, uint8_t resolution = 8, uint32_t phase = 0);
+void setPinsStatusDefaults(int32_t duty = 0, float frequency = 1000, uint8_t resolution = 8, uint32_t phase = 0);
 ```
 
-This function sets the default PWM value, frequency, resolution and phase for all 8 channels. If called with no arguments, the defaults are as shown above.  This is also the same as the startup defaults, so it's not a requirement to call this function unless new defaults are required.
+This function sets the default PWM duty, frequency, resolution and phase for all 8 channels. If called with no arguments, the defaults are as shown above.  This is also the same as the startup defaults, so it's not a requirement to call this function unless new defaults are required.
 
 ### printPinsStatus()
 

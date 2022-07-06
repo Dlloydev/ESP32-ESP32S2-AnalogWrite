@@ -6,7 +6,6 @@
   the MCPWM hardware timers.
   Try on Wokwi ESP32: https://wokwi.com/projects/334722465700774482
             ESP32-S2: https://wokwi.com/projects/334765722024542804
-            ESP32-C3: https://wokwi.com/projects/334856585002091092
   ******************************************************************/
 
 #include <pwmWrite.h>
