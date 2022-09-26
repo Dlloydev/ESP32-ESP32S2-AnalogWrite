@@ -1,5 +1,5 @@
 /*******************************************************************
-   pwmWrite Library for ESP32 Arduino core, Version 3.0.3
+   pwmWrite Library for ESP32 Arduino core, Version 3.0.4
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
@@ -51,7 +51,7 @@ uint8_t Pwm::getChannel(uint8_t pin) {
 
 float Pwm::writeFrequency(uint8_t pin, float frequency) {
   uint8_t ch = getChannel(pin);
-  if (ch >= 0) {
+  if (ch < 15) {
     if ((pinsStatus[ch / chd].pin) > 47) return 255;
     if (pinsStatus[ch / chd].frequency != frequency) {
       ledcSetup(ch, frequency, pinsStatus[ch / chd].resolution);
@@ -64,7 +64,7 @@ float Pwm::writeFrequency(uint8_t pin, float frequency) {
 
 int32_t Pwm::writeResolution(uint8_t pin, uint8_t resolution) {
   uint8_t ch = getChannel(pin);
-  if (ch >= 0) {
+  if (ch < 15) {
     if ((pinsStatus[ch / chd].pin) > 47) return 255;
     if (pinsStatus[ch / chd].resolution != resolution) {
       ledcDetachPin(pin);
@@ -93,42 +93,47 @@ void Pwm::printPinsStatus() {
       Serial.print(i); Serial.print(F(", "));
     }
   }
-  Serial.println(); Serial.println();
+  Serial.println();
+  Serial.println();
   for (int i = 0; i < 8; i++) {
     uint8_t ch = pinsStatus[i].channel;
     Serial.print(F("ch: "));
-    if (ch < 10) Serial.print(F(" ")); Serial.print(ch); Serial.print(F("  "));
-    Serial.print(F("Pin: "));
-    if (pinsStatus[ch / chd].pin < 100) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].pin < 10) Serial.print(F(" "));
-    Serial.print(pinsStatus[ch / chd].pin); Serial.print(F("  "));
-    Serial.print(F("Hz: "));
-    if (pinsStatus[ch / chd].frequency < 10000) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].frequency < 1000) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].frequency < 100) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].frequency < 10) Serial.print(F(" "));
-    Serial.print(pinsStatus[ch / chd].frequency); Serial.print(F("  "));
-    Serial.print(F("Bits: "));
-    if (pinsStatus[ch / chd].resolution < 10) Serial.print(F(" "));
-    Serial.print(pinsStatus[ch / chd].resolution); Serial.print(F("  "));
-    Serial.print(F("Duty: "));
-    if (pinsStatus[ch / chd].duty < 10000) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].duty < 1000) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].duty < 100) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].duty < 10) Serial.print(F(" "));
-    Serial.print(pinsStatus[ch / chd].duty); Serial.print(F("  "));
-    Serial.print(F("Ø: "));
-    if (pinsStatus[ch / chd].phase < 1000) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].phase < 100) Serial.print(F(" "));
-    if (pinsStatus[ch / chd].phase < 10) Serial.print(F(" "));
-    Serial.print(pinsStatus[ch / chd].phase);
-    Serial.println();
+    if (ch < 15) {
+      Serial.print(F(" "));
+      Serial.print(ch);
+      Serial.print(F("  "));
+      Serial.print(F("Pin: "));
+      if (pinsStatus[ch / chd].pin < 100) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].pin < 10) Serial.print(F(" "));
+      Serial.print(pinsStatus[ch / chd].pin); Serial.print(F("  "));
+      Serial.print(F("Hz: "));
+      if (pinsStatus[ch / chd].frequency < 10000) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].frequency < 1000) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].frequency < 100) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].frequency < 10) Serial.print(F(" "));
+      Serial.print(pinsStatus[ch / chd].frequency); Serial.print(F("  "));
+      Serial.print(F("Bits: "));
+      if (pinsStatus[ch / chd].resolution < 10) Serial.print(F(" "));
+      Serial.print(pinsStatus[ch / chd].resolution); Serial.print(F("  "));
+      Serial.print(F("Duty: "));
+      if (pinsStatus[ch / chd].duty < 10000) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].duty < 1000) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].duty < 100) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].duty < 10) Serial.print(F(" "));
+      Serial.print(pinsStatus[ch / chd].duty); Serial.print(F("  "));
+      Serial.print(F("Ø: "));
+      if (pinsStatus[ch / chd].phase < 1000) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].phase < 100) Serial.print(F(" "));
+      if (pinsStatus[ch / chd].phase < 10) Serial.print(F(" "));
+      Serial.print(pinsStatus[ch / chd].phase);
+      Serial.println();
+    }
   }
 }
 
 float Pwm::write(uint8_t pin, int32_t duty) {
   uint8_t ch = getChannel(pin);
-  if (ch >= 0) { // write PWM
+  if (ch < 15) { // write PWM
     if ((pinsStatus[ch / chd].pin) > 47) return 255;
     uint8_t bits = pinsStatus[ch / chd].resolution;
     if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
@@ -141,7 +146,7 @@ float Pwm::write(uint8_t pin, int32_t duty) {
 
 float Pwm::write(uint8_t pin, int32_t duty, float frequency) {
   uint8_t ch = getChannel(pin);
-  if (ch >= 0) { // write PWM
+  if (ch < 15) { // write PWM
     if ((pinsStatus[ch / chd].pin) > 47) return 255;
     uint8_t bits = pinsStatus[ch / chd].resolution;
     if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
@@ -161,7 +166,7 @@ float Pwm::write(uint8_t pin, int32_t duty, float frequency) {
 
 float Pwm::write(uint8_t pin, int32_t duty, float frequency, uint8_t resolution) {
   uint8_t ch = getChannel(pin);
-  if (ch >= 0) { // write PWM
+  if (ch < 15) { // write PWM
     if ((pinsStatus[ch / chd].pin) > 47) return 255;
     uint8_t bits = resolution & 0xF;
     if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
@@ -182,7 +187,7 @@ float Pwm::write(uint8_t pin, int32_t duty, float frequency, uint8_t resolution)
 
 float Pwm::write(uint8_t pin, int32_t duty, float frequency, uint8_t resolution, uint32_t phase) {
   uint8_t ch = getChannel(pin);
-  if (ch >= 0) { // write PWM
+  if (ch < 15) { // write PWM
     if ((pinsStatus[ch / chd].pin) > 47) return 255;
     uint8_t bits = resolution & 0xF;
     if (duty > ((1 << bits) - 1)) duty = (1 << bits); //constrain
