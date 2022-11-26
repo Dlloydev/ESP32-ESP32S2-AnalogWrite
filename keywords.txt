@@ -11,8 +11,14 @@ pinStatus_t	KEYWORD1
 #######################################
 
 write	KEYWORD2
-writeFrequency	KEYWORD2
-writeResolution	KEYWORD2
+attachPin	KEYWORD2
+detachPin	KEYWORD2
+pause	KEYWORD2
+resume	KEYWORD2
+getChannel	KEYWORD2
+setFrequency	KEYWORD2
+setResolution	KEYWORD2
+setPinsStatusDefaults	KEYWORD2
 printPinsStatus	KEYWORD2
 
 #######################################

@@ -1,9 +1,9 @@
 {
     "name": "ESP32 ESP32S2 AnalogWrite",
-    "keywords": "esp32, analogWrite, pwm, esp32-s2, esp32-c3, LEDC",
-    "description": "pwmWrite for ESP32 and ESP32-S2. Includes PWM phase shift control and Smart GPIO resource management.",
+    "keywords": "esp32, analogWrite, pwm, pwmWrite, esp32-s2, esp32-s3, esp32-c3, LEDC",
+    "description": "pwmWrite for ESP32 and ESP32-S2/S3/C3. Includes smart GPIO management, timer synchronization and phase shift control.",
     "license": "MIT",
-    "version": "3.0.4",
+    "version": "4.0.0",
     "frameworks": "arduino",
     "platforms": "espressif32",
     "repository": {

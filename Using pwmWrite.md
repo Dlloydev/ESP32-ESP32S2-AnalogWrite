@@ -7,8 +7,8 @@ Using this function is very easy as much is done transparently. Initializing a p
 | pin             | 255     | no pin attached                            |
 | frequency       | 1000    | pwm frequency (Hz)                         |
 | resolution      | 8       | bit width                                  |
-| duty            | 0       | duty cycle (output is ow)                  |
-| phase           | 0       | no phase shift                             |
+| duty            | 0       | duty cycle                                 |
+| phase           | 0       | phase shift                                |
 | returned value: | 0       | returns configured timer frequency (float) |
 
 ### Prototypes:
