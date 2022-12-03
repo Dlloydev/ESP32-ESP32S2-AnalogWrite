@@ -1,4 +1,4 @@
-# ESP32 PWM and SERVO
+# ESP32 PWM and SERVO Library
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>
 
@@ -14,6 +14,8 @@ This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espre
 
 -  [16 pwm fade](https://wokwi.com/projects/349232255258853970)
 -  [14 pwm fade 2 servo](https://wokwi.com/projects/349978851105833554)
+-  [Servo Knob](https://wokwi.com/projects/350033311963284051)
+-  [Servo Sweep](https://wokwi.com/projects/350037178957431378)
 -  [3 phase 40kHz](https://wokwi.com/projects/349336125753524820)
 -  [2 sync 300kHz](https://wokwi.com/projects/349322326995632722)
 -  [8 sync 20kHz](https://wokwi.com/projects/349319723103552084)
@@ -68,7 +70,7 @@ pwm.write(pin, duty, frequency, resolution, phase)
 
 - **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
 - **duty**  This sets the pwm duty. The range is 0 to (2**resolution) - 1 *(uint32_t)*
-- **frequency**  The pwm timer frequency (Hz). The frequency and resolution limits are interdependent. For more details, see [Supported Range of Frequency and Duty Resolutions](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution).  *(uint32_t)*
+- **frequency**  The pwm timer frequency (Hz). The frequency and resolution limits are interdependent *(uint32_t)*. For more details, see [Supported Range of Frequency and Duty Resolutions](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution).
 - **resolution**  The bit resolution of the pwm duty *(uint8_t)*
 - **phase**  This is also referred to as the **hpoint** value, which is the timer/counter value that the pwm output turns on. The useable range is the same as for the duty parameter. This can be used to phase shift the output or for synchronization. When the phase parameter is used, the pwm output will initiate in a paused state to allow synchronization *(uint32_t)*
 
@@ -109,14 +111,14 @@ Nothing
 
 This function accepts a value of type *float* that's processed to an unsigned duty value that takes full advantage of the servo channel's set resolution. If using a standard positional servo, this will set the angle of the shaft in degrees with range 0-180.  If using a continuous rotation servo, this will set the speed where the limits 0 and 180 are full speed in each direction and where the mid range (90) is no movement.
 
-| Entered Value *(float)*  | Coerced Value *(float)*  |    Units     |
-| :----------------------: | :----------------------: | :----------: |
-|           < 0            |            0             |   degrees    |
-|          0-180           |          0-180           |   degrees    |
-|     > 180 AND < 500      |           180            |   degrees    |
-|  ≥ 500 AND < servoMinUs  |        servoMinUs        | microseconds |
+| Entered Value *(float)*  | Coerced Value *(float)*  | Units        |
+| :----------------------- | :----------------------- | :----------- |
+| < 0                      | 0                        | degrees      |
+| 0-180                    | 0-180                    | degrees      |
+| > 180 AND < 500          | 180                      | degrees      |
+| ≥ 500 AND < servoMinUs   | servoMinUs               | microseconds |
 | servoMinUs to servoMaxUs | servoMinUs to servoMaxUs | microseconds |
-|       > servoMaxUs       |        servoMaxUs        | microseconds |
+| > servoMaxUs             | servoMaxUs               | microseconds |
 
 **Timer Width (resolution)**
 
