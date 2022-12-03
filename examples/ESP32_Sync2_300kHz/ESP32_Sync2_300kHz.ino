@@ -14,7 +14,7 @@ void setup() {
   pwm.write(pwm21, 64, 300000);
   pwm.write(pwm19, 128, 300000);
   pwm.resume();
-  pwm.printPinsStatus();
+  pwm.printConfig();
 }
 
 void loop() {

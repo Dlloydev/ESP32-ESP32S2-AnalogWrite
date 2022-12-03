@@ -18,7 +18,7 @@ void setup() {
     pwm.write(pwmPin[i], duty[i], frequency, resolution, phase[i]);
   }
   pwm.resume();
-  pwm.printPinsStatus();
+  pwm.printConfig();
 }
 
 void loop() {

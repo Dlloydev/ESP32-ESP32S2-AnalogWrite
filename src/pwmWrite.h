@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _ESP32_PWM_WRITE_
 #define _ESP32_PWM_WRITE_
 #include <Arduino.h>
@@ -10,7 +9,23 @@ class Pwm {
 
     Pwm();
 
-    typedef struct pinStatus {
+#if (defined(CONFIG_IDF_TARGET_ESP32))
+    const uint64_t pinMask = 0x308EFF034; // pwm pins
+    const uint8_t chMax = 16;
+    const uint8_t widthMax = 20;
+
+#elif (defined(CONFIG_IDF_TARGET_ESP32S2) || (CONFIG_IDF_TARGET_ESP32S3))
+    const uint64_t pinMask = 0x27FE00207FFE; // pwm pins
+    const uint8_t chMax = 8;
+    const uint8_t widthMax = 20;
+
+#elif (defined(CONFIG_IDF_TARGET_ESP32C3))
+    const uint64_t pinMask = 0xC03FF; // pwm pins
+    const uint8_t chMax = 6;
+    const uint8_t widthMax = 14;
+#endif
+
+    typedef struct config {
       uint8_t pin;
       float frequency;
       uint32_t duty;
@@ -19,50 +34,56 @@ class Pwm {
       uint8_t channel;
       uint8_t timer;
       uint32_t phase;
-    } pinStatus_t;
+      uint16_t servoMinUs;
+      uint16_t servoDefUs;
+      uint16_t servoMaxUs;
+    } config_t;
 
-#if (defined(CONFIG_IDF_TARGET_ESP32))
-    const uint64_t pinMask = 0x308EFF034; // pwm pins
-    const uint32_t chMax = 16;
-
-#elif (defined(CONFIG_IDF_TARGET_ESP32S2) || (CONFIG_IDF_TARGET_ESP32S3))
-    const uint64_t pinMask = 0x27FE00207FFE; // pwm pins
-    const uint32_t chMax = 8;
-
-#elif (defined(CONFIG_IDF_TARGET_ESP32C3))
-    const uint64_t pinMask = 0xC03FF; // pwm pins
-    const uint32_t chMax = 6;
-#endif
-
-    pinStatus_t pinsStatus[16] = {
-      {255, 1000, 0, 8, 0, 0, 0, 0 }, {255, 1000, 0, 8, 0, 1, 0, 0 },
-      {255, 1000, 0, 8, 0, 2, 1, 0 }, {255, 1000, 0, 8, 0, 3, 1, 0 },
-      {255, 1000, 0, 8, 0, 4, 2, 0 }, {255, 1000, 0, 8, 0, 5, 2, 0 },
-      {255, 1000, 0, 8, 0, 6, 3, 0 }, {255, 1000, 0, 8, 0, 7, 3, 0 },
-      {255, 1000, 0, 8, 1, 8, 0, 0 }, {255, 1000, 0, 8, 1, 9, 0, 0 },
-      {255, 1000, 0, 8, 1, 10, 1, 0 }, {255, 1000, 0, 8, 1, 11, 1, 0 },
-      {255, 1000, 0, 8, 1, 12, 2, 0 }, {255, 1000, 0, 8, 1, 13, 2, 0 },
-      {255, 1000, 0, 8, 1, 14, 3, 0 }, {255, 1000, 0, 8, 1, 15, 3, 0 }
+    config_t config[16] = {
+      {255, 1000, 0, 8, 0, 0, 0, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 1, 0, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 2, 1, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 3, 1, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 4, 2, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 5, 2, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 6, 3, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 7, 3, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 8, 0, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 9, 0, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 10, 1, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 11, 1, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 12, 2, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 13, 2, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 14, 3, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 15, 3, 0, 544, 1472, 2400 }
     };
 
     float write(uint8_t pin, uint32_t duty);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
-    void attachPin(uint8_t pin, uint8_t ch);
-    void detachPin(uint8_t pin, uint8_t ch);
+    uint32_t writeServo(uint8_t pin, float value);
+    void setServo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
+
+    uint8_t attachPin(uint8_t pin);
+    uint8_t attachPin(uint8_t pin, uint8_t ch);
+    void detachPin(uint8_t pin);
+    uint8_t getPinStatus(uint8_t pin);
+    uint8_t getPinOnChannel(uint8_t ch);
     void pause();
     void resume();
-    uint8_t getChannel(uint8_t pin);
     float setFrequency(uint8_t pin, uint32_t frequency = 1000);
-    uint32_t setResolution(uint8_t pin, uint8_t resolution = 8);
-    void setPinsStatusDefaults(uint32_t duty = 0, uint32_t frequency = 1000, uint8_t resolution = 8, uint32_t phase = 0);
-    void printPinsStatus(void);
+    uint8_t setResolution(uint8_t pin, uint8_t resolution = 8);
+    void setConfigDefaults(uint32_t duty = 0, uint32_t frequency = 1000, uint8_t resolution = 8, uint32_t phase = 0);
+    void printConfig(void);
 
   private:
-    void configChannel(uint8_t ch);
+    enum pinIs : uint8_t {denied = 253, notPwm = 254, free = 255};
     void timerPause(uint8_t ch);
     void timerResume(uint8_t ch);
+    void configChannel(uint8_t ch);
+    void writerFreqResPair(uint8_t ch, uint32_t frequency, uint8_t bits);
+    uint32_t maxDutyFix(uint32_t duty, uint8_t resolution);
     bool _sync = false;
 };
 #endif
