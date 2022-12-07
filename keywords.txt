@@ -12,15 +12,16 @@ pinStatus_t	KEYWORD1
 
 write	KEYWORD2
 writeServo	KEYWORD2
-attachPin	KEYWORD2
-detachPin	KEYWORD2
-getPinStatus	KEYWORD2
-getPinOnChannel	KEYWORD2
+read	KEYWORD2
+readMicroseconds	KEYWORD2
+attach	KEYWORD2
+attached	KEYWORD2
+attachedPin	KEYWORD2
+detach	KEYWORD2
 pause	KEYWORD2
 resume	KEYWORD2
 setFrequency	KEYWORD2
 setResolution	KEYWORD2
-setConfigDefaults	KEYWORD2
 printConfig	KEYWORD2
 
 #######################################

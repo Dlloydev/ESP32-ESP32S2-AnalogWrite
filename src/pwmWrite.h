@@ -17,7 +17,7 @@ class Pwm {
 #elif (defined(CONFIG_IDF_TARGET_ESP32S2) || (CONFIG_IDF_TARGET_ESP32S3))
     const uint64_t pinMask = 0x27FE00207FFE; // pwm pins
     const uint8_t chMax = 8;
-    const uint8_t widthMax = 20;
+    const uint8_t widthMax = 14;
 
 #elif (defined(CONFIG_IDF_TARGET_ESP32C3))
     const uint64_t pinMask = 0xC03FF; // pwm pins
@@ -31,7 +31,6 @@ class Pwm {
       uint32_t duty;
       uint8_t resolution;
       uint8_t mode;
-      uint8_t channel;
       uint8_t timer;
       uint32_t phase;
       uint16_t servoMinUs;
@@ -40,22 +39,22 @@ class Pwm {
     } config_t;
 
     config_t config[16] = {
-      {255, 1000, 0, 8, 0, 0, 0, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 1, 0, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 2, 1, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 3, 1, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 4, 2, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 5, 2, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 6, 3, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 7, 3, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 8, 0, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 9, 0, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 10, 1, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 11, 1, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 12, 2, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 13, 2, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 14, 3, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 15, 3, 0, 544, 1472, 2400 }
+      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400 },
+      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400 }
     };
 
     float write(uint8_t pin, uint32_t duty);
@@ -63,27 +62,31 @@ class Pwm {
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
     uint32_t writeServo(uint8_t pin, float value);
-    void setServo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
 
-    uint8_t attachPin(uint8_t pin);
-    uint8_t attachPin(uint8_t pin, uint8_t ch);
-    void detachPin(uint8_t pin);
-    uint8_t getPinStatus(uint8_t pin);
-    uint8_t getPinOnChannel(uint8_t ch);
-    void pause();
-    void resume();
+    float read(uint8_t pin);
+    float readMicroseconds(uint8_t pin);
+
+    uint8_t attach(uint8_t pin);
+    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
+    uint8_t attach(uint8_t pin, uint8_t ch);
+    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
+    uint8_t attached(uint8_t pin);
+    uint8_t attachedPin(uint8_t ch);
+    void detach(uint8_t pin);
+
+    void pause(void);
+    void resume(void);
     float setFrequency(uint8_t pin, uint32_t frequency = 1000);
-    uint8_t setResolution(uint8_t pin, uint8_t resolution = 8);
-    void setConfigDefaults(uint32_t duty = 0, uint32_t frequency = 1000, uint8_t resolution = 8, uint32_t phase = 0);
+    uint8_t setResolution(uint8_t pin, uint8_t resolution = 10);
     void printConfig(void);
 
   private:
-    enum pinIs : uint8_t {denied = 253, notPwm = 254, free = 255};
+    void resetFields(uint8_t ch);
     void timerPause(uint8_t ch);
     void timerResume(uint8_t ch);
-    void configChannel(uint8_t ch);
+    void configServo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
     void writerFreqResPair(uint8_t ch, uint32_t frequency, uint8_t bits);
-    uint32_t maxDutyFix(uint32_t duty, uint8_t resolution);
     bool _sync = false;
+
 };
 #endif

@@ -78,8 +78,6 @@ pwm.write(pin, duty, frequency, resolution, phase)
 
 The set frequency *(float)*
 
-#### [Using write()](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/Using%20pwmWrite.md)
-
 
 
 ### setServo()
@@ -153,28 +151,125 @@ The pwm duty value *(uint32_t)*
 
 
 
-### attachPin()
+### read()
 
 ##### Description
 
-This function accepts two arguments, the pin number and optionally the pwm channel number. This function is normally not required as it is automatically called by other functions if necessary. However, if the user needs to manually organize the pin to channel assignments, using this function with the channel parameter will be necessary.
+Read the current angle of the servo in degrees. The returned value is *float* type which provides improved resolution and takes advantage of the high resolution offered by the timer.
 
 **Syntax**
 
 ```c++
-pwm.attachPin(pin)
-pwm.attachPin(pin, channel);
+read(pin)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- The angle of the servo, from 0 to 180 degrees *(float)*
+
+
+
+### readMicroseconds()
+
+##### Description
+
+Reads the timer channel's duty value in microseconds. The minimum limit is 544 μs representing 0 degrees shaft rotation and the  maximum limit is 2400 μs representing 180 degrees shaft rotation. The returned value is *float* type which provides improved resolution and takes advantage of the high resolution offered by the timer.
+
+**Syntax**
+
+```c++
+readMicroseconds(pin)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- The channel's duty value converted to microseconds *(float)*
+
+
+
+### attach()
+
+##### Description
+
+This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. Additionally, there are parameters available for setting the servo timer values for minimum, default and maximum microseconds. 
+
+**Syntax**
+
+```c++
+attach(pin)                                // auto attach
+attach(pin, minUs, defUs, maxUs)           // auto attach including servo timer values
+attach(pin, channel)                       // attach on channel 
+attach(pin, channel, minUs, defUs, maxUs)  // attach on channel incl servo timer values
 ```
 
 ##### Parameters
 
 - **pin**  The pin number *(uint8_t)*
-- **channel**  This optional parameter can be used to attach the pin to a specific channel (if free).
+- **channel**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
+- **minUs**  Minimum timer width in microseconds *(uint16_t)*
+- **defUs**  Default timer width in microseconds *(uint16_t)*
+- **maxUs**  Maximum timer width in microseconds *(uint16_t)*
 
 ##### Returns
 
-- If successful, the channel number (0-15) *(uint8_t)*
-- If no vacancy, 253 *(uint8_t)*
+- If not a valid pin, 254 *(uint8_t)*
+- If attached, the channel number (0-15) *(uint8_t)*
+- If not attached, 255 *(uint8_t)*
+
+
+
+### attached()
+
+##### Description
+
+This function checks the pin status and if attached, returns the channel number. 
+
+**Syntax**
+
+```c++
+attached(pin)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- If not a valid pin, 254 *(uint8_t)*
+- If attached, the channel number (0-15) *(uint8_t)*
+- If not attached, 255 *(uint8_t)*
+
+
+
+### attachedPin()
+
+##### Description
+
+This function reports the pin status of a specific channel 
+
+**Syntax**
+
+```c++
+attachedPin(ch)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- If attached, the pin number *(uint8_t)*
+- If the channel is free, 255 *(uint8_t)*
 
 
 
@@ -187,64 +282,16 @@ This function removes control of the pin from the specified PWM channel.  Also, 
 **Syntax**
 
 ```c++
-pwm.detachPin(pin, channel)
+pwm.detachPin(pin)
 ```
 
 ##### Parameters
 
 - **pin**  The pin number *(uint8_t)*
-- **channel**  The channel to reset to default status with no pin assigned (free) *(uint8_t)*
 
 ##### Returns
 
 - nothing
-
-
-
-### getPinStatus()
-
-##### Description
-
-This function returns the channel number that's assigned to the specified pin. Otherwise, returns if the pin is free or in use and/or no free channel.
-
-**Syntax**
-
-```c++
-pwm.getPinStatus(pin)
-```
-
-##### Parameters
-
-- **pin**  The pin number.
-
-##### Returns
-
-- If attached, returns the channel number (0-15) *(uint8_t)*
-- If the pin is free, returns 255 *(uint8_t)*
-- If the pin isn't available (used by other code or there's no free channel), returns 253 *(uint8_t)*
-
-
-
-### getPinOnChannel()
-
-##### Description
-
-This function returns the pin number that's attached to the specified PWM channel.
-
-**Syntax**
-
-```c++
-pwm.getPinOnChannel(channel)
-```
-
-##### Parameters
-
-- **channel**  The channel number.
-
-##### Returns
-
-- If the channel has a pin attached, returns the pin number *(uint8_t)*
-- If the channel is free, returns 255 *(uint8_t)*
 
 
 
@@ -340,32 +387,6 @@ pwm.setResolution(pin, resolution)
 
 
 
-### setConfigDefaults()
-
-##### Description
-
-This function sets the default PWM duty, frequency, resolution and phase values for all channels. If called with no arguments, the values are the same as the startup defaults. It's not a requirement to call this function unless new defaults are needed.
-
-**Syntax**
-
-```c++
-pwm.setConfigDefaults()
-pwm.setConfigDefaults(duty, frequency, resolution, phase)
-```
-
-##### Parameters (optional)
-
-- **duty**  This sets the pwm duty. The range is 0 to (2^resolution) - 1, default is 0 *(uint32_t)*
-- **frequency**  The frequency in Hz. The default is 1000 Hz *(uint32_t)**
-- **resolution**  The PWM resolution can be set from 1-bit to 16-bit, default is 8-bit *(uint8_t)*
-- **phase**  The phase range is the same as for the duty parameter, default is 0 *(uint32_t)*
-
-##### Returns
-
-- nothing
-
-
-
 ### printConfig()
 
 ##### Description
@@ -384,9 +405,9 @@ pwm.printConfig()
 
 ##### Returns
 
-- serial text report on serial monitor
+- serial report on serial monitor
 
-![image](https://user-images.githubusercontent.com/63488701/205149918-2410ed2e-d376-4b6c-bdda-1ff890ad421e.png)
+![image](https://user-images.githubusercontent.com/63488701/206087406-8fc0773b-a8f0-4d6a-a995-439c1eab2906.png)
 
 
 
