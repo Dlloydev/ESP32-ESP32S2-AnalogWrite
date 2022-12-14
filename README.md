@@ -1,10 +1,8 @@
-# ESP32 PWM and SERVO Library
+# ESP32 PWM, SERVO and TONE Library
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>
 
-![image](https://user-images.githubusercontent.com/63488701/174445314-c7945015-f295-4cba-917c-cc4ead8d534a.png)
-
-
+![image](https://user-images.githubusercontent.com/63488701/207152696-7162de8e-bea7-4353-9ae3-682bc40c4e68.png)
 
 ### Description
 
@@ -12,6 +10,7 @@ This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espre
 
 **Simulation Examples:**
 
+-  [ESP32_ServoSweep_NonBlockingTone_Fade](https://wokwi.com/projects/350973592395055698)
 -  [16 pwm fade](https://wokwi.com/projects/349232255258853970)
 -  [14 pwm fade 2 servo](https://wokwi.com/projects/349978851105833554)
 -  [Servo Knob](https://wokwi.com/projects/350033311963284051)
@@ -19,6 +18,9 @@ This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espre
 -  [3 phase 40kHz](https://wokwi.com/projects/349336125753524820)
 -  [2 sync 300kHz](https://wokwi.com/projects/349322326995632722)
 -  [8 sync 20kHz](https://wokwi.com/projects/349319723103552084)
+-  [ESP32_3phase_10kHz.ino](https://wokwi.com/projects/334722465700774482)
+-  [ESP32_S2_3phase_10kHz.ino](https://wokwi.com/projects/334765722024542804)
+-  [ESP32_C3_3phase_10kHz.ino](https://wokwi.com/projects/334856585002091092)
 
 | Board    | PWM Pins                          | PWM, Duty and Phase Channels | Frequency and Resolution Channels |
 | -------- | --------------------------------- | ---------------------------- | --------------------------------- |
@@ -80,29 +82,6 @@ The set frequency *(float)*
 
 
 
-### setServo()
-
-##### Description:
-
-This function sets the minimum, default and maxumum servo values in microseconds. Accepted range is 500 to 2500 microseconds.
-
-##### Syntax
-
-```c++
-pwm.setServo(channel, minUs, defUs, maxUs)
-```
-
-##### Parameters
-
-- **channel**  The pwm channel *(uint8_t)*
-- **minUs, defUs, maxUs**  These are the minimum, default and maximum limit in microseconds (uint16_t)
-
-##### Returns
-
-Nothing
-
-
-
 ### writeServo()
 
 ##### Description:
@@ -132,7 +111,7 @@ The frequency and resolution values are shared by each channel pair. When any ch
 
 **Attaching to free Channel**
 
-This process is automatic - the servo pin will be attached to the next free channel. If you need to organize pins on specific channels, then use call the `attachPin()`method first. 
+This process is automatic - the servo pin will be attached to the next free channel. If you need to assign the servo pin(s) to specific channels or to set the minimum, default or maximum microsecond values, then call the `attach()`method first.
 
 ##### Syntax
 
@@ -148,6 +127,42 @@ pwm.writeServo(pin, value)
 ##### Returns
 
 The pwm duty value *(uint32_t)*
+
+
+
+### tone()
+
+##### Description:
+
+This function generates a square wave of the specified frequency (and 50% duty  cycle and 8-bit resolution) on a pin. There will be no output (no tone) if the duration isn't specified or equals 0. The duration in milliseconds has range 0-65535 where 0 is off and 65535 is always on. The last parameter (interval)  specifies the pause time before the next call to tone becomes ready. The pin can be connected to a piezo buzzer or other speaker to play tones.
+
+**Channel Pairing**
+
+The frequency and resolution values are shared by each channel pair. When the tone pin is attached, the next lower or higher channel on the same timer gets updated with the same frequency and resolution values as appropriate.
+
+**Attaching to free Channel**
+
+This process is automatic - the tone pin will be attached to the next free channel. If you need to assign the tone pin to a specific channel, then call the `attach()`method first.
+
+##### Syntax
+
+```c++
+pwm.tone(pin, frequency, duration)
+pwm.tone(pin, frequency, duration, interval)
+```
+
+##### Parameters
+
+- **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
+- **frequency**  The tone frequency (Hz) with range 1-65535 *(uint16_t)*.
+- **duration**  The duration in milliseconds with range 0-65535 *(uint16_t)*, where 0 is off (default) and 65535 is always on.
+- **interval**  This optional parameter specifies the pause time in milliseconds before the next call to tone becomes ready. *(uint16_t)*, range 0-65535, default = 0.
+
+##### Returns
+
+- 0 (ready) *(uint8_t)*
+- 1 (playing until duration expires) *(uint8_t)*
+- 2 (no tone until interval expires) *(uint8_t)*
 
 
 
@@ -407,7 +422,7 @@ pwm.printConfig()
 
 - serial report on serial monitor
 
-![image](https://user-images.githubusercontent.com/63488701/206087406-8fc0773b-a8f0-4d6a-a995-439c1eab2906.png)
+![image](https://user-images.githubusercontent.com/63488701/207452928-ca44457d-f807-439b-971e-927af4259e16.png)
 
 
 

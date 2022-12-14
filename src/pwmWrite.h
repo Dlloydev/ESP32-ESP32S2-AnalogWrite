@@ -36,25 +36,26 @@ class Pwm {
       uint16_t servoMinUs;
       uint16_t servoDefUs;
       uint16_t servoMaxUs;
+      uint32_t startMs;
     } config_t;
 
     config_t config[16] = {
-      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400 },
-      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400 }
+      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0 },
+      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0 }
     };
 
     float write(uint8_t pin, uint32_t duty);
@@ -62,6 +63,7 @@ class Pwm {
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
     uint32_t writeServo(uint8_t pin, float value);
+    uint32_t tone(uint8_t pin, uint32_t frequency, uint16_t duration = 0, uint16_t interval = 0);
 
     float read(uint8_t pin);
     float readMicroseconds(uint8_t pin);
@@ -74,19 +76,21 @@ class Pwm {
     uint8_t attachedPin(uint8_t ch);
     void detach(uint8_t pin);
 
-    void pause(void);
-    void resume(void);
+    void pause(uint8_t ch = 255);
+    void resume(uint8_t ch = 255);
+
     float setFrequency(uint8_t pin, uint32_t frequency = 1000);
     uint8_t setResolution(uint8_t pin, uint8_t resolution = 10);
     void printConfig(void);
 
   private:
+
+    enum State { ready, play, stop };
+    State state = ready;
+
     void resetFields(uint8_t ch);
-    void timerPause(uint8_t ch);
-    void timerResume(uint8_t ch);
     void configServo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
     void writerFreqResPair(uint8_t ch, uint32_t frequency, uint8_t bits);
     bool _sync = false;
-
 };
 #endif

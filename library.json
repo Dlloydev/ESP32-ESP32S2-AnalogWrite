@@ -1,9 +1,9 @@
 {
     "name": "ESP32 ESP32S2 AnalogWrite",
     "keywords": "pwm, servo, esp32, analogWrite, pwmWrite, esp32-s2, esp32-s3, esp32-c3, LEDC",
-    "description": "ESP32 PWM and SERVO Library. Smart GPIO management, high resolution Servo and PWM control features.",
+    "description": "ESP32 PWM, SERVO and TONE Library. Smart GPIO management, high resolution Servo and PWM control features.",
     "license": "MIT",
-    "version": "4.1.1",
+    "version": "4.2.0",
     "frameworks": "arduino",
     "platforms": "espressif32",
     "repository": {

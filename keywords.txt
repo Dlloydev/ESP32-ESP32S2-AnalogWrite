@@ -13,6 +13,7 @@ pinStatus_t	KEYWORD1
 write	KEYWORD2
 writeServo	KEYWORD2
 read	KEYWORD2
+tone	KEYWORD2
 readMicroseconds	KEYWORD2
 attach	KEYWORD2
 attached	KEYWORD2
