@@ -1,5 +1,5 @@
 /*******************************************************************
-   ESP32 PWM, SERVO and TONE Library, Version 4.2.0
+   ESP32 PWM, SERVO and TONE Library, Version 4.2.1
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
@@ -107,17 +107,14 @@ uint32_t Pwm::writeServo(uint8_t pin, float value) {
   return duty;
 }
 
-uint32_t Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t interval) {
+uint8_t Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t interval) {
   uint8_t ch = attached(pin);
-
   if (ch == 255) {
     ch = attach(pin);
     write(pin, 127, frequency, 8);
     pause(ch);
   }
-
   switch (state) {
-
     case ready:
       if (duration) {
         config[ch].startMs = millis();
@@ -126,28 +123,43 @@ uint32_t Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t 
       }
       return 0;
       break;
-
     case play:
       if (frequency != config[ch].frequency) {
         config[ch].startMs = millis();
         ledcChangeFrequency(ch, frequency, config[ch].resolution);
         config[ch].frequency = frequency;
-        resume();
+        resume(ch);
       }
       if (millis() - config[ch].startMs >= duration) {
         config[ch].startMs = millis();
         (duration < 0xffff) ? pause(ch) : resume(ch);
         state = stop;
+        return 2;
       }
       return 1;
       break;
-
     case stop:
-      if (millis() - config[ch].startMs >= interval) state = ready;
+      if (millis() - config[ch].startMs >= interval) {
+        state = ready;
+        return 0;
+      }
       return 2;
       break;
   }
   return 0;
+}
+
+uint8_t Pwm::note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval) {
+  const uint16_t noteFrequencyBase[12] = {
+    // C       C#        D       Eb        E        F       F#        G       G#        A       Bb        B
+    4186,    4435,    4699,    4978,    5274,    5588,    5920,    6272,    6645,    7040,    7459,    7902
+  };
+
+  if (octave > 8 || note >= NOTE_MAX) {
+    return 0;
+  }
+  uint32_t noteFreq =  (uint32_t)noteFrequencyBase[note] / (uint32_t)(1 << (8 - octave));
+  return tone(pin, noteFreq, duration, interval);
 }
 
 float Pwm::read(uint8_t pin) {

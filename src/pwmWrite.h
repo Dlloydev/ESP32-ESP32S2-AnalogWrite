@@ -62,15 +62,16 @@ class Pwm {
     float write(uint8_t pin, uint32_t duty, uint32_t frequency);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
-    uint32_t writeServo(uint8_t pin, float value);
-    uint32_t tone(uint8_t pin, uint32_t frequency, uint16_t duration = 0, uint16_t interval = 0);
 
     float read(uint8_t pin);
     float readMicroseconds(uint8_t pin);
+    uint32_t writeServo(uint8_t pin, float value);
+    uint8_t tone(uint8_t pin, uint32_t frequency, uint16_t duration = 0, uint16_t interval = 0);
+    uint8_t note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval);
 
     uint8_t attach(uint8_t pin);
-    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
     uint8_t attach(uint8_t pin, uint8_t ch);
+    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
     uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
     uint8_t attached(uint8_t pin);
     uint8_t attachedPin(uint8_t ch);

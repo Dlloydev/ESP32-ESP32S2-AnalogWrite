@@ -1,4 +1,4 @@
-# ESP32 PWM, SERVO and TONE Library
+# ESP32 PWM, SERVO, TONE and NOTE Library
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>
 
@@ -6,10 +6,11 @@
 
 ### Description
 
-This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 16 PWM channels.  A unique feature is the pin management where any pin will not be automatically configured if it has been previously accessed by other code. If required, the user can also manually assign a pin to any specific channel. The pwm write function can attach a pin, control PWM duty, frequency, resolution and phase shift all from one function. Timer pause and resume functions are provided for improved synchronization of multiple PWM waveforms at higher frequencies.
+This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 16 PWM channels.  Includes smart GPIO pin management where any pin will not be automatically configured if it has been previously accessed by other code. Some advanced control features are auto or manual pin to channel attaching, timer pause and resume, pwm phase shift and syncronization.
 
 **Simulation Examples:**
 
+-  [playingNotes.ino](https://wokwi.com/projects/351175246893548120)
 -  [ESP32_ServoSweep_NonBlockingTone_Fade](https://wokwi.com/projects/350973592395055698)
 -  [16 pwm fade](https://wokwi.com/projects/349232255258853970)
 -  [14 pwm fade 2 servo](https://wokwi.com/projects/349978851105833554)
@@ -163,6 +164,42 @@ pwm.tone(pin, frequency, duration, interval)
 - 0 (ready) *(uint8_t)*
 - 1 (playing until duration expires) *(uint8_t)*
 - 2 (no tone until interval expires) *(uint8_t)*
+
+
+
+### note()
+
+##### Description:
+
+This function generates a square wave of the specified frequency (and 50% duty  cycle and 8-bit resolution) on a pin. There will be no output (no tone) if the duration isn't specified or equals 0. The duration in milliseconds has range 0-65535 where 0 is off and 65535 is always on. The last parameter (interval)  specifies the pause time before the next call to note becomes ready. The pin can be connected to a piezo buzzer or other speaker to play notes.
+
+**Channel Pairing**
+
+The frequency and resolution values are shared by each channel pair. When the note pin is attached, the next lower or higher channel on the same timer gets updated with the same frequency and resolution values as appropriate.
+
+**Attaching to free Channel**
+
+This process is automatic - the note pin will be attached to the next free channel. If you need to assign the tone pin to a specific channel, then call the `attach()`method first.
+
+##### Syntax
+
+```c++
+pwm.note(pin, note, octave, duration, interval)
+```
+
+##### Parameters
+
+- **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
+- **note**  The type is defined in [esp32-hal-ledc.h](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.h) *(note_t)*.
+- **octave**  The duration in milliseconds with range 0-65535 *(uint16_t)*, where 0 is off (default) and 65535 is always on.
+- **duration**  The duration in milliseconds with range 0-65535 *(uint16_t)*, where 0 is off (default) and 65535 is always on.
+- **interval**  This parameter specifies the pause time in milliseconds before the next call to tone becomes ready. *(uint16_t)*, range 0-65535, default = 0.
+
+##### Returns
+
+- 0 (ready) *(uint8_t)*
+- 1 (playing until duration expires) *(uint8_t)*
+- 2 (no note until interval expires) *(uint8_t)*
 
 
 
