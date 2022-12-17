@@ -10,6 +10,7 @@ This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espre
 
 **Simulation Examples:**
 
+-  [ESP32 Note Explorer ♩ ♪ ♫ ♬](https://wokwi.com/projects/351231798778266200) 
 -  [playingNotes.ino](https://wokwi.com/projects/351175246893548120)
 -  [ESP32_ServoSweep_NonBlockingTone_Fade](https://wokwi.com/projects/350973592395055698)
 -  [16 pwm fade](https://wokwi.com/projects/349232255258853970)
