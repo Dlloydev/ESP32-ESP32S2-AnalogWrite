@@ -1,12 +1,11 @@
 /*******************************************************************
-   ESP32 PWM, SERVO and TONE Library, Version 4.2.1
+   ESP32 PWM, SERVO and TONE Library, Version 4.2.2
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
 
 #include <Arduino.h>
 #include "pwmWrite.h"
-#include <stdlib.h>
 
 Pwm::Pwm() {}
 
@@ -15,7 +14,7 @@ float Pwm::write(uint8_t pin, uint32_t duty) {
   if (ch < chMax) { // write PWM
     if (config[ch].duty != duty) {
       ledcSetup(ch, config[ch].frequency, config[ch].resolution);
-      if (_sync) pause(ch);
+      if (sync) pause(ch);
       ledcWrite(ch, duty);
       config[ch].duty = duty;
     }
@@ -28,9 +27,9 @@ float Pwm::write(uint8_t pin, uint32_t duty, uint32_t frequency) {
   if (ch < chMax) { // write PWM
     if (config[ch].frequency != frequency) {
       ledcSetup(ch, frequency, config[ch].resolution);
-      if (_sync) pause(ch);
+      if (sync) pause(ch);
       ledcWrite(ch, duty);
-      writerFreqResPair(ch, frequency, config[ch].resolution);
+      write_ch_pair(ch, frequency, config[ch].resolution);
     }
     if (config[ch].duty != duty) {
       ledcWrite(ch, duty);
@@ -45,9 +44,9 @@ float Pwm::write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolut
   if (ch < chMax) { // write PWM
     if ((config[ch].frequency != frequency) || (config[ch].resolution != resolution)) {
       ledcSetup(ch, frequency, resolution);
-      if (_sync) pause(ch);
+      if (sync) pause(ch);
       ledcWrite(ch, duty);
-      writerFreqResPair(ch, frequency, resolution);
+      write_ch_pair(ch, frequency, resolution);
     }
     if (config[ch].duty != duty) {
       ledcWrite(ch, duty);
@@ -62,9 +61,9 @@ float Pwm::write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolut
   if (ch < chMax) { // write PWM
     if ((config[ch].frequency != frequency) || (config[ch].resolution != resolution)) {
       ledcSetup(ch, frequency, resolution);
-      if (_sync) pause(ch);
+      if (sync) pause(ch);
       ledcWrite(ch, duty);
-      writerFreqResPair(ch, frequency, resolution);
+      write_ch_pair(ch, frequency, resolution);
     }
     uint32_t ch_config = ch;
     if (ch > 7) ch_config = ch - 8;
@@ -100,7 +99,7 @@ uint32_t Pwm::writeServo(uint8_t pin, float value) {
     if (config[ch].duty != duty) {
       ledcSetup(ch, config[ch].frequency, config[ch].resolution);
       ledcWrite(ch, duty);
-      writerFreqResPair(ch, config[ch].frequency, config[ch].resolution);
+      write_ch_pair(ch, config[ch].frequency, config[ch].resolution);
       config[ch].duty = duty;
     }
   }
@@ -109,7 +108,7 @@ uint32_t Pwm::writeServo(uint8_t pin, float value) {
 
 uint8_t Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t interval) {
   uint8_t ch = attached(pin);
-  if (ch == 255) {
+  if (ch == 253) {
     ch = attach(pin);
     write(pin, 127, frequency, 8);
     pause(ch);
@@ -181,12 +180,12 @@ float Pwm::readMicroseconds(uint8_t pin) {
 
 uint8_t Pwm::attach(uint8_t pin) {
   uint8_t chan = attached(pin);
-  if (chan == 255) { // pin is free
+  if (detached(pin) && chan == 253) { // pin is detached and free ch exists
     for (uint8_t ch = 0; ch < chMax; ch++) {
       if (config[ch].pin == 255) { // ch is free
         config[ch].pin = pin;
         ledcSetup(ch, config[ch].frequency, config[ch].resolution);
-        if (_sync) pause(ch);
+        if (sync) pause(ch);
         ledcAttachPin(pin, ch);
         return ch;
       }
@@ -196,55 +195,44 @@ uint8_t Pwm::attach(uint8_t pin) {
 }
 
 uint8_t Pwm::attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs) {
-  uint8_t chan = attached(pin);
-  if (chan == 255) { // pin is free
-    for (uint8_t ch = 0; ch < chMax; ch++) {
-      if (config[ch].pin == 255) { // ch is free
-        config[ch].pin = pin;
-        configServo(ch, minUs, defUs, maxUs);
-        ledcSetup(ch, config[ch].frequency, config[ch].resolution);
-        if (_sync) pause(ch);
-        ledcAttachPin(pin, ch);
-        return ch;
-      }
-    }
-  }
-  return chan;
+  uint8_t ch = attach(pin);
+  if (ch < chMax) config_servo(ch, minUs, defUs, maxUs);
+  return ch;
 }
 
-uint8_t Pwm::attach(uint8_t pin, uint8_t ch) {
+uint8_t Pwm::attach(uint8_t pin, uint8_t ch, bool invert) {
   uint8_t chan = attached(pin);
-  if (chan == 255 && ch < chMax) {
+  if (config[ch].pin == 255) { // ch is free
     config[ch].pin = pin;
     ledcSetup(ch, config[ch].frequency, config[ch].resolution);
-    if (_sync) pause(ch);
-    ledcAttachPin(pin, ch);
+    if (sync) pause(ch);
+    ledc_attach_with_invert(pin, ch, invert);
     return ch;
   }
   return chan;
 }
 
 uint8_t Pwm::attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs) {
-  uint8_t chan = attached(pin);
-  if (chan == 255 && ch < chMax) {
-    config[ch].pin = pin;
-    configServo(ch, minUs, defUs, maxUs);
-    ledcSetup(ch, config[ch].frequency, config[ch].resolution);
-    if (_sync) pause(ch);
-    ledcAttachPin(pin, ch);
-    return ch;
-  }
-  return chan;
+  config_servo(ch, minUs, defUs, maxUs);
+  return attach(pin, ch);
+}
+
+uint8_t Pwm::attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, bool invert) {
+  config_servo(ch, minUs, defUs, maxUs);
+  return attach(pin, ch, invert);
 }
 
 uint8_t Pwm::attached(uint8_t pin) {
-  if (!((pinMask >> pin) & 1)) return 254;
-  else {  // check if pin is attached
+  if (!((pinMask >> pin) & 1)) return 254; // not a pwm pin
+  else {
+    uint8_t free = 0;
     for (uint8_t ch = 0; ch < chMax; ch++) {
       if (config[ch].pin == pin) return ch;
+      if (config[ch].pin == 255) free++;
     }
+    if (free) return 253; // free channel(s) exist
   }
-  return 255;
+  return 255;  // not attached
 }
 
 uint8_t Pwm::attachedPin(uint8_t ch) {
@@ -254,23 +242,28 @@ uint8_t Pwm::attachedPin(uint8_t ch) {
 void Pwm::detach(uint8_t pin) {
   uint8_t ch = attached(pin);
   if (ch < chMax) {
-    resetFields(ch);
+    reset_fields(ch);
     ledcDetachPin(config[ch].pin);
     REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
   }
 }
 
+bool Pwm::detached(uint8_t pin) {
+  if ((REG_GET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL)) == 0) return true;
+  else return false;
+}
+
 void Pwm::pause(uint8_t ch) {
-  if (ch == 255) _sync = true;
+  if (ch == 253) sync = true;
   else ledc_timer_pause((ledc_mode_t)config[ch].mode, (ledc_timer_t)config[ch].timer);
 }
 
 void Pwm::resume(uint8_t ch) {
-  if (_sync && ch == 255) {
+  if (sync && ch == 253) {
     for (uint8_t ch = 0; ch < chMax; ch++) {
       if (config[ch].pin < 48) ledc_timer_resume((ledc_mode_t)config[ch].mode, (ledc_timer_t)config[ch].timer);
     }
-    _sync = false;
+    sync = false;
   } else {
     ledc_timer_resume((ledc_mode_t)config[ch].mode, (ledc_timer_t)config[ch].timer);
   }
@@ -281,9 +274,9 @@ float Pwm::setFrequency(uint8_t pin, uint32_t frequency) {
   if (ch < chMax) {
     if (config[ch].frequency != frequency) {
       ledcSetup(ch, frequency, config[ch].resolution);
-      if (_sync) pause(ch);
+      if (sync) pause(ch);
       ledcWrite(ch, config[ch].duty);
-      writerFreqResPair(ch, frequency, config[ch].resolution);
+      write_ch_pair(ch, frequency, config[ch].resolution);
     }
   }
   return ledcReadFreq(ch);
@@ -296,10 +289,10 @@ uint8_t Pwm::setResolution(uint8_t pin, uint8_t resolution) {
       ledcDetachPin(pin);
       ledcAttachPin(pin, ch);
       ledcSetup(ch, config[ch].frequency, resolution);
-      if (_sync) pause(ch);
+      if (sync) pause(ch);
       ledcWrite(ch, config[ch].duty);
       config[ch].resolution = resolution;
-      writerFreqResPair(ch, config[ch].frequency, resolution);
+      write_ch_pair(ch, config[ch].frequency, resolution);
     }
   }
   return config[ch].resolution;
@@ -344,9 +337,28 @@ void Pwm::printConfig() {
   }
 }
 
-/***************************** private helper functions ********************************/
+/************************* private functions ***************************/
 
-void Pwm::configServo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs) {
+void Pwm::ledc_attach_with_invert(uint8_t pin, uint8_t ch, bool invert) {
+  if (ch >= chMax) return;
+  uint32_t ch_config = ch;
+  if (ch > 7) ch_config = ch - 8;
+  ledc_channel_config_t ledc_channel = {
+    .gpio_num       = (config[ch].pin),
+    .speed_mode     = (ledc_mode_t) config[ch].mode,
+    .channel        = (ledc_channel_t) ch_config,
+    .intr_type      = (ledc_intr_type_t) LEDC_INTR_DISABLE,
+    .timer_sel      = (ledc_timer_t) config[ch].timer,
+    .duty           = 0,
+    .hpoint         = 0,
+    .flags = {
+      .output_invert = (uint8_t)invert
+    }
+  };
+  ledc_channel_config(&ledc_channel);
+}
+
+void Pwm::config_servo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs) {
   if (minUs < 500) config[ch].servoMinUs = 500;
   else if (minUs > 2500) config[ch].servoMinUs = 2500;
   else config[ch].servoMinUs = minUs;
@@ -356,9 +368,14 @@ void Pwm::configServo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs
   if (maxUs < 500) config[ch].servoMaxUs = 500;
   else if (maxUs > 2500) config[ch].servoMaxUs = 2500;
   else config[ch].servoMaxUs = maxUs;
+  if (config[ch].frequency < 40 || config[ch].frequency > 900) config[ch].frequency = 50;
+  if (config[ch].resolution > widthMax) config[ch].resolution = widthMax;
+  else if (config[ch].resolution < 14 && widthMax == 20) config[ch].resolution = 16;
+  else if (config[ch].resolution < 14) config[ch].resolution = 14;
+  write_ch_pair(ch, config[ch].frequency, config[ch].resolution);
 }
 
-void Pwm::writerFreqResPair(uint8_t ch, uint32_t frequency, uint8_t bits) {
+void Pwm::write_ch_pair(uint8_t ch, uint32_t frequency, uint8_t bits) {
   config[ch].frequency = frequency;
   config[ch].resolution = bits;
   if (ch % 2 == 0) { // even ch
@@ -370,7 +387,7 @@ void Pwm::writerFreqResPair(uint8_t ch, uint32_t frequency, uint8_t bits) {
   }
 }
 
-void Pwm::resetFields(uint8_t ch) {
+void Pwm::reset_fields(uint8_t ch) {
   config[ch].pin = 255;
   config[ch].duty = 0;
   config[ch].frequency = 1000;

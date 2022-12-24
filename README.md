@@ -6,10 +6,17 @@
 
 ### Description
 
-This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 16 PWM channels.  Includes smart GPIO pin management where any pin will not be automatically configured if it has been previously accessed by other code. Some advanced control features are auto or manual pin to channel attaching, timer pause and resume, pwm phase shift and syncronization.
+This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 16 PWM channels.  Includes smart GPIO pin management where any pin will not be automatically configured if it has been previously accessed by other code. Some advanced control features are auto or manual pin to channel attaching and timer pause and resume methods.
+
+PWM can be inverted, phase shifted and asynchronously aligned with the timing of other pwm channels. 
+
+Servo read and write functions are included that work with *float* values for more precise control. An optionally inverted servo pwm feature allows using a simple NPN or N-Channel MOSFET driver for the servo's control signal.
+
+Also included are non blocking Tone and Note functions that include *duration* and *interval* parameters.
 
 **Simulation Examples:**
 
+-  [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
 -  [ESP32 Note Explorer ♩ ♪ ♫ ♬](https://wokwi.com/projects/351231798778266200) 
 -  [playingNotes.ino](https://wokwi.com/projects/351175246893548120)
 -  [ESP32_ServoSweep_NonBlockingTone_Fade](https://wokwi.com/projects/350973592395055698)
@@ -192,7 +199,7 @@ pwm.note(pin, note, octave, duration, interval)
 
 - **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
 - **note**  The type is defined in [esp32-hal-ledc.h](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.h) *(note_t)*.
-- **octave**  The duration in milliseconds with range 0-65535 *(uint16_t)*, where 0 is off (default) and 65535 is always on.
+- **octave**  There are 8 octaves available, 1 to 8 *(uint8_t)* 
 - **duration**  The duration in milliseconds with range 0-65535 *(uint16_t)*, where 0 is off (default) and 65535 is always on.
 - **interval**  This parameter specifies the pause time in milliseconds before the next call to tone becomes ready. *(uint16_t)*, range 0-65535, default = 0.
 
@@ -257,23 +264,35 @@ This function allows auto-attaching a pin to the first available channel if only
 **Syntax**
 
 ```c++
-attach(pin)                                // auto attach
-attach(pin, minUs, defUs, maxUs)           // auto attach including servo timer values
-attach(pin, channel)                       // attach on channel 
-attach(pin, channel, minUs, defUs, maxUs)  // attach on channel incl servo timer values
+attach(pin)                                  // auto attach to first open channel
+attach(pin, ch, invert)                      // attach to ch, optional invert 
+attach(pin, minUs, defUs, maxUs)             // auto attach incl servo timer values
+attach(pin, ch, minUs, defUs, maxUs)         // attach to ch with servo limits
+attach(pin, ch, minUs, defUs, maxUs, invert) // attach to ch, servo limits and invert
 ```
 
 ##### Parameters
 
 - **pin**  The pin number *(uint8_t)*
+
 - **channel**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
+
 - **minUs**  Minimum timer width in microseconds *(uint16_t)*
+
 - **defUs**  Default timer width in microseconds *(uint16_t)*
+
 - **maxUs**  Maximum timer width in microseconds *(uint16_t)*
+
+- **invert**  Inverts the PWM output. Allows using a simpler driver for higher voltage servo control. Only one NPN transistor or N-Channel MOSFET needed. No additional latency added as found with software inversion because the inverted pulse remains at the start of the refresh period rather than being flipped to the end of the refresh period  *(bool)*.
+
+  [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
+
+  ![image](https://user-images.githubusercontent.com/63488701/209453287-4c1b0ba8-8e0e-42cd-9bef-55a7b2f1e8b4.png)
 
 ##### Returns
 
 - If not a valid pin, 254 *(uint8_t)*
+- free channels exist, 253 *(uint8_t)*
 - If attached, the channel number (0-15) *(uint8_t)*
 - If not attached, 255 *(uint8_t)*
 
@@ -298,6 +317,7 @@ attached(pin)
 ##### Returns
 
 - If not a valid pin, 254 *(uint8_t)*
+- free channels exist, 253 *(uint8_t)*
 - If attached, the channel number (0-15) *(uint8_t)*
 - If not attached, 255 *(uint8_t)*
 
@@ -307,7 +327,7 @@ attached(pin)
 
 ##### Description
 
-This function reports the pin status of a specific channel 
+This function returns the pin that's attached to the specified channel.
 
 **Syntax**
 

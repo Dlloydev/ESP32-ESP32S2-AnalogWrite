@@ -1,3 +1,10 @@
+/**********************
+   pwmWrite.h
+   Created April, 2021.
+   by dlloydev
+***********************/
+
+#pragma once
 #ifndef _ESP32_PWM_WRITE_
 #define _ESP32_PWM_WRITE_
 #include <Arduino.h>
@@ -27,19 +34,19 @@ class Pwm {
 
     typedef struct config {
       uint8_t pin;
-      float frequency;
-      uint32_t duty;
-      uint8_t resolution;
-      uint8_t mode;
-      uint8_t timer;
-      uint32_t phase;
-      uint16_t servoMinUs;
-      uint16_t servoDefUs;
-      uint16_t servoMaxUs;
-      uint32_t startMs;
+      float frequency;       // pwm frequency (Hz)
+      uint32_t duty;         // pwm steps or clock ticks, determines pulse width
+      uint8_t resolution;    // bits, determines the number of steps in pwm period
+      uint8_t mode;          // ledc speed mode (0 or 1)
+      uint8_t timer;         // ledc timer (0-3)
+      uint32_t phase;        // ledc hpoint value for shifting pulse start
+      uint16_t servoMinUs;   // minimum servo pulse in μs
+      uint16_t servoDefUs;   // default servo pulse in μs
+      uint16_t servoMaxUs;   // maximum servo pulse in μs
+      uint32_t startMs;      // for non-blocking timing purposes in ms
     } config_t;
 
-    config_t config[16] = {
+    config_t config[16] = {  // channel config data (see above)
       {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0 },
       {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0 },
       {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0 },
@@ -58,40 +65,44 @@ class Pwm {
       {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0 }
     };
 
+    // pwm
     float write(uint8_t pin, uint32_t duty);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
+    uint8_t attach(uint8_t pin); // attach pin to next free channel
+    uint8_t attach(uint8_t pin, uint8_t ch, bool invert = false); // attach to specified ch with invert option 
 
+    // servo
+    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
+    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
+    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, bool invert);
     float read(uint8_t pin);
     float readMicroseconds(uint8_t pin);
     uint32_t writeServo(uint8_t pin, float value);
-    uint8_t tone(uint8_t pin, uint32_t frequency, uint16_t duration = 0, uint16_t interval = 0);
+
+    // tone and note
+    uint8_t tone(uint8_t pin, uint32_t frequency, uint16_t duration = 500, uint16_t interval = 0);
     uint8_t note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval);
 
-    uint8_t attach(uint8_t pin);
-    uint8_t attach(uint8_t pin, uint8_t ch);
-    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
-    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
-    uint8_t attached(uint8_t pin);
-    uint8_t attachedPin(uint8_t ch);
-    void detach(uint8_t pin);
-
-    void pause(uint8_t ch = 255);
-    void resume(uint8_t ch = 255);
-
+    // common
+    uint8_t attached(uint8_t pin);     // check if pin is attaced
+    uint8_t attachedPin(uint8_t ch);   // get pin on specified channel
+    void detach(uint8_t pin);          // detach pin
+    bool detached(uint8_t pin);        // check if pin is detached
+    void pause(uint8_t ch = 255);      // pause timer on all or specified channel
+    void resume(uint8_t ch = 255);     // resume timer on all or specified channel
+    void printConfig(void);            // print the status of all channels
     float setFrequency(uint8_t pin, uint32_t frequency = 1000);
     uint8_t setResolution(uint8_t pin, uint8_t resolution = 10);
-    void printConfig(void);
 
   private:
-
     enum State { ready, play, stop };
     State state = ready;
-
-    void resetFields(uint8_t ch);
-    void configServo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
-    void writerFreqResPair(uint8_t ch, uint32_t frequency, uint8_t bits);
-    bool _sync = false;
+    void ledc_attach_with_invert(uint8_t pin, uint8_t ch, bool invert = false);
+    void config_servo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
+    void write_ch_pair(uint8_t ch, uint32_t frequency, uint8_t bits);
+    void reset_fields(uint8_t ch);
+    bool sync = false;
 };
 #endif

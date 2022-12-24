@@ -1,6 +1,7 @@
 /*
   ESP32 3 Phase PWM Outputs (40kHz, 10-bit)
   https://wokwi.com/projects/349336125753524820
+  David Lloyd
 */
 
 #include <pwmWrite.h>
@@ -8,7 +9,7 @@ const byte pwmPin[3] = {21, 19, 18};
 const uint16_t duty = 341;
 const byte deadtime = 21;
 const uint16_t phase[3] = {0, 341, 682};
-const uint16_t shift[3] = {602, 602, 0};
+const uint16_t shift[3] = {452, 452, 0};
 const uint32_t frequency = 40000;
 const byte resolution = 10;
 Pwm pwm = Pwm();
