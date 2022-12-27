@@ -18,7 +18,8 @@ Also included are non blocking Tone and Note functions that include *duration* a
 
 -  [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
 -  [ESP32 Note Explorer ♩ ♪ ♫ ♬](https://wokwi.com/projects/351231798778266200) 
--  [playingNotes.ino](https://wokwi.com/projects/351175246893548120)
+-  [playingNotes](https://wokwi.com/projects/351175246893548120)
+-  [playingTones](https://wokwi.com/projects/352178590336932865)
 -  [ESP32_ServoSweep_NonBlockingTone_Fade](https://wokwi.com/projects/350973592395055698)
 -  [16 pwm fade](https://wokwi.com/projects/349232255258853970)
 -  [14 pwm fade 2 servo](https://wokwi.com/projects/349978851105833554)

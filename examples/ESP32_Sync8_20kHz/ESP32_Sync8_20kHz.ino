@@ -7,7 +7,7 @@
 #include <pwmWrite.h>
 const byte pwmPin[8] = {21, 19, 18, 5, 16, 4, 2, 15};
 const uint16_t duty[8] = {64, 128, 192, 256, 320, 384, 448, 512};
-const uint16_t phase[8] = {460, 460, 380, 380, 230, 230, 0, 0};
+const uint16_t phase[8] = {230, 230, 154, 154, 76, 76, 0, 0};
 const uint32_t frequency = 20000;
 const byte resolution = 10;
 Pwm pwm = Pwm();

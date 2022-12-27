@@ -1,8 +1,7 @@
-/**********************
+/***********************
    pwmWrite.h
-   Created April, 2021.
-   by dlloydev
-***********************/
+   by dlloydev, 04/2021.
+************************/
 
 #pragma once
 #ifndef _ESP32_PWM_WRITE_
@@ -101,7 +100,10 @@ class Pwm {
     State state = ready;
     void ledc_attach_with_invert(uint8_t pin, uint8_t ch, bool invert = false);
     void config_servo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
-    void write_ch_pair(uint8_t ch, uint32_t frequency, uint8_t bits);
+    void wr_ch_pair(uint8_t ch, uint32_t frequency, uint8_t resolution);
+    void wr_duty(uint8_t ch, uint32_t duty);
+    void wr_freq_res(uint8_t ch, uint32_t frequency, uint8_t resolution);
+    void wr_phase(uint8_t ch, uint32_t duty, uint32_t phase);
     void reset_fields(uint8_t ch);
     bool sync = false;
 };
