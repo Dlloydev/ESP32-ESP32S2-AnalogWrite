@@ -16,21 +16,22 @@ Also included are non blocking Tone and Note functions that include *duration* a
 
 **Simulation Examples:**
 
--  [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
--  [ESP32 Note Explorer ♩ ♪ ♫ ♬](https://wokwi.com/projects/351231798778266200) 
--  [playingNotes](https://wokwi.com/projects/351175246893548120)
--  [playingTones](https://wokwi.com/projects/352178590336932865)
--  [ESP32_ServoSweep_NonBlockingTone_Fade](https://wokwi.com/projects/350973592395055698)
--  [16 pwm fade](https://wokwi.com/projects/349232255258853970)
--  [14 pwm fade 2 servo](https://wokwi.com/projects/349978851105833554)
--  [Servo Knob](https://wokwi.com/projects/350033311963284051)
+-  [16 PWM Fade](https://wokwi.com/projects/349232255258853970)
+-  [14 PWM Fade 2 Servo](https://wokwi.com/projects/349978851105833554)
 -  [Servo Sweep](https://wokwi.com/projects/350037178957431378)
--  [3 phase 40kHz](https://wokwi.com/projects/349336125753524820)
--  [2 sync 300kHz](https://wokwi.com/projects/349322326995632722)
--  [8 sync 20kHz](https://wokwi.com/projects/349319723103552084)
--  [ESP32_3phase_10kHz.ino](https://wokwi.com/projects/334722465700774482)
--  [ESP32_S2_3phase_10kHz.ino](https://wokwi.com/projects/334765722024542804)
--  [ESP32_C3_3phase_10kHz.ino](https://wokwi.com/projects/334856585002091092)
+-  [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
+-  [Dual Servo Sweep with Independent Speed Control](https://wokwi.com/projects/351978833396630095)
+-  [Servo Knob](https://wokwi.com/projects/350033311963284051)
+-  [Note Explorer ♩ ♪ ♫ ♬](https://wokwi.com/projects/351231798778266200) 
+-  [Playing Notes](https://wokwi.com/projects/351175246893548120)
+-  [Playing Tones](https://wokwi.com/projects/352178590336932865)
+-  [Servo Sweep with Non Blocking Tone and Fade](https://wokwi.com/projects/350973592395055698)
+-  [2 Sync 300kHz](https://wokwi.com/projects/349322326995632722)
+-  [8 Sync 20kHz](https://wokwi.com/projects/349319723103552084)
+-  [ESP32_3-Phase 40kHz](https://wokwi.com/projects/349336125753524820)
+-  [ESP32_3-Phase_10kHz](https://wokwi.com/projects/334722465700774482)
+-  [ESP32_S2_3-Phase_10kHz](https://wokwi.com/projects/334765722024542804)
+-  [ESP32_C3_3-Phase_10kHz](https://wokwi.com/projects/334856585002091092)
 
 | Board    | PWM Pins                          | PWM, Duty and Phase Channels | Frequency and Resolution Channels |
 | -------- | --------------------------------- | ---------------------------- | --------------------------------- |

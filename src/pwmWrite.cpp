@@ -1,5 +1,5 @@
 /*******************************************************************
-   ESP32 PWM, SERVO and TONE Library, Version 4.2.3
+   ESP32 PWM, SERVO and TONE Library, Version 4.2.4
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
@@ -351,6 +351,7 @@ void Pwm::wr_ch_pair(uint8_t ch, uint32_t frequency, uint8_t bits) {
 
 void Pwm::wr_duty(uint8_t ch, uint32_t duty) {
   if (config[ch].duty != duty) {
+    ledcSetup(ch, config[ch].frequency, config[ch].resolution);
     ledcWrite(ch, duty);
     config[ch].duty = duty;
   }
