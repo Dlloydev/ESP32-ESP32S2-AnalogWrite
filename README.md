@@ -14,24 +14,39 @@ Servo read and write functions are included that work with *float* values for mo
 
 Also included are non blocking Tone and Note functions that include *duration* and *interval* parameters.
 
-**Simulation Examples:**
+##### **Examples:**
 
--  [16 PWM Fade](https://wokwi.com/projects/349232255258853970)
--  [14 PWM Fade 2 Servo](https://wokwi.com/projects/349978851105833554)
--  [Servo Sweep](https://wokwi.com/projects/350037178957431378)
--  [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
--  [Dual Servo Sweep with Independent Speed Control](https://wokwi.com/projects/351978833396630095)
--  [Servo Knob](https://wokwi.com/projects/350033311963284051)
--  [Note Explorer ♩ ♪ ♫ ♬](https://wokwi.com/projects/351231798778266200) 
--  [Playing Notes](https://wokwi.com/projects/351175246893548120)
--  [Playing Tones](https://wokwi.com/projects/352178590336932865)
--  [Servo Sweep with Non Blocking Tone and Fade](https://wokwi.com/projects/350973592395055698)
--  [2 Sync 300kHz](https://wokwi.com/projects/349322326995632722)
--  [8 Sync 20kHz](https://wokwi.com/projects/349319723103552084)
--  [ESP32_3-Phase 40kHz](https://wokwi.com/projects/349336125753524820)
--  [ESP32_3-Phase_10kHz](https://wokwi.com/projects/334722465700774482)
--  [ESP32_S2_3-Phase_10kHz](https://wokwi.com/projects/334765722024542804)
--  [ESP32_C3_3-Phase_10kHz](https://wokwi.com/projects/334856585002091092)
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349232255258853970)  [16 PWM Fade](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Fade16/ESP32_Fade16.ino)   ESP32 fading 16 pairs of LEDs
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349978851105833554)  [14 PWM Fade 2 Servo](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Fade_Servo/ESP32_Fade_Servo.ino)   ESP32 fading 14 pairs of LEDs and controlling 2 servo motors
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/350037178957431378)  [Servo Sweep](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Sweep/Servo_Sweep.ino)   Sweep a servo motor from 0-180 degrees and back
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351967394028061269)  [Servo_Sweep_Inverted](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Sweep_Inverted/Servo_Sweep_Inverted.ino)   Using inverted PWM mode to sweep a servo motor
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351978833396630095)  [Dual Servo Sweep with Independent Speed Control](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Dual_Servo_Sweep_Speed/Dual_Servo_Sweep_Speed.ino) 
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/350033311963284051)  [Servo Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Knob/Servo_Knob.ino)   Controls servo position by using a potentiometer 
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351231798778266200)  [Note Explorer ♩ ♪ ♫ ♬](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Note_Explorer/ESP32_Note_Explorer.ino)   Plays all 96 ledc notes that are available, non blocking
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351175246893548120)  [Playing Notes](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/playingNotes/playingNotes.ino)   Playing Notes based on sliding pot position, 4th octave, non blocking
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/352178590336932865)  [Playing Tones](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/playingTones/playingTones.ino)   Playing Tones based on sliding pot position, 4Hz to 4095Hz, non blocking
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349322326995632722)  [2 Sync 300kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Sync2_300kHz/ESP32_Sync2_300kHz.ino)   2 synchronized PWM outputs using the same timer (channel pair)
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349319723103552084)  [8 Sync 20kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Sync8_20kHz/ESP32_Sync8_20kHz.ino)   ESP32 8 Synchronized PWM Outputs (20kHz, 10-bit)
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349336125753524820)  [ESP32_3-Phase 40kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_3phase_40kHz/ESP32_3phase_40kHz.ino)   ESP32 3 Phase PWM Outputs (40kHz, 10-bit)
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334722465700774482)  [ESP32_3-Phase 10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_3phase_10kHz/ESP32_3phase_10kHz.ino)   ESP32 3 Phase PWM Outputs (10kHz, 10-bit)
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334765722024542804)  [ESP32_S2_3-Phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_S2_3phase_10kHz/ESP32_S2_3phase_10kHz.ino)   ESP32 S2 3 Phase PWM Outputs (10kHz, 10-bit)
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334856585002091092)  [ESP32_C3_3-Phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_3phase_10kHz/ESP32_C3_3phase_10kHz.ino)   ESP32 C3 3 Phase PWM Outputs (10kHz, 10-bit)
+
+  
 
 | Board    | PWM Pins                          | PWM, Duty and Phase Channels | Frequency and Resolution Channels |
 | -------- | --------------------------------- | ---------------------------- | --------------------------------- |
@@ -171,9 +186,7 @@ pwm.tone(pin, frequency, duration, interval)
 
 ##### Returns
 
-- 0 (ready) *(uint8_t)*
-- 1 (playing until duration expires) *(uint8_t)*
-- 2 (no tone until interval expires) *(uint8_t)*
+- nothing
 
 
 
@@ -207,9 +220,7 @@ pwm.note(pin, note, octave, duration, interval)
 
 ##### Returns
 
-- 0 (ready) *(uint8_t)*
-- 1 (playing until duration expires) *(uint8_t)*
-- 2 (no note until interval expires) *(uint8_t)*
+- nothing
 
 
 
