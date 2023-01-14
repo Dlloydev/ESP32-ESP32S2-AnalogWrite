@@ -14,6 +14,12 @@ Servo read and write functions are included that work with *float* values for mo
 
 Also included are non blocking Tone and Note functions that include *duration* and *interval* parameters.
 
+### Coming Soon...
+
+####  Servo Easing (soft-start, soft-stop)
+
+#### ![Easing_Linear](https://user-images.githubusercontent.com/63488701/212481603-d811b9ac-ffbe-4190-9dd9-47e191919a11.gif)
+
 ##### **Examples:**
 
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349232255258853970)  [16 PWM Fade](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Fade16/ESP32_Fade16.ino)   ESP32 fading 16 pairs of LEDs

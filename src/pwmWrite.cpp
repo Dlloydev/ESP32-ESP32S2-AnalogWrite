@@ -69,59 +69,36 @@ uint32_t Pwm::writeServo(uint8_t pin, float value) {
   return duty;
 }
 
-uint8_t Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t interval) {
-  uint8_t ch = attached(pin);
-  if (ch == 253) {
-    ch = attach(pin);
-    write(pin, 127, frequency, 8);
-    pause(ch);
-  }
-  switch (state) {
-    case ready:
-      if (duration) {
-        config[ch].startMs = millis();
-        (duration < 0xffff) ? pause(ch) : resume(ch);
-        state = play;
-      }
-      return 0;
-      break;
-    case play:
-      if (frequency != config[ch].frequency) {
-        config[ch].startMs = millis();
-        ledcChangeFrequency(ch, frequency, config[ch].resolution);
+void Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t interval) {
+  uint8_t ch = attach(pin);
+  if (ch < chMax) {
+    uint32_t ms = millis();
+    static bool durDone = false;
+    if (frequency < 4) frequency = 4;
+    if (!durDone) {
+      if (frequency != config[ch].frequency && (ms - config[ch].startMs > interval)) {
+        config[ch].startMs = ms;
         config[ch].frequency = frequency;
+        ledcChangeFrequency(ch, frequency, config[ch].resolution);
+        write(pin, 127, frequency, 8);
         resume(ch);
       }
-      if (millis() - config[ch].startMs >= duration) {
-        config[ch].startMs = millis();
-        (duration < 0xffff) ? pause(ch) : resume(ch);
-        state = stop;
-        return 2;
+      if (duration && ((ms - config[ch].startMs) > duration) || (duration == 0)) {
+        config[ch].startMs = ms;
+        durDone = true;
+        if (duration < 0xffff) pause(ch);
       }
-      return 1;
-      break;
-    case stop:
-      if (millis() - config[ch].startMs >= interval) {
-        state = ready;
-        return 0;
-      }
-      return 2;
-      break;
+    } else if (ms - config[ch].startMs > interval) durDone = false;
   }
-  return 0;
 }
 
-uint8_t Pwm::note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval) {
+void Pwm::note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval) {
   const uint16_t noteFrequencyBase[12] = {
     // C       C#        D       Eb        E        F       F#        G       G#        A       Bb        B
     4186,    4435,    4699,    4978,    5274,    5588,    5920,    6272,    6645,    7040,    7459,    7902
   };
-
-  if (octave > 8 || note >= NOTE_MAX) {
-    return 0;
-  }
   uint32_t noteFreq =  (uint32_t)noteFrequencyBase[note] / (uint32_t)(1 << (8 - octave));
-  return tone(pin, noteFreq, duration, interval);
+  if (octave <= 8 || note <= NOTE_MAX) tone(pin, noteFreq, duration, interval);
 }
 
 float Pwm::read(uint8_t pin) {

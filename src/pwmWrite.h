@@ -81,8 +81,8 @@ class Pwm {
     uint32_t writeServo(uint8_t pin, float value);
 
     // tone and note
-    uint8_t tone(uint8_t pin, uint32_t frequency, uint16_t duration = 500, uint16_t interval = 0);
-    uint8_t note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval);
+    void tone(uint8_t pin, uint32_t frequency, uint16_t duration = 500, uint16_t interval = 0);
+    void note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval);
 
     // common
     uint8_t attached(uint8_t pin);     // check if pin is attaced
@@ -96,8 +96,6 @@ class Pwm {
     uint8_t setResolution(uint8_t pin, uint8_t resolution = 10);
 
   private:
-    enum State { ready, play, stop };
-    State state = ready;
     void ledc_attach_with_invert(uint8_t pin, uint8_t ch, bool invert = false);
     void config_servo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
     void wr_ch_pair(uint8_t ch, uint32_t frequency, uint8_t resolution);
