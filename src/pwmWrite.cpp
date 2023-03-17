@@ -44,6 +44,7 @@ float Pwm::write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolut
   }
   return config[ch].frequency;
 }
+
 uint32_t Pwm::writeServo(uint8_t pin, float value) {
   uint8_t ch = attached(pin);
   if (ch == 253) { // free channels exist
@@ -129,11 +130,12 @@ float Pwm::readMicroseconds(uint8_t pin) {
 }
 
 uint8_t Pwm::attach(uint8_t pin) {
-  uint8_t chan = attached(pin);
-  if (chan == 253) { // free channels exist
-    for (uint8_t ch = 0; ch < chMax; ch++) {
-      if (config[ch].pin == 255) { // ch is free
-        config[ch].pin = pin;
+  uint8_t ch = attached(pin);
+  if (ch == 253) { // free channels exist
+    for (uint8_t c = 0; c < chMax; c++) {
+      if (config[c].pin == 255 && ch == 253) { //first free ch
+        config[c].pin = pin;
+        ch = c;
         ledcSetup(ch, config[ch].frequency, config[ch].resolution);
         if (sync) pause(ch);
         ledcAttachPin(pin, ch);
@@ -141,7 +143,7 @@ uint8_t Pwm::attach(uint8_t pin) {
       }
     }
   }
-  return chan;
+  return ch;
 }
 
 uint8_t Pwm::attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs) {
