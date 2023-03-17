@@ -1,5 +1,5 @@
 /*******************************************************************
-   ESP32 PWM, SERVO and TONE Library, Version 4.2.4
+   ESP32 PWM, SERVO and TONE Library, Version 4.2.5
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
@@ -44,16 +44,26 @@ float Pwm::write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolut
   }
   return config[ch].frequency;
 }
-
 uint32_t Pwm::writeServo(uint8_t pin, float value) {
-  uint8_t ch = attach(pin);
+  uint8_t ch = attached(pin);
+  if (ch == 253) { // free channels exist
+    for (uint8_t c = 0; c < chMax; c++) {
+      if (config[c].pin == 255 && ch == 253) { //first free ch
+        config[c].pin = pin;
+        ch = c;
+        if (config[ch].frequency < 40 || config[ch].frequency > 900) config[ch].frequency = 50;
+        if (config[ch].resolution > widthMax) config[ch].resolution = widthMax;
+        else if (config[ch].resolution < 14 && widthMax == 20) config[ch].resolution = 16;
+        else if (config[ch].resolution < 14) config[ch].resolution = 14;
+        ledcSetup(ch, config[ch].frequency, config[ch].resolution);
+        if (sync) pause(ch);
+        ledcAttachPin(pin, ch);
+      }
+    }
+  }
   float countPerUs;
   uint32_t duty = config[ch].servoDefUs;
   if (ch < chMax) { // write PWM
-    if (config[ch].frequency < 40 || config[ch].frequency > 900) config[ch].frequency = 50;
-    if (config[ch].resolution > widthMax) config[ch].resolution = widthMax;
-    else if (config[ch].resolution < 14 && widthMax == 20) config[ch].resolution = 16;
-    else if (config[ch].resolution < 14) config[ch].resolution = 14;
     countPerUs = ((1 << config[ch].resolution) - 1) / (1000000.0 / config[ch].frequency);
     if (value < config[ch].servoMinUs) {  // degrees
       if (value < 0) value = 0;
@@ -120,7 +130,7 @@ float Pwm::readMicroseconds(uint8_t pin) {
 
 uint8_t Pwm::attach(uint8_t pin) {
   uint8_t chan = attached(pin);
-  if (chan == 253) { // pin is free
+  if (chan == 253) { // free channels exist
     for (uint8_t ch = 0; ch < chMax; ch++) {
       if (config[ch].pin == 255) { // ch is free
         config[ch].pin = pin;
@@ -328,7 +338,6 @@ void Pwm::wr_ch_pair(uint8_t ch, uint32_t frequency, uint8_t bits) {
 
 void Pwm::wr_duty(uint8_t ch, uint32_t duty) {
   if (config[ch].duty != duty) {
-    ledcSetup(ch, config[ch].frequency, config[ch].resolution);
     ledcWrite(ch, duty);
     config[ch].duty = duty;
   }
