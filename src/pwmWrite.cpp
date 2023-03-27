@@ -1,5 +1,5 @@
 /*******************************************************************
-   ESP32 PWM, SERVO and TONE Library, Version 4.3.0
+   ESP32 PWM, SERVO and TONE Library, Version 4.3.1
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
@@ -94,7 +94,7 @@ void Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t inte
         write(pin, 127, frequency, 8);
         resume(ch);
       }
-      if (duration && ((ms - mem[ch].startMs) > duration) || (duration == 0)) {
+      if ((duration && ((ms - mem[ch].startMs) > duration)) || (duration == 0)) {
         mem[ch].startMs = ms;
         durDone = true;
         if (duration < 0xffff) pause(ch);
@@ -183,7 +183,7 @@ uint8_t Pwm::attached(uint8_t pin) {
     if (mem[ch].pin == pin) return ch;
     if (mem[ch].pin == 255) freeCh = true; // free channel(s) exist
   }
-  return (free) ? 253 : 255; // free : not attached
+  return (freeCh) ? 253 : 255; // freeCh : not attached
 }
 
 uint8_t Pwm::attachedPin(uint8_t ch) {
