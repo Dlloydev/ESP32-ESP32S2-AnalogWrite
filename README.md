@@ -28,9 +28,9 @@ pwm.writeServo(servoPin3, pos3, speed3, 0.8);  // move 90 deg, 180 deg/s, steep 
 
 ##### **Examples:**
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/360276061783595009)  [Servo Easing](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo-Easing.ino)   Controls three servos with different easing settings
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/360276061783595009)  [Servo Easing](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo-Easing/Servo-Easing.ino)   Controls three servos with different easing settings
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/355852275661848577)  [ESP32_C3_6_Servo_Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_6_Servo_Knob.ino)   Potentiometer control of 6 servos on an ESP32-C3
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/355852275661848577)  [ESP32_C3_6_Servo_Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_6_Servo_Knob/ESP32_C3_6_Servo_Knob.ino)   Potentiometer control of 6 servos on an ESP32-C3
 
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349232255258853970)  [16 PWM Fade](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Fade16/ESP32_Fade16.ino)   ESP32 fading 16 pairs of LEDs
 
