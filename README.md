@@ -1,4 +1,4 @@
-# ESP32 PWM, SERVO, TONE and NOTE Library
+# ESP32 PWM, Servo, Easing and Tone Library
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>
 
@@ -10,17 +10,27 @@ This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espre
 
 PWM can be inverted, phase shifted and asynchronously aligned with the timing of other pwm channels. 
 
-Servo read and write functions are included that work with *float* values for more precise control. An optionally inverted servo pwm feature allows using a simple NPN or N-Channel MOSFET driver for the servo's control signal.
+Servo Easing is fully integrated into the servo write and attach functions. Only 2 parameters give complete control over the speed and the easing characteristic of the servo. The method used for easing is a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1) ([reference](https://dhemery.github.io/DHE-Modules/technical/sigmoid/)). An optionally inverted servo pwm feature allows using a simple NPN or N-Channel MOSFET driver for the servo's control signal.
 
-Also included are non blocking Tone and Note functions that include *duration* and *interval* parameters.
+#### Servo Easing
 
-### Coming Soon...
+Just 2 easing parameters (speed and easing constant) for unlimited control ...
 
-####  Servo Easing (soft-start, soft-stop)
+```c++
+pwm.writeServo(servoPin1, pos1, speed1, 0.0);  // move 90 deg, 70 deg/s, linear
+pwm.writeServo(servoPin2, pos2, speed2, 0.6);  // mpve 180 deg, 140 deg/s, avg sigmoid
+pwm.writeServo(servoPin3, pos3, speed3, 0.8);  // move 90 deg, 180 deg/s, steep sigmoid
+```
 
-#### ![Easing_Linear](https://user-images.githubusercontent.com/63488701/212481603-d811b9ac-ffbe-4190-9dd9-47e191919a11.gif)
+#### ![ServoEasing](https://user-images.githubusercontent.com/63488701/227943891-87cb7555-fe56-4064-a83a-38b99ad58e1d.gif)
+
+
 
 ##### **Examples:**
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/360276061783595009)  [Servo Easing](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo-Easing.ino)   Controls three servos with different easing settings
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/355852275661848577)  [ESP32_C3_6_Servo_Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_6_Servo_Knob.ino)   Potentiometer control of 6 servos on an ESP32-C3
 
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349232255258853970)  [16 PWM Fade](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Fade16/ESP32_Fade16.ino)   ESP32 fading 16 pairs of LEDs
 
@@ -54,11 +64,11 @@ Also included are non blocking Tone and Note functions that include *duration* a
 
   
 
-| Board    | PWM Pins                          | PWM, Duty and Phase Channels | Frequency and Resolution Channels |
-| -------- | --------------------------------- | ---------------------------- | --------------------------------- |
-| ESP32    | 2, 4, 5, 12-19, 21-23, 27, 32, 33 | 16                           | 8                                 |
-| ESP32‑S2 | 1- 14, 21, 33-42, 45              | 8                            | 4                                 |
-| ESP32‑C3 | 0- 9, 18, 19                      | 6                            | 3                                 |
+| Board    | PWM Pins                             | PWM, Duty and Phase Channels | Frequency and Resolution Channels |
+| -------- | ------------------------------------ | ---------------------------- | --------------------------------- |
+| ESP32    | 2, 4, 5, 12-19, 21-23, 25-27, 32, 33 | 16                           | 8                                 |
+| ESP32‑S2 | 1- 14, 21, 33-42, 45                 | 8                            | 4                                 |
+| ESP32‑C3 | 0- 9, 18, 19                         | 6                            | 3                                 |
 
 ### PWM Channel Configuration
 
@@ -149,16 +159,20 @@ This process is automatic - the servo pin will be attached to the next free chan
 
 ```c++
 pwm.writeServo(pin, value)
+pwm.writeServo(pin, value, speed, ke)
 ```
 
 ##### Parameters
 
 - **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
 - **value**  This value is converted to the pwm duty. See above table for range and units *(float)
+- **speed**  This value has units degrees/second (float). For example, if `speed` is set to 100 deg/s and the servo position value is changed from 0 to 180 deg, then the servo will take 1.8 sec (1800 ms) to complete its travel. Its motion (response) will be determined by `ke`,
+- **ke**  Servo easing constant for a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1). A `ke` value of 0.0 represents a linear response. As you increase `ke`, this increases the steepness of a sigmoid response. When `ke` is 1.0, normal "instantaneous" servo response is enabled and the speed parameter is ignored.
 
 ##### Returns
 
-The pwm duty value *(uint32_t)*
+- If the servo easing constant `ke` is 1.0 (default) then the pwm duty value *(uint32_t)* is returned.
+- If  `ke` is less than 1.0, then a normalized float value (0.0 to 1.0) is returned. This represents the programmed servo position from start to stop as it moves over time. When the returned value reaches 0.5, this represents both 50% travel and 50% time duration, no matter what easing constant is set.
 
 
 
@@ -283,11 +297,12 @@ This function allows auto-attaching a pin to the first available channel if only
 **Syntax**
 
 ```c++
-attach(pin)                                  // auto attach to first open channel
-attach(pin, ch, invert)                      // attach to ch, optional invert 
-attach(pin, minUs, defUs, maxUs)             // auto attach incl servo timer values
-attach(pin, ch, minUs, defUs, maxUs)         // attach to ch with servo limits
-attach(pin, ch, minUs, defUs, maxUs, invert) // attach to ch, servo limits and invert
+attach(pin)                                     // auto attach to 1st free channel
+attach(pin, ch, invert)                         // attach to ch, optional invert 
+attach(pin, minUs, defUs, maxUs)                // auto attach incl servo timer values
+attach(pin, ch, minUs, defUs, maxUs)            // attach to ch with servo limits
+attach(pin, ch, minUs, defUs, maxUs, speed, ke) // as above with speed, easing constant
+attach(pin, ch, minUs, defUs, maxUs, speed, ke, invert) // as above with invert
 ```
 
 ##### Parameters
@@ -301,6 +316,10 @@ attach(pin, ch, minUs, defUs, maxUs, invert) // attach to ch, servo limits and i
 - **defUs**  Default timer width in microseconds *(uint16_t)*
 
 - **maxUs**  Maximum timer width in microseconds *(uint16_t)*
+
+- **speed**  This servo easing parameter has units degrees/second (float). For example, if `speed` is set to 100 deg/s and the servo position value is changed from 0 to 180 deg, then the servo will take 1.8 sec (1800 ms) to complete its travel. Its motion (response) will be determined by `ke`,
+
+- **ke**  Servo easing constant for a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1). A `ke` value of 0.0 represents a linear response. As you increase `ke`, this increases the steepness of a sigmoid response. When `ke` is 1.0, normal "instantaneous" servo response is enabled and the speed parameter is ignored.
 
 - **invert**  Inverts the PWM output. Allows using a simpler driver for higher voltage servo control. Only one NPN transistor or N-Channel MOSFET needed. No additional latency added as found with software inversion because the inverted pulse remains at the start of the refresh period rather than being flipped to the end of the refresh period  *(bool)*.
 
