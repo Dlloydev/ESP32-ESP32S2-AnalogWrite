@@ -26,7 +26,7 @@ class Pwm {
     const uint8_t widthMax = 14;
 
 #elif (defined(CONFIG_IDF_TARGET_ESP32C3))
-    const uint64_t pinMask = 0xC03FF; // pwm pins
+    const uint64_t pinMask = 0x3C07FF; // pwm pins
     const uint8_t chMax = 6;
     const uint8_t widthMax = 14;
 #endif
