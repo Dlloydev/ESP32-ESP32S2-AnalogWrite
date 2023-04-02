@@ -52,26 +52,25 @@ class Pwm {
       float ke;              // servo easing constant (0.0 linear, >0 and <1 sigmoid, 1.0 no easing)
       float te;              // servo easing normalized elapsed time (0.0 start - 1.0 stop)
       float ye;              // servo easing normalized position (0.0 start - 1.0 stop)
-      bool pms;              // servo easing previous ms value
     } mem_t;
 
     mem_t mem[16] = {  // channel data (see above)
-      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 },
-      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0 }
+      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0}
     };
 
     // pwm
@@ -80,7 +79,7 @@ class Pwm {
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
     uint8_t attach(uint8_t pin); // attach pin to next free channel
-    uint8_t attach(uint8_t pin, uint8_t ch, bool invert = false); // attach to specified ch with invert option 
+    uint8_t attach(uint8_t pin, uint8_t ch, bool invert = false); // attach to specified ch with invert option
 
     // servo
     uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
@@ -103,14 +102,14 @@ class Pwm {
     bool detached(uint8_t pin);        // check if pin is detached
     void pause(uint8_t ch = 255);      // pause timer on all or specified channel
     void resume(uint8_t ch = 255);     // resume timer on all or specified channel
-    void printConfig(void);            // print the status of all channels
+    void printDebug(void);             // print the status of all channels
     float setFrequency(uint8_t pin, uint32_t frequency = 1000);
     uint8_t setResolution(uint8_t pin, uint8_t resolution = 10);
 
   private:
     float duty2deg(uint8_t ch, uint32_t duty, float countPerUs);
     void ledc_attach_with_invert(uint8_t pin, uint8_t ch, bool invert = false);
-    void config_servo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, float speed = 100, float ke = 1.0);
+    void config_servo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, float speed = 0, float ke = 1.0);
     void wr_servo(uint8_t pin, float value, float speed, float ke);
     void wr_ch_pair(uint8_t ch, uint32_t frequency, uint8_t resolution);
     void wr_duty(uint8_t ch, uint32_t duty);

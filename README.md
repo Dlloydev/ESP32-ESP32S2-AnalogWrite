@@ -325,7 +325,7 @@ attach(pin, ch, minUs, defUs, maxUs, speed, ke, invert) // as above with invert
 
   [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
 
-  ![image](https://user-images.githubusercontent.com/63488701/209453287-4c1b0ba8-8e0e-42cd-9bef-55a7b2f1e8b4.png)
+  ![image](https://user-images.githubusercontent.com/63488701/229374262-460e878e-81f1-4398-8ea5-60b02026a4cf.png)
 
 ##### Returns
 
@@ -498,7 +498,7 @@ pwm.setResolution(pin, resolution)
 
 
 
-### printConfig()
+### printDebug()
 
 ##### Description
 
@@ -507,7 +507,7 @@ This function prints the available PWM pins to choose from and a formatted outpu
 **Syntax**
 
 ```c++
-pwm.printConfig()
+pwm.printDebug()
 ```
 
 ##### Parameters (optional)
@@ -518,9 +518,7 @@ pwm.printConfig()
 
 - serial report on serial monitor
 
-![image](https://user-images.githubusercontent.com/63488701/207452928-ca44457d-f807-439b-971e-927af4259e16.png)
-
-
+![![image](https://user-images.githubusercontent.com/63488701/229374511-de75b97d-f91f-44d0-b103-0ca858d16727.png)
 
 ```
 This Library is licensed under the MIT License

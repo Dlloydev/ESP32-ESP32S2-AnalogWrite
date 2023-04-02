@@ -1,5 +1,5 @@
 /*******************************************************************
-   ESP32 PWM, SERVO and TONE Library, Version 4.3.2
+   ESP32 PWM, SERVO and TONE Library, Version 4.3.3
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
@@ -47,36 +47,28 @@ float Pwm::write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolut
 
 float Pwm::writeServo(uint8_t pin, float value, float speed, float ke) {
   uint8_t ch = attached(pin);
-  bool ms = millis() >> 3 & 1;
-  if (ms && !mem[ch].pms) {
-    wr_servo(pin, value, speed, ke);
-  }
-  mem[ch].pms = ms;
+  wr_servo(pin, value, speed, ke);
   return (ke < 1.0) ? mem[ch].ye : value; // normalized easing duty (0.0 - 1.0)
 }
 
 float Pwm::writeServo(uint8_t pin, float value) {
   uint8_t ch = attached(pin);
-  bool ms = millis() >> 3 & 1;
-  if (ms && !mem[ch].pms) {
-    if (ch == 253) { // free channels exist
-      for (uint8_t c = 0; c < chMax; c++) {
-        if (mem[c].pin == 255 && ch == 253) { //first free ch
-          mem[c].pin = pin;
-          ch = c;
-          if (mem[ch].frequency < 40 || mem[ch].frequency > 900) mem[ch].frequency = 50;
-          if (mem[ch].resolution > widthMax) mem[ch].resolution = widthMax;
-          else if (mem[ch].resolution < 14 && widthMax == 20) mem[ch].resolution = 16;
-          else if (mem[ch].resolution < 14) mem[ch].resolution = 14;
-          ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
-          if (sync) pause(ch);
-          ledcAttachPin(pin, ch);
-        }
+  if (ch == 253) { // free channels exist
+    for (uint8_t c = 0; c < chMax; c++) {
+      if (mem[c].pin == 255 && ch == 253) { //first free ch
+        mem[c].pin = pin;
+        ch = c;
+        if (mem[ch].frequency < 40 || mem[ch].frequency > 900) mem[ch].frequency = 50;
+        if (mem[ch].resolution > widthMax) mem[ch].resolution = widthMax;
+        else if (mem[ch].resolution < 14 && widthMax == 20) mem[ch].resolution = 16;
+        else if (mem[ch].resolution < 14) mem[ch].resolution = 14;
+        ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
+        if (sync) pause(ch);
+        ledcAttachPin(pin, ch);
       }
     }
-    wr_servo(pin, value, mem[ch].speed, mem[ch].ke);
   }
-  mem[ch].pms = ms;
+  wr_servo(pin, value, mem[ch].speed, mem[ch].ke);
   return (mem[ch].ke < 1.0) ? mem[ch].ye : value; // normalized easing duty (0.0 - 1.0)
 }
 
@@ -248,43 +240,19 @@ uint8_t Pwm::setResolution(uint8_t pin, uint8_t resolution) {
   return mem[ch].resolution;
 }
 
-void Pwm::printConfig() {
-  Serial.print(F("PWM pins: "));
+void Pwm::printDebug() {
+  Serial.printf("PWM pins:\n");
   for (uint8_t i = 0; i < 48; i++) {
     if ((pinMask >> i) & 1) {
-      Serial.print(i); Serial.print(F(", "));
+      Serial.printf("%d,", i);
     }
   }
-  Serial.println();
-  Serial.println();
-  Serial.println(F("Ch  Pin   Hz     Res  Duty Phase  Servo"));
+  Serial.printf("\n\nCh  Pin     Hz Res  Duty  Servo          Speed   ke\n");
   for (uint8_t ch = 0; ch < chMax; ch++) {
-    if (ch < 10) Serial.print(F(" "));
-    Serial.print(ch);
-    Serial.print(F("  "));
-    if (mem[ch].pin < 100) Serial.print(F(" "));
-    if (mem[ch].pin < 10) Serial.print(F(" "));
-    Serial.print(mem[ch].pin); Serial.print(F("  "));
-    if (mem[ch].frequency < 10000) Serial.print(F(" "));
-    if (mem[ch].frequency < 1000) Serial.print(F(" "));
-    if (mem[ch].frequency < 100) Serial.print(F(" "));
-    if (mem[ch].frequency < 10) Serial.print(F(" "));
-    Serial.print(mem[ch].frequency, 1); Serial.print(F("  "));
-    if (mem[ch].resolution < 10) Serial.print(F(" "));
-    Serial.print(mem[ch].resolution); Serial.print(F("  "));
-    if (mem[ch].duty < 1000) Serial.print(F(" "));
-    if (mem[ch].duty < 100) Serial.print(F(" "));
-    if (mem[ch].duty < 10) Serial.print(F(" "));
-    Serial.print(mem[ch].duty); Serial.print(F("  "));
-    if (mem[ch].phase < 1000) Serial.print(F(" "));
-    if (mem[ch].phase < 100) Serial.print(F(" "));
-    if (mem[ch].phase < 10) Serial.print(F(" "));
-    Serial.print(mem[ch].phase); Serial.print(F("  "));
-    Serial.print(mem[ch].servoMinUs); Serial.print(F(" "));
-    Serial.print(mem[ch].servoDefUs); Serial.print(F(" "));
-    Serial.print(mem[ch].servoMaxUs);
-    Serial.println();
+    Serial.printf ("%2d  %3d  %5.0f  %2d  %4d  %d-%d-%d  %5.1f  %1.1f\n", ch, mem[ch].pin, mem[ch].frequency, mem[ch].resolution,
+                   mem[ch].duty, mem[ch].servoMinUs, mem[ch].servoDefUs, mem[ch].servoMaxUs, mem[ch].speed, mem[ch].ke);
   }
+  Serial.printf("\n");
 }
 
 /************************* private functions ***************************/
@@ -441,4 +409,6 @@ void Pwm::reset_fields(uint8_t ch) {
   mem[ch].servoMinUs = 544;
   mem[ch].servoDefUs = 1472;
   mem[ch].servoMaxUs = 2400;
+  mem[ch].speed = 0;
+  mem[ch].ke = 1.0;
 }
