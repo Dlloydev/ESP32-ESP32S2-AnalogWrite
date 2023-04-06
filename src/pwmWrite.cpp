@@ -1,5 +1,5 @@
 /*******************************************************************
-   ESP32 PWM, SERVO and TONE Library, Version 4.3.3
+   ESP32 PWM, SERVO and TONE Library, Version 4.3.4
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    This Library is licensed under the MIT License
  *******************************************************************/
@@ -136,35 +136,68 @@ uint8_t Pwm::attach(uint8_t pin) {
   return ch;
 }
 
-uint8_t Pwm::attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs) {
-  uint8_t ch = attach(pin);
-  if (ch < chMax) config_servo(ch, minUs, defUs, maxUs);
-  return ch;
-}
-
-uint8_t Pwm::attach(uint8_t pin, uint8_t ch, bool invert) {
-  if (mem[ch].pin == 255) { // channel is free
-    mem[ch].pin = pin;
+uint8_t Pwm::attach(uint8_t pin, uint8_t ch) {
+  if (mem[ch].pin == 255) {
+     mem[ch].pin = pin;
     ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
     if (sync) pause(ch);
-    ledc_attach_with_invert(pin, ch, invert);
+    ledcAttachPin(pin, ch);
   }
   return ch;
 }
 
-uint8_t Pwm::attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs) {
-  config_servo(ch, minUs, defUs, maxUs);
+uint8_t Pwm::attachInvert(uint8_t pin) {
+  uint8_t ch = attached(pin);
+  if (ch == 253) { // free channels exist
+    for (uint8_t c = 0; c < chMax; c++) {
+      if (mem[c].pin == 255 && ch == 253) { //first free ch
+        mem[c].pin = pin;
+        ch = c;
+        ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
+        if (sync) pause(ch);
+        ledc_attach_with_invert(pin, ch);
+        return ch;
+      }
+    }
+  }
+  return ch;
+}
+
+uint8_t Pwm::attachInvert(uint8_t pin, uint8_t ch) {
+  if (mem[ch].pin == 255) {
+     mem[ch].pin = pin;
+    ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
+    if (sync) pause(ch);
+    ledc_attach_with_invert(pin, ch);
+  }
+  return ch;
+}
+
+uint8_t Pwm::attach(uint8_t pin, uint16_t minUs, uint16_t maxUs) {
+  uint8_t ch = attach(pin);
+  if (ch < chMax) config_servo(ch, minUs, maxUs);
+  return ch;
+}
+
+uint8_t Pwm::attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs) {
+  config_servo(ch, minUs, maxUs);
   return attach(pin, ch);
 }
 
-uint8_t Pwm::attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs,  float speed, float ke) {
-  config_servo(ch, minUs, defUs, maxUs, speed, ke);
+uint8_t Pwm::attach(uint8_t pin, uint16_t minUs, uint16_t maxUs, float speed, float ke) {
+  uint8_t ch = attach(pin);
+  if (ch < chMax) config_servo(ch, minUs, maxUs, speed, ke);
+  return ch;
+}
+
+uint8_t Pwm::attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs,  float speed, float ke) {
+  config_servo(ch, minUs, maxUs, speed, ke);
   return attach(pin, ch);
 }
 
-uint8_t Pwm::attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, float speed, float ke, bool invert) {
-  config_servo(ch, minUs, defUs, maxUs, speed, ke);
-  uint8_t chan = attach(pin, ch, invert);
+uint8_t Pwm::attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke, bool invert) {
+  config_servo(ch, minUs, maxUs, speed, ke);
+  uint8_t chan = attachInvert(pin, ch);
   return chan;
 }
 
@@ -247,17 +280,17 @@ void Pwm::printDebug() {
       Serial.printf("%d,", i);
     }
   }
-  Serial.printf("\n\nCh  Pin     Hz Res  Duty  Servo          Speed   ke\n");
+  Serial.printf("\n\nCh  Pin     Hz Res  Duty  Servo     Speed   ke\n");
   for (uint8_t ch = 0; ch < chMax; ch++) {
-    Serial.printf ("%2d  %3d  %5.0f  %2d  %4d  %d-%d-%d  %5.1f  %1.1f\n", ch, mem[ch].pin, mem[ch].frequency, mem[ch].resolution,
-                   mem[ch].duty, mem[ch].servoMinUs, mem[ch].servoDefUs, mem[ch].servoMaxUs, mem[ch].speed, mem[ch].ke);
+    Serial.printf ("%2d  %3d  %5.0f  %2d  %4d  %d-%d  %5.1f  %1.1f\n", ch, mem[ch].pin, mem[ch].frequency, mem[ch].resolution,
+                   mem[ch].duty, mem[ch].servoMinUs, mem[ch].servoMaxUs, mem[ch].speed, mem[ch].ke);
   }
   Serial.printf("\n");
 }
 
 /************************* private functions ***************************/
 
-void Pwm::ledc_attach_with_invert(uint8_t pin, uint8_t ch, bool invert) {
+void Pwm::ledc_attach_with_invert(uint8_t pin, uint8_t ch) {
   if (ch >= chMax) return;
   uint32_t ch_config = ch;
   if (ch > 7) ch_config = ch - 8;
@@ -270,7 +303,7 @@ void Pwm::ledc_attach_with_invert(uint8_t pin, uint8_t ch, bool invert) {
     .duty           = 0,
     .hpoint         = 0,
     .flags = {
-      .output_invert = (uint8_t)invert
+      .output_invert = 1
     }
   };
   ledc_channel_config(&ledc_channel);
@@ -280,13 +313,10 @@ float Pwm::duty2deg(uint8_t ch, uint32_t duty, float countPerUs) {
   return ((duty / countPerUs - mem[ch].servoMinUs) / (mem[ch].servoMaxUs - mem[ch].servoMinUs)) * 180.0;
 }
 
-void Pwm::config_servo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, float speed, float ke) {
+void Pwm::config_servo(uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke) {
   if (minUs < 500) mem[ch].servoMinUs = 500;
   else if (minUs > 2500) mem[ch].servoMinUs = 2500;
   else mem[ch].servoMinUs = minUs;
-  if (defUs < 500) mem[ch].servoDefUs = 500;
-  else if (defUs > 2500) mem[ch].servoDefUs = 2500;
-  else mem[ch].servoDefUs = defUs;
   if (maxUs < 500) mem[ch].servoMaxUs = 500;
   else if (maxUs > 2500) mem[ch].servoMaxUs = 2500;
   else mem[ch].servoMaxUs = maxUs;
@@ -407,7 +437,6 @@ void Pwm::reset_fields(uint8_t ch) {
   mem[ch].resolution = 8;
   mem[ch].phase = 0;
   mem[ch].servoMinUs = 544;
-  mem[ch].servoDefUs = 1472;
   mem[ch].servoMaxUs = 2400;
   mem[ch].speed = 0;
   mem[ch].ke = 1.0;

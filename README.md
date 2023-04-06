@@ -28,7 +28,9 @@ pwm.writeServo(servoPin3, pos3, speed3, 0.8);  // move 90 deg, 180 deg/s, steep 
 
 ##### **Examples:**
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/360276061783595009)  [Servo Easing](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo-Easing/Servo-Easing.ino)   Controls three servos with different easing settings
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/360276061783595009)  [Servo_Easing_Time](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Time/Servo_Easing_Time.ino)   3 servos with different easing constants and timed position control
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/361237697368753153)  [Servo_Easing_Position](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Position/Servo_Easing_Position.ino)   3 servos with different easing constants and position feedback control
 
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/355852275661848577)  [ESP32_C3_6_Servo_Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_6_Servo_Knob/ESP32_C3_6_Servo_Knob.ino)   Potentiometer control of 6 servos on an ESP32-C3
 
@@ -52,8 +54,6 @@ pwm.writeServo(servoPin3, pos3, speed3, 0.8);  // move 90 deg, 180 deg/s, steep 
 
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349322326995632722)  [2 Sync 300kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Sync2_300kHz/ESP32_Sync2_300kHz.ino)   2 synchronized PWM outputs using the same timer (channel pair)
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349319723103552084)  [8 Sync 20kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Sync8_20kHz/ESP32_Sync8_20kHz.ino)   ESP32 8 Synchronized PWM Outputs (20kHz, 10-bit)
-
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349336125753524820)  [ESP32_3-Phase 40kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_3phase_40kHz/ESP32_3phase_40kHz.ino)   ESP32 3 Phase PWM Outputs (40kHz, 10-bit)
 
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334722465700774482)  [ESP32_3-Phase 10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_3phase_10kHz/ESP32_3phase_10kHz.ino)   ESP32 3 Phase PWM Outputs (10kHz, 10-bit)
@@ -64,11 +64,11 @@ pwm.writeServo(servoPin3, pos3, speed3, 0.8);  // move 90 deg, 180 deg/s, steep 
 
   
 
-| Board    | PWM Pins                             | PWM, Duty and Phase Channels | Frequency and Resolution Channels |
-| -------- | ------------------------------------ | ---------------------------- | --------------------------------- |
-| ESP32    | 2, 4, 5, 12-19, 21-23, 25-27, 32, 33 | 16                           | 8                                 |
-| ESP32‑S2 | 1- 14, 21, 33-42, 45                 | 8                            | 4                                 |
-| ESP32‑C3 | 0- 10, 18-21                         | 6                            | 3                                 |
+| Board       | PWM Pins                  | PWM, Duty and Phase Channels | Frequency and Resolution Channels |
+| ----------- | ------------------------- | ---------------------------- | --------------------------------- |
+| ESP32       | 0-19, 21-23, 25-27, 32-39 | 16                           | 8                                 |
+| ESP32‑S2/S3 | 0-21, 26, 33-45           | 8                            | 4                                 |
+| ESP32‑C3    | 0- 10, 18-21              | 6                            | 3                                 |
 
 ### PWM Channel Configuration
 
@@ -153,7 +153,7 @@ The frequency and resolution values are shared by each channel pair. When any ch
 
 **Attaching to free Channel**
 
-This process is automatic - the servo pin will be attached to the next free channel. If you need to assign the servo pin(s) to specific channels or to set the minimum, default or maximum microsecond values, then call the `attach()`method first.
+This process is automatic - the servo pin will be attached to the next free channel. If you need to assign the servo pin(s) to specific channels or to set the minimum or maximum microsecond values, then call the `attach()`method first.
 
 ##### Syntax
 
@@ -292,28 +292,27 @@ readMicroseconds(pin)
 
 ##### Description
 
-This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. Additionally, there are parameters available for setting the servo timer values for minimum, default and maximum microseconds. 
+This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. Additionally, there are parameters available for setting the servo timer values for minimum and maximum microseconds. 
 
 **Syntax**
 
 ```c++
-attach(pin)                                     // auto attach to 1st free channel
-attach(pin, ch, invert)                         // attach to ch, optional invert 
-attach(pin, minUs, defUs, maxUs)                // auto attach incl servo timer values
-attach(pin, ch, minUs, defUs, maxUs)            // attach to ch with servo limits
-attach(pin, ch, minUs, defUs, maxUs, speed, ke) // as above with speed, easing constant
-attach(pin, ch, minUs, defUs, maxUs, speed, ke, invert) // as above with invert
+attach(pin)                                       // auto attach to 1st free channel
+attach(pin, ch)                                   // attach to specified channel 
+attach(pin, minUs, maxUs)                         // auto attach to free ch with servo limits
+attach(pin, ch, minUs, maxUs)                     // attach to specified ch with servo limits
+attach(pin, minUs, maxUs, speed, ke)              // attach to free ch with speed and easing constant
+attach(pin, ch, minUs, maxUs, speed, ke)          // as above but attaches to specified channel
+attach(pin, ch, minUs, maxUs, speed, ke, invert)  // as above with invert  
 ```
 
 ##### Parameters
 
 - **pin**  The pin number *(uint8_t)*
 
-- **channel**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
+- **ch**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
 
-- **minUs**  Minimum timer width in microseconds *(uint16_t)*
-
-- **defUs**  Default timer width in microseconds *(uint16_t)*
+- **minUs**  Minimum timer width in microseconds *(uint16_t)
 
 - **maxUs**  Maximum timer width in microseconds *(uint16_t)*
 
@@ -326,6 +325,33 @@ attach(pin, ch, minUs, defUs, maxUs, speed, ke, invert) // as above with invert
   [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
 
   ![image](https://user-images.githubusercontent.com/63488701/229374262-460e878e-81f1-4398-8ea5-60b02026a4cf.png)
+
+##### Returns
+
+- If not a valid pin, 254 *(uint8_t)*
+- free channels exist, 253 *(uint8_t)*
+- If attached, the channel number (0-15) *(uint8_t)*
+- If not attached, 255 *(uint8_t)*
+
+
+
+### attachInvert()
+
+##### Description
+
+This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. The pwm output will be inverted. The duty value represents the low period.
+
+**Syntax**
+
+```c++
+attachInvert(pin);      // attach pin to next free channel with inverted pwm
+attachInvert(pin, ch);  // attach to specified ch with inverted pwm
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)*
+- **ch**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
 
 ##### Returns
 
@@ -518,7 +544,7 @@ pwm.printDebug()
 
 - serial report on serial monitor
 
-![![image](https://user-images.githubusercontent.com/63488701/229374511-de75b97d-f91f-44d0-b103-0ca858d16727.png)
+![image](https://user-images.githubusercontent.com/63488701/229374511-de75b97d-f91f-44d0-b103-0ca858d16727.png)
 
 ```
 This Library is licensed under the MIT License

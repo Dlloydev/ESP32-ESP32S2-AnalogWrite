@@ -16,12 +16,12 @@ class Pwm {
     Pwm();
 
 #if (defined(CONFIG_IDF_TARGET_ESP32))
-    const uint64_t pinMask = 0x30EEFF034; // pwm pins
+    const uint64_t pinMask = 0xFF0EEFFFFF; // pwm pins
     const uint8_t chMax = 16;
     const uint8_t widthMax = 20;
 
 #elif (defined(CONFIG_IDF_TARGET_ESP32S2) || (CONFIG_IDF_TARGET_ESP32S3))
-    const uint64_t pinMask = 0x27FE00207FFE; // pwm pins
+    const uint64_t pinMask = 0x3FFE043FFFFF; // pwm pins
     const uint8_t chMax = 8;
     const uint8_t widthMax = 14;
 
@@ -40,7 +40,6 @@ class Pwm {
       uint8_t timer;         // ledc timer (0-3)
       uint32_t phase;        // ledc hpoint value for shifting pulse start
       uint16_t servoMinUs;   // minimum servo pulse in μs (544)
-      uint16_t servoDefUs;   // default servo pulse in μs (1472)
       uint16_t servoMaxUs;   // maximum servo pulse in μs (2400)
       uint32_t startMs;      // servo easing or tone start ms
       uint32_t stopMs;       // servo easing stop ms value
@@ -55,22 +54,22 @@ class Pwm {
     } mem_t;
 
     mem_t mem[16] = {  // channel data (see above)
-      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 0, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 0, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 0, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 0, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 1, 0, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 1, 1, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 1, 2, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
-      {255, 1000, 0, 8, 1, 3, 0, 544, 1472, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0}
+      {255, 1000, 0, 8, 0, 0, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 0, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 1, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 1, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 2, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 2, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 3, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 0, 3, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 0, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 0, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 1, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 1, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 2, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 2, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 3, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0},
+      {255, 1000, 0, 8, 1, 3, 0, 544, 2400, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0}
     };
 
     // pwm
@@ -78,14 +77,19 @@ class Pwm {
     float write(uint8_t pin, uint32_t duty, uint32_t frequency);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
+    
+    // pwm
     uint8_t attach(uint8_t pin); // attach pin to next free channel
-    uint8_t attach(uint8_t pin, uint8_t ch, bool invert = false); // attach to specified ch with invert option
+    uint8_t attach(uint8_t pin, uint8_t ch); // attach to specified ch
+    uint8_t attachInvert(uint8_t pin); // attach pin to next free channel with inverted pwm
+    uint8_t attachInvert(uint8_t pin, uint8_t ch); // attach to specified ch with inverted pwm
 
     // servo
-    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
-    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs);
-    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, float speed, float ke);
-    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, float speed, float ke, bool invert);
+    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t maxUs);
+    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs);
+    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t maxUs, float speed, float ke);
+    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke);
+    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke, bool invert);
     float read(uint8_t pin);
     float readMicroseconds(uint8_t pin);
     float writeServo(uint8_t pin, float value);
@@ -108,8 +112,8 @@ class Pwm {
 
   private:
     float duty2deg(uint8_t ch, uint32_t duty, float countPerUs);
-    void ledc_attach_with_invert(uint8_t pin, uint8_t ch, bool invert = false);
-    void config_servo(uint8_t ch, uint16_t minUs, uint16_t defUs, uint16_t maxUs, float speed = 0, float ke = 1.0);
+    void ledc_attach_with_invert(uint8_t pin, uint8_t ch);
+    void config_servo(uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed = 0, float ke = 1.0);
     void wr_servo(uint8_t pin, float value, float speed, float ke);
     void wr_ch_pair(uint8_t ch, uint32_t frequency, uint8_t resolution);
     void wr_duty(uint8_t ch, uint32_t duty);
