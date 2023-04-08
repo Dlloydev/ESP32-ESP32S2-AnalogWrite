@@ -4,7 +4,7 @@
   by dlloydev, December 2022.
 
   This demonstrates using an inverted PWM output for servo control.
-  It allows using a only one transistor to drive a higher voltage Servo control signal.
+  It allows using only one transistor to drive a higher voltage Servo control signal.
   No additional latency is added like found with software inversion, because the inverted
   pulse remains at the start of the refresh period rather than being flipped to the end.
 */
@@ -14,10 +14,9 @@
 Pwm pwm = Pwm();
 
 const int servoPin = 5, ch = 0;
-bool invert = true;
 
 void setup() {
-pwm.attach(servoPin, ch, invert);
+pwm.attach(servoPin, ch, 544, 2400, 0, 1, true);
 }
 
 void loop() {
