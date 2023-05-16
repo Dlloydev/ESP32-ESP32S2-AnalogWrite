@@ -24,13 +24,29 @@ pwm.writeServo(servoPin3, pos3, speed3, 0.8);  // move 90 deg, 180 deg/s, steep 
 
 #### ![ServoEasing](https://user-images.githubusercontent.com/63488701/227943891-87cb7555-fe56-4064-a83a-38b99ad58e1d.gif)
 
+##### Speed Control:
 
+The maximum speed in degrees/sec is derived from the servo's datasheet. For this [SG90 Micro Servo](https://robojax.com/learn/arduino/robojax-servo-sg90_datasheet.pdf) we have  Operating speed: 0.1 s/60 degree. In this case, the maximum value for the speed parameter is 600 deg/sec. When a new servo position value is set, the operating time in milliseconds = degrees to move / speed * 1000.
+
+##### Easing Control:
+
+The easing constant ke controls how the servo moves to the set position by varying the speed. Its effect from linear (ke = 0.0) to maximum steep curve (ke = 0.99).
+
+##### Position Feedback: 
+
+The calculated position of the servo is the returned value "ye" of the writeServo function. The easing position ye is normalized (0.0-1.0) but can slightly over/undershoot this range. The servo has reached its programmed position when ye = 1.0 if the new setting is larger than previous and also when ye = 0.0 if the new position setting is smaller than previous.
+
+##### servoWrite:
+
+When a new servo position is programmed, the servoWrite function is repeatedly called with the same parameters until the servo completes its motion (returned value ye = 1.0 or 0.0). The servo responds on its own according to ke and speed. Stepping of position is not required.
 
 ##### **Examples:**
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/360276061783595009)  [Servo_Easing_Time](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Time/Servo_Easing_Time.ino)   3 servos with different easing constants and timed position control
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/364791981216008193)  [Servo_Easing_Interrupt](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_Interrupt_Servo_Ease_Speed/ESP32_C3_Interrupt_Servo_Ease_Speed.ino)   Servo Easing with feedback based on position and Interrupt controlled sampling
 
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/361237697368753153)  [Servo_Easing_Position](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Position/Servo_Easing_Position.ino)   3 servos with different easing constants and position feedback control
+
+- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/360276061783595009)  [Servo_Easing_Time](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Time/Servo_Easing_Time.ino)   3 servos with different easing constants and timed position control
 
 - [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/355852275661848577)  [ESP32_C3_6_Servo_Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_6_Servo_Knob/ESP32_C3_6_Servo_Knob.ino)   Potentiometer control of 6 servos on an ESP32-C3
 
@@ -324,7 +340,7 @@ attach(pin, ch, minUs, maxUs, speed, ke, invert)  // as above with invert
 
   [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
 
-  ![image](https://user-images.githubusercontent.com/63488701/229374262-460e878e-81f1-4398-8ea5-60b02026a4cf.png)
+  ![image](https://user-images.githubusercontent.com/63488701/236273265-0cdf2dca-78b8-4afd-8924-1f263c7cde80.png)
 
 ##### Returns
 
