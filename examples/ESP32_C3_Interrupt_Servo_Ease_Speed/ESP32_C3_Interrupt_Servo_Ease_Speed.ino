@@ -35,7 +35,7 @@
   The delay of 50 ms was added to control the plotter sample period.
 */
 
-#include "pwmWrite.h"
+#include <pwmWrite.h>
 
 const int servoPin = 8;
 volatile float ke = 0.0;      // easing curve
