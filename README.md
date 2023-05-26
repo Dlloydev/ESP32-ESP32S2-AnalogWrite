@@ -12,6 +12,10 @@ PWM can be inverted, phase shifted and asynchronously aligned with the timing of
 
 Servo Easing is fully integrated into the servo write and attach functions. Only 2 parameters give complete control over the speed and the easing characteristic of the servo. The method used for easing is a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1) ([reference](https://dhemery.github.io/DHE-Modules/technical/sigmoid/)). An optionally inverted servo pwm feature allows using a simple NPN or N-Channel MOSFET driver for the servo's control signal.
 
+### Arduino core for the ESP32, ESP32-S2, ESP32-S3 and ESP32-C3
+
+Recommend using the [latest release](https://github.com/espressif/arduino-esp32), however this library works with release 2.0.7 or newer.
+
 #### Servo Easing
 
 Just 2 easing parameters (speed and easing constant) for unlimited control ...
