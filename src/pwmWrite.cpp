@@ -48,7 +48,7 @@ float Pwm::write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolut
 float Pwm::writeServo(uint8_t pin, float value, float speed, float ke) {
   uint8_t ch = attached(pin);
   wr_servo(pin, value, speed, ke);
-  return (ke < 1.0) ? mem[ch].ye : value; // normalized easing duty (0.0 - 1.0)
+  return mem[ch].ye; // normalized easing position (0.0 - 1.0)
 }
 
 float Pwm::writeServo(uint8_t pin, float value) {
@@ -69,7 +69,7 @@ float Pwm::writeServo(uint8_t pin, float value) {
     }
   }
   wr_servo(pin, value, mem[ch].speed, mem[ch].ke);
-  return (mem[ch].ke < 1.0) ? mem[ch].ye : value; // normalized easing duty (0.0 - 1.0)
+  return mem[ch].ye; // normalized easing position (0.0 - 1.0)
 }
 
 void Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t interval) {
@@ -77,7 +77,11 @@ void Pwm::tone(uint8_t pin, uint32_t frequency, uint16_t duration, uint16_t inte
   if (ch < chMax) {
     uint32_t ms = millis();
     static bool durDone = false;
+#if defined(CONFIG_IDF_TARGET_ESP32C3)
+    if (frequency < 153) frequency = 153;
+#else
     if (frequency < 4) frequency = 4;
+#endif
     if (!durDone) {
       if (frequency != mem[ch].frequency && (ms - mem[ch].startMs > interval)) {
         mem[ch].startMs = ms;
@@ -138,7 +142,7 @@ uint8_t Pwm::attach(uint8_t pin) {
 
 uint8_t Pwm::attach(uint8_t pin, uint8_t ch) {
   if (mem[ch].pin == 255) {
-     mem[ch].pin = pin;
+    mem[ch].pin = pin;
     ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
     if (sync) pause(ch);
     ledcAttachPin(pin, ch);
@@ -165,7 +169,7 @@ uint8_t Pwm::attachInvert(uint8_t pin) {
 
 uint8_t Pwm::attachInvert(uint8_t pin, uint8_t ch) {
   if (mem[ch].pin == 255) {
-     mem[ch].pin = pin;
+    mem[ch].pin = pin;
     ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
     if (sync) pause(ch);
     ledc_attach_with_invert(pin, ch);
@@ -380,10 +384,14 @@ void Pwm::wr_servo(uint8_t pin, float value, float speed, float ke) {
       if (duty > mem[ch].startDuty) {
         mem[ch].te = (float)(now - mem[ch].startMs) / mem[ch].deltaMs;
         mem[ch].ye = (-(ke + 1.0f) * (2.0f * mem[ch].te - 1.0f) / (2.0f * (-4.0f * ke * fabsf(mem[ch].te - 0.5f) + ke - 1.0f))) + 0.5f;
+        if (isnan(mem[ch].ye) || mem[ch].ye < 0.0) mem[ch].ye = 0.0;
+        else if (mem[ch].ye > 1.0) mem[ch].ye = 1.0;
         easeDuty = mem[ch].startDuty + (mem[ch].deltaDuty * mem[ch].ye);
       } else {
         mem[ch].te = 1 - ((float)(now - mem[ch].startMs) / mem[ch].deltaMs);
         mem[ch].ye = 1 - (((ke + 1.0f) * (2.0f * mem[ch].te - 1.0f) / (2.0f * (-4.0f * ke * fabsf(mem[ch].te - 0.5f) + ke - 1.0f))) + 0.5f);
+        if (isnan(mem[ch].ye) || mem[ch].ye < 0.0) mem[ch].ye = 0.0;
+        else if (mem[ch].ye > 1.0) mem[ch].ye = 1.0;
         easeDuty = duty + (mem[ch].deltaDuty * mem[ch].ye);
       }
       ledcWrite(ch, easeDuty);
