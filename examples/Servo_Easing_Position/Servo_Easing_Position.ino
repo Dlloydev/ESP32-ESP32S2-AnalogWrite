@@ -9,7 +9,7 @@
   ⚪ The purple servo moves from 45 to 135 deg at 180 deg/s with steep sigmoid motion.
 */
 
-#include <pwmWrite.h>
+#include <Servo.h>
 
 const int servoPin1 = 18;
 const int servoPin2 = 19;
@@ -34,7 +34,7 @@ uint8_t pos3 = 135;
 
 float ye1, ye2, ye3;
 
-Pwm pwm = Pwm();
+Servo myservo = Servo();
 
 void setup() {
   Serial.begin(115200);
@@ -51,9 +51,9 @@ void loop() {
   if (ye3 <= 0.0 ) pos3 = 135;
   else if (ye3 >= 1.0) pos3 = 45;
 
-  ye1 = pwm.writeServo(servoPin1, pos1, speed1, ke1);
-  ye2 = pwm.writeServo(servoPin2, pos2, speed2, ke2);
-  ye3 = pwm.writeServo(servoPin3, pos3, speed3, ke3);
+  ye1 = myservo.write(servoPin1, pos1, speed1, ke1);
+  ye2 = myservo.write(servoPin2, pos2, speed2, ke2);
+  ye3 = myservo.write(servoPin3, pos3, speed3, ke3);
   Serial.print(ye1);
   Serial.print(",");
   Serial.print(ye2);

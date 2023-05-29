@@ -4,9 +4,9 @@
   by dlloydev, December 2022.
 */
 
-#include <pwmWrite.h>
+#include <Servo.h>
 
-Pwm pwm = Pwm();
+Servo myservo = Servo();
 
 const int potPin = 4;
 const int servoPin = 5;
@@ -18,6 +18,6 @@ void setup() {
 void loop() {
   val = analogRead(potPin);         // read the pot value (0-4095)
   val = map(val, 0, 4095, 0, 180);  // scale the pot reading to 0-180 (degrees)
-  pwm.writeServo(servoPin, val);    // set the servo position (degrees)
+  myservo.write(servoPin, val);    // set the servo position (degrees)
   delay(15);
 }
