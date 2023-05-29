@@ -4,7 +4,9 @@
 
 Pwm	KEYWORD1
 pwm	KEYWORD1
-pinStatus_t	KEYWORD1
+Servo	KEYWORD1
+myservo	KEYWORD1
+mem_t	KEYWORD1
 
 #######################################
 # Methods and Functions
@@ -12,19 +14,27 @@ pinStatus_t	KEYWORD1
 
 write	KEYWORD2
 writeServo	KEYWORD2
+writePwm	KEYWORD2
+writeMicroseconds	KEYWORD2
 read	KEYWORD2
+readMicroseconds	KEYWORD2
 tone	KEYWORD2
 note	KEYWORD2
 readMicroseconds	KEYWORD2
 attach	KEYWORD2
+attachInvert	KEYWORD2
+attachServo	KEYWORD2
+attachPwm	KEYWORD2
 attached	KEYWORD2
 attachedPin	KEYWORD2
+firstFreeCh	KEYWORD2
 detach	KEYWORD2
+detached	KEYWORD2
 pause	KEYWORD2
 resume	KEYWORD2
 setFrequency	KEYWORD2
 setResolution	KEYWORD2
-printConfig	KEYWORD2
+printDebug	KEYWORD2
 
 #######################################
 # Constants

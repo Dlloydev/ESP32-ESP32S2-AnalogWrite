@@ -4,9 +4,9 @@
   by dlloydev, December 2022.
 */
 
-#include <pwmWrite.h>
+#include <Servo.h>
 
-Pwm pwm = Pwm();
+Servo myservo = Servo();
 
 const int speedPin1 = 32, speedPin2 = 12;
 const int servoPin1 = 14, servoPin2 = 13;
@@ -20,9 +20,9 @@ void loop() {
   speed1 = (analogRead(speedPin1)) / 4095.0;  // 0-100% speed
   speed2 = (analogRead(speedPin2)) / 2047.0;  // 0-200% speed
 
-  pwm.writeServo(servoPin1, pos1);
+  myservo.write(servoPin1, pos1);
   delay(5); // for simulator
-  pwm.writeServo(servoPin2, pos2);
+  myservo.write(servoPin2, pos2);
   delay(5); // for simulator
 
   if (pos1 < 0) pos1 = 0;

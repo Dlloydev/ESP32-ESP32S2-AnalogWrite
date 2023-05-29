@@ -2,95 +2,141 @@
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ESP32%20ESP32S2%20AnalogWrite.svg?)](https://www.ardu-badge.com/ESP32%20ESP32S2%20AnalogWrite)  <a href="https://registry.platformio.org/libraries/dlloydev/ESP32 ESP32S2 AnalogWrite"><img src="https://badges.registry.platformio.org/packages/dlloydev/library/ESP32 ESP32S2 AnalogWrite.svg" alt="PlatformIO Registry" /></a>
 
-![image](https://user-images.githubusercontent.com/63488701/207152696-7162de8e-bea7-4353-9ae3-682bc40c4e68.png)
+<details>
+
+<summary><h3>Comparison to Servo Library for Arduino</h3></summary>
+
+
+- Both libraries use the same header filename: `Servo.h`
+- Methods in both libraries have identical names.
+- With the Servo Library for Arduino, each servo is instantiated, whereas only one instance is used with the ESP32 ESP32S2 AnalogWrite library to control up to 16 servos. Therefore, the `write()` method in the ESP32 ESP32S2 AnalogWrite library has a pin parameter to select the attached servo.
+
+#### Comparison Table
+
+- Superscript values represent the number of available overload functions .
+- With the ESP32 ESP32S2 AnalogWrite library, both `Servo.h` and `pwmWrite.h` have access to all methods. Choose **one** header only that best suits your application. Note that `Servo.h`uses a Servo class that translates method names to match the Servo Library for Arduino. Each header gives full access to the libraries features.
+
+| Library: | [Servo Library for Arduino](https://github.com/arduino-libraries/Servo) | [ESP32 ESP32S2 AnalogWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite) | [ESP32 ESP32S2 AnalogWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite) |
+| -------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Header   | Servo.h                                                      | Servo.h                                                      | pwmWrite.h                                                   |
+| Includes | ServoTimers.h                                                | pwmWrite.h                                                   | driver/ledc.h                                                |
+| Methods  | attach()<sup> 2</sup>                                        | attach()<sup> 10</sup>                                       | attachServo()<sup> 10</sup>                                  |
+|          | write()                                                      | write()<sup> 2</sup>                                         | writeServo()<sup> 2</sup>                                    |
+|          | writeMicroseconds()                                          | writeMicroseconds()                                          | n/a                                                          |
+|          | read()                                                       | read()                                                       | read()                                                       |
+|          | attached()                                                   | attached()                                                   | attached()                                                   |
+|          | detach()                                                     | detach()                                                     | detach()                                                     |
+|          | attachedPin()                                                | attachedPin()                                                | attachedPin()                                                |
+|          | readMicroseconds()                                           | readMicroseconds()                                           | readMicroseconds()                                           |
+|          |                                                              | writePwm()<sup> 4</sup>                                      | write()<sup> 4</sup>                                         |
+|          |                                                              | detached()                                                   | detached()                                                   |
+|          |                                                              | attachInvert()                                               | attachInvert()                                               |
+|          |                                                              | firstFreeCh()                                                | firstFreeCh()                                                |
+|          |                                                              | pause()                                                      | pause()                                                      |
+|          |                                                              | resume()                                                     | resume()                                                     |
+|          |                                                              | printDebug()                                                 | printDebug()                                                 |
+|          |                                                              | setFrequency()                                               | setFrequency()                                               |
+|          |                                                              | setResolution()                                              | setResolution()                                              |
+|          |                                                              | tone()                                                       | tone()                                                       |
+|          |                                                              | note()                                                       | note()                                                       |
+
+</details>
+
+![image](https://github.com/Dlloydev/jtag2updi/assets/63488701/8217e847-b427-4b2b-9f39-f941578af63d)
 
 ### Description
 
-This library wraps the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 16 PWM channels.  Includes smart GPIO pin management where any pin will not be automatically configured if it has been previously accessed by other code. Some advanced control features are auto or manual pin to channel attaching and timer pause and resume methods.
+This library uses the ESP32 Arduino framework's [ledc](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.c) functions and provides up to 16 channels for servos, pwm, leds, buzzers etc. Includes smart GPIO pin management where any pin will not be automatically attached if previously accessed by other code. Includes advanced control methods like timer pause/resume, phase delay using hpoint, inverted pwm and tunable servo easing.
 
-PWM can be inverted, phase shifted and asynchronously aligned with the timing of other pwm channels. 
+Servo Easing is fully integrated into the servo write and attach functions. Only 2 parameters give complete control over the speed and the easing characteristic of the servo. The method used for easing is a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1) ([reference](https://dhemery.github.io/DHE-Modules/technical/sigmoid/)).
 
-Servo Easing is fully integrated into the servo write and attach functions. Only 2 parameters give complete control over the speed and the easing characteristic of the servo. The method used for easing is a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1) ([reference](https://dhemery.github.io/DHE-Modules/technical/sigmoid/)). An optionally inverted servo pwm feature allows using a simple NPN or N-Channel MOSFET driver for the servo's control signal.
 
-### Arduino core for the ESP32, ESP32-S2, ESP32-S3 and ESP32-C3
+
+#### Arduino core for the ESP32, ESP32-S2, ESP32-S3 and ESP32-C3
 
 Recommend using the [latest release](https://github.com/espressif/arduino-esp32), however this library works with release 2.0.7 or newer.
 
-#### Servo Easing
+<details>
+
+<summary><h3>Servo Easing</h3></summary>
 
 Just 2 easing parameters (speed and easing constant) for unlimited control ...
 
 ```c++
-pwm.writeServo(servoPin1, pos1, speed1, 0.0);  // move 90 deg, 70 deg/s, linear
-pwm.writeServo(servoPin2, pos2, speed2, 0.6);  // mpve 180 deg, 140 deg/s, avg sigmoid
-pwm.writeServo(servoPin3, pos3, speed3, 0.8);  // move 90 deg, 180 deg/s, steep sigmoid
+myservo.write(servoPin1, pos1, speed1, 0.0);  // move 90 deg at 70 deg/s, linear
+myservo.write(servoPin2, pos2, speed2, 0.6);  // mpve 180 deg at 140 deg/s, avg sigmoid
+myservo.write(servoPin3, pos3, speed3, 0.8);  // move 90 deg at 180 deg/s, steep sigmoid
 ```
 
 #### ![ServoEasing](https://user-images.githubusercontent.com/63488701/227943891-87cb7555-fe56-4064-a83a-38b99ad58e1d.gif)
 
-##### Speed Control:
+#### Speed Control:
 
 The maximum speed in degrees/sec is derived from the servo's datasheet. For this [SG90 Micro Servo](https://robojax.com/learn/arduino/robojax-servo-sg90_datasheet.pdf) we have  Operating speed: 0.1 s/60 degree. In this case, the maximum value for the speed parameter is 600 deg/sec. When a new servo position value is set, the operating time in milliseconds = degrees to move / speed * 1000.
 
-##### Easing Control:
+#### Easing Control:
 
 The easing constant ke controls how the servo moves to the set position by varying the speed. Its effect from linear (ke = 0.0) to maximum steep curve (ke = 0.99).
 
-##### Position Feedback: 
+#### Position Feedback: 
 
 The calculated position of the servo is the returned value "ye" of the writeServo function. The easing position ye is normalized (0.0-1.0) but can slightly over/undershoot this range. The servo has reached its programmed position when ye = 1.0 if the new setting is larger than previous and also when ye = 0.0 if the new position setting is smaller than previous.
 
-##### servoWrite:
+#### servoWrite:
 
-When a new servo position is programmed, the servoWrite function is repeatedly called with the same parameters until the servo completes its motion (returned value ye = 1.0 or 0.0). The servo responds on its own according to ke and speed. Stepping of position is not required.
+After a new servo position is programmed, repeatedly call the servoWrite function with the same parameters until the servo completes its motion (returned value ye = 1.0 or 0.0). The servo responds according to ke and speed. Servo position is incremented after each call. 
 
-##### **Examples:**
+</details>
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/364791981216008193)  [Servo_Easing_Interrupt](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_Interrupt_Servo_Ease_Speed/ESP32_C3_Interrupt_Servo_Ease_Speed.ino)   Servo Easing with feedback based on position and Interrupt controlled sampling
+<details>
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/361237697368753153)  [Servo_Easing_Position](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Position/Servo_Easing_Position.ino)   3 servos with different easing constants and position feedback control
+<summary><h3>Examples</h3></summary>
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/360276061783595009)  [Servo_Easing_Time](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Time/Servo_Easing_Time.ino)   3 servos with different easing constants and timed position control
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351231798778266200)  [Note Explorer ♩ ♪ ♫ ♬](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Note_Explorer/Note_Explorer.ino)   Plays all 96 ledc notes that are available, non blocking
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/355852275661848577)  [ESP32_C3_6_Servo_Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_6_Servo_Knob/ESP32_C3_6_Servo_Knob.ino)   Potentiometer control of 6 servos on an ESP32-C3
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351175246893548120)  [Note_Player](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Note_Player/Note_Player.ino)   Playing Notes based on sliding pot position, 4th octave, non blocking
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349232255258853970)  [16 PWM Fade](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Fade16/ESP32_Fade16.ino)   ESP32 fading 16 pairs of LEDs
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349336125753524820)  [Pwm_3phase_40kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_3phase_40kHz/Pwm_3phase_40kHz.ino)   ESP32 3 Phase PWM Outputs (40kHz, 10-bit)
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349978851105833554)  [14 PWM Fade 2 Servo](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Fade_Servo/ESP32_Fade_Servo.ino)   ESP32 fading 14 pairs of LEDs and controlling 2 servo motors
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334722465700774482)  [Pwm_ESP32_3phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_ESP32_3phase_10kHz/Pwm_ESP32_3phase_10kHz.ino)   ESP32 3 Phase PWM Outputs (10kHz, 10-bit)
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/350037178957431378)  [Servo Sweep](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Sweep/Servo_Sweep.ino)   Sweep a servo motor from 0-180 degrees and back
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334856585002091092)  [Pwm_ESP32_C3_3phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_ESP32_C3_3phase_10kHz/Pwm_ESP32_C3_3phase_10kHz.ino)   ESP32 C3 3 Phase PWM Outputs (10kHz, 10-bit)
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351967394028061269)  [Servo_Sweep_Inverted](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Sweep_Inverted/Servo_Sweep_Inverted.ino)   Using inverted PWM mode to sweep a servo motor
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334765722024542804)  [Pwm_ESP32_S2_3phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_ESP32_S2_3phase_10kHz/Pwm_ESP32_S2_3phase_10kHz.ino)   ESP32 S2 3 Phase PWM Outputs (10kHz, 10-bit)
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351978833396630095)  [Dual Servo Sweep with Independent Speed Control](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Dual_Servo_Sweep_Speed/Dual_Servo_Sweep_Speed.ino) 
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349978851105833554)  [Pwm_Fade_Servo](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_Fade_Servo/Pwm_Fade_Servo)   ESP32 fading 14 pairs of LEDs and controlling 2 servo motors
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/350033311963284051)  [Servo Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Knob/Servo_Knob.ino)   Controls servo position by using a potentiometer 
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349232255258853970)  [Pwm_Fade16](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_Fade16/Pwm_Fade16.ino)   ESP32 fading 16 pairs of LEDs
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351231798778266200)  [Note Explorer ♩ ♪ ♫ ♬](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Note_Explorer/ESP32_Note_Explorer.ino)   Plays all 96 ledc notes that are available, non blocking
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349322326995632722)  [Pwm_Sync2_300kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_Sync2_300kHz/Pwm_Sync2_300kHz.ino)   2 synchronized PWM outputs using the same timer (channel pair)
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351175246893548120)  [Playing Notes](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/playingNotes/playingNotes.ino)   Playing Notes based on sliding pot position, 4th octave, non blocking
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/364791981216008193)  [Servo_Easing_Interrupt](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Interrupt/Servo_Easing_Interrupt.ino)   Servo Easing with position feedback and Interrupt control
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/352178590336932865)  [Playing Tones](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/playingTones/playingTones.ino)   Playing Tones based on sliding pot position, 4Hz to 4095Hz, non blocking
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/361237697368753153)  [Servo_Easing_Position](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Easing_Position/Servo_Easing_Position.ino)   3 servos with easing and position feedback control
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349322326995632722)  [2 Sync 300kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_Sync2_300kHz/ESP32_Sync2_300kHz.ino)   2 synchronized PWM outputs using the same timer (channel pair)
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/350033311963284051)  [Servo Knob](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Knob/Servo_Knob.ino)   Controls servo position by using a potentiometer 
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349336125753524820)  [ESP32_3-Phase 40kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_3phase_40kHz/ESP32_3phase_40kHz.ino)   ESP32 3 Phase PWM Outputs (40kHz, 10-bit)
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/355852275661848577)  [Servo_Knob_Six](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Knob_Six/Servo_Knob_Six.ino)   Potentiometer control of 6 servos on an ESP32-C3
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334722465700774482)  [ESP32_3-Phase 10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_3phase_10kHz/ESP32_3phase_10kHz.ino)   ESP32 3 Phase PWM Outputs (10kHz, 10-bit)
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/350037178957431378)  [Servo Sweep](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Sweep/Servo_Sweep.ino)   Sweep a servo motor from 0-180 degrees and back
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334765722024542804)  [ESP32_S2_3-Phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_S2_3phase_10kHz/ESP32_S2_3phase_10kHz.ino)   ESP32 S2 3 Phase PWM Outputs (10kHz, 10-bit)
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351967394028061269)  [Servo_Sweep_Inverted](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Sweep_Inverted/Servo_Sweep_Inverted.ino)   Using inverted PWM mode to sweep a servo motor
 
-- [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334856585002091092)  [ESP32_C3_3-Phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/ESP32_C3_3phase_10kHz/ESP32_C3_3phase_10kHz.ino)   ESP32 C3 3 Phase PWM Outputs (10kHz, 10-bit)
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351978833396630095)  [Servo_Sweep_Speed](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Servo_Sweep_Speed/Servo_Sweep_Speed.ino)  Independent speed control of 2 servos
 
-  
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/352178590336932865)  [Tone_Player](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Tone_Player/Tone_Player.ino)   Playing Tones based on sliding pot position
+
+</details>
+
+<details>
+
+<summary><h3>PWM Channel Configuration</h3></summary>
 
 | Board       | PWM Pins                  | PWM, Duty and Phase Channels | Frequency and Resolution Channels |
 | ----------- | ------------------------- | ---------------------------- | --------------------------------- |
 | ESP32       | 0-19, 21-23, 25-27, 32-39 | 16                           | 8                                 |
 | ESP32‑S2/S3 | 0-21, 26, 33-45           | 8                            | 4                                 |
 | ESP32‑C3    | 0- 10, 18-21              | 6                            | 3                                 |
-
-### PWM Channel Configuration
 
 Frequency and resolution values are shared by each channel pair thats on the same timer. When any channel gets configured, the next lower or higher channel gets updated with the same frequency and resolution values as appropriate.
 
@@ -113,38 +159,20 @@ Frequency and resolution values are shared by each channel pair thats on the sam
 |     14      | 1          | 3     | 8         | 8          | 15   | 15    |
 |     15      | 1          | 3     | 8         | 8          | 16   | 16    |
 
+</details>
 
+## Reference (Servo.h)
 
-### write()
-
-##### Description
-
-This function writes the duty and optionally the frequency, resolution and phase parameters. If necessary, the pin will be automatically attached to the first available pwm channel. To avoid conflicts with other code, the pin will not be attached if previously accessed.
-
-##### Syntax
+### Include and Instantiate
 
 ```c++
-pwm.write(pin, duty)
-pwm.write(pin, duty, frequency)
-pwm.write(pin, duty, frequency, resolution)
-pwm.write(pin, duty, frequency, resolution, phase)
+#include <Servo.h>
+Servo myservo = Servo();
 ```
 
-##### Parameters
+<details>
 
-- **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
-- **duty**  This sets the pwm duty. The range is 0 to (2**resolution) - 1 *(uint32_t)*
-- **frequency**  The pwm timer frequency (Hz). The frequency and resolution limits are interdependent *(uint32_t)*. For more details, see [Supported Range of Frequency and Duty Resolutions](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution).
-- **resolution**  The bit resolution of the pwm duty *(uint8_t)*
-- **phase**  This is also referred to as the **hpoint** value, which is the timer/counter value that the pwm output turns on. The useable range is the same as for the duty parameter. This can be used to phase shift the output or for synchronization. When the phase parameter is used, the pwm output will initiate in a paused state to allow synchronization *(uint32_t)*
-
-##### Returns
-
-The set frequency *(float)*
-
-
-
-### writeServo()
+<summary><h3>write()</h3></summary>
 
 ##### Description:
 
@@ -178,8 +206,8 @@ This process is automatic - the servo pin will be attached to the next free chan
 ##### Syntax
 
 ```c++
-pwm.writeServo(pin, value)
-pwm.writeServo(pin, value, speed, ke)
+myservo.write(pin, value)
+myservo.write(pin, value, speed, ke)
 ```
 
 ##### Parameters
@@ -194,9 +222,372 @@ pwm.writeServo(pin, value, speed, ke)
 - If the servo easing constant `ke` is 1.0 (default) then the pwm duty value *(uint32_t)* is returned.
 - If  `ke` is less than 1.0, then a normalized float value (0.0 to 1.0) is returned. This represents the programmed servo position from start to stop as it moves over time. When the returned value reaches 0.5, this represents both 50% travel and 50% time duration, no matter what easing constant is set.
 
+</details>
+
+<details>
+
+<summary><h3>writeMicroseconds()</h3></summary>
+
+##### Description
+
+This function calls the write() function above.
+
+**Syntax**
+
+```c++
+myservo.writeMicroseconds()
+```
+
+##### Parameters
+
+- none.
+
+##### Returns
+
+- nothing
+
+</details>
+
+<details>
+
+<summary><h3>read()</h3></summary>
+
+##### Description
+
+Read the current angle of the servo in degrees. The returned value is *float* type which provides improved resolution and takes advantage of the high resolution offered by the timer.
+
+**Syntax**
+
+```c++
+myservo.read(pin)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- The angle of the servo, from 0 to 180 degrees *(float)*
+
+</details>
+
+<details>
+
+<summary><h3>readMicroseconds()</h3></summary>
+
+##### Description
+
+Reads the timer channel's duty value in microseconds. The minimum limit is 544 μs representing 0 degrees shaft rotation and the  maximum limit is 2400 μs representing 180 degrees shaft rotation. The returned value is *float* type which provides improved resolution and takes advantage of the high resolution offered by the timer.
+
+**Syntax**
+
+```c++
+myservo.readMicroseconds(pin)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- The channel's duty value converted to microseconds *(float)*
+
+</details>
+
+<details>
+
+<summary><h3>attach()</h3></summary>
+
+##### Description
+
+This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. Additionally, there are parameters available for setting the servo timer values for minimum and maximum microseconds. 
+
+**Syntax**
+
+```c++
+myservo.attach(pin)                                       // auto attach to 1st free channel
+myservo.attach(pin, invert)                               // as above with invert
+myservo.attach(pin, ch)                                   // attach to specified channel
+myservo.attach(pin, ch, invert)                           // as above with invert
+myservo.attach(pin, minUs, maxUs)                         // auto attach to free ch, servo limits
+myservo.attach(pin, ch, minUs, maxUs)                     // attach to specified ch, servo limits
+myservo.attach(pin, ch, minUs, maxUs, invert)             // as above with invert
+myservo.attach(pin, minUs, maxUs, speed, ke)              // attach to free ch, speed, easing const
+myservo.attach(pin, ch, minUs, maxUs, speed, ke)          // as above but attaches to specified ch
+myservo.attach(pin, ch, minUs, maxUs, speed, ke, invert)  // as above with invert
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)*
+
+- **ch**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
+
+- **minUs**  Minimum timer width in microseconds *(uint16_t)
+
+- **maxUs**  Maximum timer width in microseconds *(uint16_t)*
+
+- **speed**  This servo easing parameter has units degrees/second (float). For example, if `speed` is set to 100 deg/s and the servo position value is changed from 0 to 180 deg, then the servo will take 1.8 sec (1800 ms) to complete its travel. Its motion (response) will be determined by `ke`,
+
+- **ke**  Servo easing constant for a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1). A `ke` value of 0.0 represents a linear response. As you increase `ke`, this increases the steepness of a sigmoid response. When `ke` is 1.0, normal "instantaneous" servo response is enabled and the speed parameter is ignored.
+
+- **invert**  Inverts the PWM output. Allows using a simpler driver for higher voltage servo control. Only one NPN transistor or N-Channel MOSFET needed. No additional latency added as found with software inversion because the inverted pulse remains at the start of the refresh period rather than being flipped to the end of the refresh period  *(bool)*.
+
+  [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
+
+  ![image](https://user-images.githubusercontent.com/63488701/236273265-0cdf2dca-78b8-4afd-8924-1f263c7cde80.png)
+
+##### Returns
+
+- If not a valid pin, 254 *(uint8_t)*
+- free channels exist, 253 *(uint8_t)*
+- If attached, the channel number (0-15) *(uint8_t)*
+- If not attached, 255 *(uint8_t)*
+
+</details>
+
+<details>
+
+<summary><h3>attached()</h3></summary>
+
+##### Description
+
+This function checks the pin status and if attached, returns the channel number. 
+
+**Syntax**
+
+```c++
+myservo.attached(pin)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- If not a valid pin, 254 *(uint8_t)*
+- free channels exist, 253 *(uint8_t)*
+- If attached, the channel number (0-15) *(uint8_t)*
+- If not attached, 255 *(uint8_t)*
+
+</details>
+
+<details>
+
+<summary><h3>attachedPin()</h3></summary>
+
+##### Description
+
+This function returns the pin that's attached to the specified channel.
+
+**Syntax**
+
+```c++
+myservo.attachedPin(ch)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- If attached, the pin number *(uint8_t)*
+- If the channel is free, 255 *(uint8_t)*
+
+</details>
+
+<details>
+
+<summary><h3>attachInvert()</h3></summary>
+
+##### Description
+
+This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. The pwm output will be inverted. The duty value represents the low period.
+
+**Syntax**
+
+```c++
+myservo.attachInvert(pin);      // attach pin to next free channel with inverted pwm
+myservo.attachInvert(pin, ch);  // attach to specified ch with inverted pwm
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)*
+- **ch**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
+
+##### Returns
+
+- If not a valid pin, 254 *(uint8_t)*
+- free channels exist, 253 *(uint8_t)*
+- If attached, the channel number (0-15) *(uint8_t)*
+- If not attached, 255 *(uint8_t)*
+
+</details>
 
 
-### tone()
+<details>
+
+<summary><h3>writePwm()</h3></summary>
+
+##### Description
+
+This function writes the duty and optionally the frequency, resolution and phase parameters. If necessary, the pin will be automatically attached to the first available pwm channel. To avoid conflicts with other code, the pin will not be attached if previously accessed.
+
+##### Syntax
+
+```c++
+myservo.writePwm(pin, duty)
+myservo.writePwm(pin, duty, frequency)
+myservo.writePwm(pin, duty, frequency, resolution)
+myservo.writePwm(pin, duty, frequency, resolution, phase)
+```
+
+##### Parameters
+
+- **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
+- **duty**  This sets the pwm duty. The range is 0 to (2**resolution) - 1 *(uint32_t)*
+- **frequency**  The pwm timer frequency (Hz). The frequency and resolution limits are interdependent *(uint32_t)*. For more details, see [Supported Range of Frequency and Duty Resolutions](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution).
+- **resolution**  The bit resolution of the pwm duty *(uint8_t)*
+- **phase**  This is also referred to as the **hpoint** value, which is the timer/counter value that the pwm output turns on. The useable range is the same as for the duty parameter. This can be used to phase shift the output or for synchronization. When the phase parameter is used, the pwm output will initiate in a paused state to allow synchronization *(uint32_t)*
+
+##### Returns
+
+The set frequency *(float)*
+
+</details>
+
+<details>
+
+<summary><h3>detachPin()</h3></summary>
+
+##### Description
+
+This function removes control of the pin from the specified PWM channel.  Also, the channel defaults are applied.
+
+**Syntax**
+
+```c++
+myservo.detachPin(pin)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)*
+
+##### Returns
+
+- nothing
+
+</details>
+
+<details>
+
+<summary><h3>pause()</h3></summary>
+
+##### Description
+
+This function is used internally by the write() function when the phase parameter is used to allow synchronization of multiple pwm signals. 
+
+If this function is manually called, any channel(s) that get configured will have their PWM output paused.  Then calling `resume()` will start all newly configured channels at the same time. Note that this approach limits the maximum pwm frequency to about 10kHz or some pulses or glitches might occur during channel configuration.
+
+**Syntax**
+
+```c++
+myservo.pause()
+```
+
+##### Parameters
+
+- none.
+
+##### Returns
+
+- nothing
+
+</details>
+
+<details>
+
+<summary><h3>resume()</h3></summary>
+
+##### Description
+
+This function is used to start the pwm outputs of all channels to synchronize (align) the signals. Note that there will be a consistent delay between the startup of each timer which can be corrected by using the `write()` function's phase parameter.
+
+**Syntax**
+
+```c++
+myservo.resume()
+```
+
+##### Parameters
+
+- none.
+
+##### Returns
+
+- nothing
+
+</details>
+
+<details>
+
+<summary><h3>setFrequency()</h3></summary>
+
+##### Description
+
+Sets the PWM frequency on any PWM pin.
+
+**Syntax**
+
+```c++
+myservo.setFrequency(pin, frequency)
+```
+
+##### Parameters
+
+- **pin**  The pin number  (uint8_t) If the pin is detached (free) and there's a free channel available, the pin will be attached to the first free channel that's found *(uint8_t)*
+- **frequency**  The frequency in Hz. The default is 1000 Hz *(uint32_t)*
+
+##### Returns
+
+- The frequency set by the timer hardware *(float)*
+
+</details>
+
+<details>
+
+<summary><h3>setResolution()</h3></summary>
+
+##### Description
+
+Sets the PWM resolution for any PWM pin.
+
+**Syntax**
+
+```c++
+myservo.setResolution(pin, resolution)
+```
+
+##### Parameters
+
+- **pin**  The pin number  (uint8_t) If the pin is detached (free) and there's a free channel available, the pin will be attached to the first free channel that's found *(uint8_t)*
+- **resolution**  The PWM resolution can be set from 1-bit to 16-bit, default is 8-bit *(uint8_t)*
+
+##### Returns
+
+- The set resolution reported by the pin channel *(uint8_t)*
+
+</details>
+
+<details>
+
+<summary><h3>tone()</h3></summary>
 
 ##### Description:
 
@@ -213,8 +604,8 @@ This process is automatic - the tone pin will be attached to the next free chann
 ##### Syntax
 
 ```c++
-pwm.tone(pin, frequency, duration)
-pwm.tone(pin, frequency, duration, interval)
+myservo.tone(pin, frequency, duration)
+myservo.tone(pin, frequency, duration, interval)
 ```
 
 ##### Parameters
@@ -228,9 +619,11 @@ pwm.tone(pin, frequency, duration, interval)
 
 - nothing
 
+</details>
 
+<details>
 
-### note()
+<summary><h3>note()</h3></summary>
 
 ##### Description:
 
@@ -262,289 +655,11 @@ pwm.note(pin, note, octave, duration, interval)
 
 - nothing
 
+</details>
 
+<details>
 
-### read()
-
-##### Description
-
-Read the current angle of the servo in degrees. The returned value is *float* type which provides improved resolution and takes advantage of the high resolution offered by the timer.
-
-**Syntax**
-
-```c++
-read(pin)
-```
-
-##### Parameters
-
-- **pin**  The pin number *(uint8_t)
-
-##### Returns
-
-- The angle of the servo, from 0 to 180 degrees *(float)*
-
-
-
-### readMicroseconds()
-
-##### Description
-
-Reads the timer channel's duty value in microseconds. The minimum limit is 544 μs representing 0 degrees shaft rotation and the  maximum limit is 2400 μs representing 180 degrees shaft rotation. The returned value is *float* type which provides improved resolution and takes advantage of the high resolution offered by the timer.
-
-**Syntax**
-
-```c++
-readMicroseconds(pin)
-```
-
-##### Parameters
-
-- **pin**  The pin number *(uint8_t)
-
-##### Returns
-
-- The channel's duty value converted to microseconds *(float)*
-
-
-
-### attach()
-
-##### Description
-
-This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. Additionally, there are parameters available for setting the servo timer values for minimum and maximum microseconds. 
-
-**Syntax**
-
-```c++
-attach(pin)                                       // auto attach to 1st free channel
-attach(pin, ch)                                   // attach to specified channel 
-attach(pin, minUs, maxUs)                         // auto attach to free ch with servo limits
-attach(pin, ch, minUs, maxUs)                     // attach to specified ch with servo limits
-attach(pin, minUs, maxUs, speed, ke)              // attach to free ch with speed and easing constant
-attach(pin, ch, minUs, maxUs, speed, ke)          // as above but attaches to specified channel
-attach(pin, ch, minUs, maxUs, speed, ke, invert)  // as above with invert  
-```
-
-##### Parameters
-
-- **pin**  The pin number *(uint8_t)*
-
-- **ch**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
-
-- **minUs**  Minimum timer width in microseconds *(uint16_t)
-
-- **maxUs**  Maximum timer width in microseconds *(uint16_t)*
-
-- **speed**  This servo easing parameter has units degrees/second (float). For example, if `speed` is set to 100 deg/s and the servo position value is changed from 0 to 180 deg, then the servo will take 1.8 sec (1800 ms) to complete its travel. Its motion (response) will be determined by `ke`,
-
-- **ke**  Servo easing constant for a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1). A `ke` value of 0.0 represents a linear response. As you increase `ke`, this increases the steepness of a sigmoid response. When `ke` is 1.0, normal "instantaneous" servo response is enabled and the speed parameter is ignored.
-
-- **invert**  Inverts the PWM output. Allows using a simpler driver for higher voltage servo control. Only one NPN transistor or N-Channel MOSFET needed. No additional latency added as found with software inversion because the inverted pulse remains at the start of the refresh period rather than being flipped to the end of the refresh period  *(bool)*.
-
-  [Servo_Sweep_Inverted](https://wokwi.com/projects/351967394028061269)
-
-  ![image](https://user-images.githubusercontent.com/63488701/236273265-0cdf2dca-78b8-4afd-8924-1f263c7cde80.png)
-
-##### Returns
-
-- If not a valid pin, 254 *(uint8_t)*
-- free channels exist, 253 *(uint8_t)*
-- If attached, the channel number (0-15) *(uint8_t)*
-- If not attached, 255 *(uint8_t)*
-
-
-
-### attachInvert()
-
-##### Description
-
-This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. The pwm output will be inverted. The duty value represents the low period.
-
-**Syntax**
-
-```c++
-attachInvert(pin);      // attach pin to next free channel with inverted pwm
-attachInvert(pin, ch);  // attach to specified ch with inverted pwm
-```
-
-##### Parameters
-
-- **pin**  The pin number *(uint8_t)*
-- **ch**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
-
-##### Returns
-
-- If not a valid pin, 254 *(uint8_t)*
-- free channels exist, 253 *(uint8_t)*
-- If attached, the channel number (0-15) *(uint8_t)*
-- If not attached, 255 *(uint8_t)*
-
-
-
-### attached()
-
-##### Description
-
-This function checks the pin status and if attached, returns the channel number. 
-
-**Syntax**
-
-```c++
-attached(pin)
-```
-
-##### Parameters
-
-- **pin**  The pin number *(uint8_t)
-
-##### Returns
-
-- If not a valid pin, 254 *(uint8_t)*
-- free channels exist, 253 *(uint8_t)*
-- If attached, the channel number (0-15) *(uint8_t)*
-- If not attached, 255 *(uint8_t)*
-
-
-
-### attachedPin()
-
-##### Description
-
-This function returns the pin that's attached to the specified channel.
-
-**Syntax**
-
-```c++
-attachedPin(ch)
-```
-
-##### Parameters
-
-- **pin**  The pin number *(uint8_t)
-
-##### Returns
-
-- If attached, the pin number *(uint8_t)*
-- If the channel is free, 255 *(uint8_t)*
-
-
-
-### detachPin()
-
-##### Description
-
-This function removes control of the pin from the specified PWM channel.  Also, the channel defaults are applied.
-
-**Syntax**
-
-```c++
-pwm.detachPin(pin)
-```
-
-##### Parameters
-
-- **pin**  The pin number *(uint8_t)*
-
-##### Returns
-
-- nothing
-
-
-
-### pause()
-
-##### Description
-
-This function is used internally by the write() function when the phase parameter is used to allow synchronization of multiple pwm signals. 
-
-If this function is manually called, any channel(s) that get configured will have their PWM output paused.  Then calling `resume()` will start all newly configured channels at the same time. Note that this approach limits the maximum pwm frequency to about 10kHz or some pulses or glitches might occur during channel configuration.
-
-**Syntax**
-
-```c++
-pwm.pause()
-```
-
-##### Parameters
-
-- none.
-
-##### Returns
-
-- nothing
-
-
-
-### resume()
-
-##### Description
-
-This function is used to start the pwm outputs of all channels to synchronize (align) the signals. Note that there will be a consistent delay between the startup of each timer which can be corrected by using the `write()` function's phase parameter.
-
-**Syntax**
-
-```c++
-pwm.resume()
-```
-
-##### Parameters
-
-- none.
-
-##### Returns
-
-- nothing
-
-
-
-### setFrequency()
-
-##### Description
-
-Sets the PWM frequency on any PWM pin.
-
-**Syntax**
-
-```c++
-pwm.setFrequency(pin, frequency)
-```
-
-##### Parameters
-
-- **pin**  The pin number  (uint8_t) If the pin is detached (free) and there's a free channel available, the pin will be attached to the first free channel that's found *(uint8_t)*
-- **frequency**  The frequency in Hz. The default is 1000 Hz *(uint32_t)*
-
-##### Returns
-
-- The frequency set by the timer hardware *(float)*
-
-
-
-### setResolution()
-
-##### Description
-
-Sets the PWM resolution for any PWM pin.
-
-**Syntax**
-
-```c++
-pwm.setResolution(pin, resolution)
-```
-
-##### Parameters
-
-- **pin**  The pin number  (uint8_t) If the pin is detached (free) and there's a free channel available, the pin will be attached to the first free channel that's found *(uint8_t)*
-- **resolution**  The PWM resolution can be set from 1-bit to 16-bit, default is 8-bit *(uint8_t)*
-
-##### Returns
-
-- The set resolution reported by the pin channel *(uint8_t)*
-
-
-
-### printDebug()
+<summary><h3>printDebug()</h3></summary>
 
 ##### Description
 
@@ -553,7 +668,7 @@ This function prints the available PWM pins to choose from and a formatted outpu
 **Syntax**
 
 ```c++
-pwm.printDebug()
+myservo.printDebug()
 ```
 
 ##### Parameters (optional)
@@ -566,7 +681,8 @@ pwm.printDebug()
 
 ![image](https://user-images.githubusercontent.com/63488701/229374511-de75b97d-f91f-44d0-b103-0ca858d16727.png)
 
+</details>
+
 ```
 This Library is licensed under the MIT License
 ```
-

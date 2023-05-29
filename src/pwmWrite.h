@@ -77,19 +77,22 @@ class Pwm {
     float write(uint8_t pin, uint32_t duty, uint32_t frequency);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
     float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
-    
-    // pwm
-    uint8_t attach(uint8_t pin); // attach pin to next free channel
-    uint8_t attach(uint8_t pin, uint8_t ch); // attach to specified ch
-    uint8_t attachInvert(uint8_t pin); // attach pin to next free channel with inverted pwm
-    uint8_t attachInvert(uint8_t pin, uint8_t ch); // attach to specified ch with inverted pwm
+    uint8_t attach(uint8_t pin);                     // attach pin to next free channel
+    uint8_t attach(uint8_t pin, uint8_t ch);         // attach to specified ch
+    uint8_t attachInvert(uint8_t pin);               // attach pin to next free channel with inverted pwm
+    uint8_t attachInvert(uint8_t pin, uint8_t ch);   // attach to specified ch with inverted pwm
 
     // servo
-    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t maxUs);
-    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs);
-    uint8_t attach(uint8_t pin, uint16_t minUs, uint16_t maxUs, float speed, float ke);
-    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke);
-    uint8_t attach(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke, bool invert);
+    uint8_t attachServo(uint8_t pin);
+    uint8_t attachServo(uint8_t pin, bool invert);
+    uint8_t attachServo(uint8_t pin, uint8_t ch);
+    uint8_t attachServo(uint8_t pin, uint8_t ch, bool invert);
+    uint8_t attachServo(uint8_t pin, uint16_t minUs, uint16_t maxUs);
+    uint8_t attachServo(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs);
+    uint8_t attachServo(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, bool invert);
+    uint8_t attachServo(uint8_t pin, uint16_t minUs, uint16_t maxUs, float speed, float ke);
+    uint8_t attachServo(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke);
+    uint8_t attachServo(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke, bool invert);
     float read(uint8_t pin);
     float readMicroseconds(uint8_t pin);
     float writeServo(uint8_t pin, float value);
@@ -100,8 +103,9 @@ class Pwm {
     void note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval);
 
     // common
-    uint8_t attached(uint8_t pin);     // check if pin is attaced
+    uint8_t attached(uint8_t pin);     // check if pin is attached
     uint8_t attachedPin(uint8_t ch);   // get pin on specified channel
+    uint8_t firstFreeCh(void);         // get first free channel
     void detach(uint8_t pin);          // detach pin
     bool detached(uint8_t pin);        // check if pin is detached
     void pause(uint8_t ch = 255);      // pause timer on all or specified channel
@@ -122,4 +126,5 @@ class Pwm {
     void reset_fields(uint8_t ch);
     bool sync = false;
 };
+
 #endif

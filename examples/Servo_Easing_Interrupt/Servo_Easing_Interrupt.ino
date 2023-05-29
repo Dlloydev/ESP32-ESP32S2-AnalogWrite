@@ -35,7 +35,7 @@
   The delay of 50 ms was added to control the plotter sample period.
 */
 
-#include <pwmWrite.h>
+#include <Servo.h>
 
 const int servoPin = 8;
 volatile float ke = 0.0;      // easing curve
@@ -44,10 +44,11 @@ volatile float pos = 90;      // servo position (degrees)
 volatile float ye;            // calculated servo position (normalized)
 
 hw_timer_t *Timer0 = NULL;
-Pwm pwm = Pwm();
+
+Servo myservo = Servo();
 
 void IRAM_ATTR Timer0_ISR() {
-  ye = pwm.writeServo(servoPin, pos, speed, ke);
+  ye = myservo.write(servoPin, pos, speed, ke);
 }
 
 void setup() {
@@ -56,20 +57,20 @@ void setup() {
   Timer0 = timerBegin(0, 80, true);
   timerAttachInterrupt(Timer0, &Timer0_ISR, true);
   timerAlarmWrite(Timer0, 20000, true);  // 20 ms
-  pwm.writeServo(servoPin, pos, speed, ke);  // attach servo
+  myservo.write(servoPin, pos, speed, ke);  // attach servo
   timerAlarmEnable(Timer0);
 
   // slowly go to 0 degrees, linear easing
   pos = 0.0;
   speed = 30;
   ke = 0.0;
-  ye = pwm.writeServo(servoPin, pos, speed, ke);
+  ye = myservo.write(servoPin, pos, speed, ke);
   while (ye > 0);
 
   // setup faster speed and new easing curve
   speed = 100;
   ke = 0.7;
-  ye = pwm.writeServo(servoPin, pos, speed, ke);
+  ye = myservo.write(servoPin, pos, speed, ke);
 }
 
 void loop() {
