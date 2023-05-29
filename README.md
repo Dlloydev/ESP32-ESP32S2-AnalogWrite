@@ -14,7 +14,7 @@
 #### Comparison Table
 
 - Superscript values represent the number of available overload functions .
-- With the ESP32 ESP32S2 AnalogWrite library, both `Servo.h` and `pwmWrite.h` have access to all methods. Choose **one** header only that best suits your application. Note that `Servo.h`uses a Servo class that translates method names to match the Servo Library for Arduino. Each header gives full access to the libraries features.
+- With the ESP32 ESP32S2 AnalogWrite library, both `Servo.h` and `pwmWrite.h` have access to all methods. Choose **one** header only that best suits your application. Note that `Servo.h` uses a Servo class that translates method names to match the Servo Library for Arduino. Each header gives full access to the libraries features.
 
 | Library: | [Servo Library for Arduino](https://github.com/arduino-libraries/Servo) | [ESP32 ESP32S2 AnalogWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite) | [ESP32 ESP32S2 AnalogWrite](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite) |
 | -------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -28,9 +28,10 @@
 |          | detach()                                                     | detach()                                                     | detach()                                                     |
 |          | attachedPin()                                                | attachedPin()                                                | attachedPin()                                                |
 |          | readMicroseconds()                                           | readMicroseconds()                                           | readMicroseconds()                                           |
+|          |                                                              | attachPwm()<sup> 2</sup>                                     | attach()<sup> 2</sup>                                        |
+|          |                                                              | attachInvert()<sup> 2</sup>                                  | attachInvert()<sup> 2</sup>                                  |
 |          |                                                              | writePwm()<sup> 4</sup>                                      | write()<sup> 4</sup>                                         |
 |          |                                                              | detached()                                                   | detached()                                                   |
-|          |                                                              | attachInvert()                                               | attachInvert()                                               |
 |          |                                                              | firstFreeCh()                                                | firstFreeCh()                                                |
 |          |                                                              | pause()                                                      | pause()                                                      |
 |          |                                                              | resume()                                                     | resume()                                                     |
@@ -238,14 +239,6 @@ This function calls the write() function above.
 myservo.writeMicroseconds()
 ```
 
-##### Parameters
-
-- none.
-
-##### Returns
-
-- nothing
-
 </details>
 
 <details>
@@ -350,6 +343,34 @@ myservo.attach(pin, ch, minUs, maxUs, speed, ke, invert)  // as above with inver
 
 <details>
 
+<summary><h3>attachPwm()</h3></summary>
+
+##### Description
+
+This function allows auto-attaching a pin to the first available channel if only the pin is specified. To have the pin assigned to a specific channel, use both the pin and channel (ch) parameters. 
+
+**Syntax**
+
+```c++
+myservo.attach(pin)       // auto attach to 1st free channel
+myservo.attach(pin, ch)   // attach to specified channel
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- If not a valid pin, 254 *(uint8_t)*
+- free channels exist, 253 *(uint8_t)*
+- If attached, the channel number (0-15) *(uint8_t)*
+- If not attached, 255 *(uint8_t)*
+
+</details>
+
+<details>
+
 <summary><h3>attached()</h3></summary>
 
 ##### Description
@@ -372,31 +393,6 @@ myservo.attached(pin)
 - free channels exist, 253 *(uint8_t)*
 - If attached, the channel number (0-15) *(uint8_t)*
 - If not attached, 255 *(uint8_t)*
-
-</details>
-
-<details>
-
-<summary><h3>attachedPin()</h3></summary>
-
-##### Description
-
-This function returns the pin that's attached to the specified channel.
-
-**Syntax**
-
-```c++
-myservo.attachedPin(ch)
-```
-
-##### Parameters
-
-- **pin**  The pin number *(uint8_t)
-
-##### Returns
-
-- If attached, the pin number *(uint8_t)*
-- If the channel is free, 255 *(uint8_t)*
 
 </details>
 
@@ -426,6 +422,32 @@ myservo.attachInvert(pin, ch);  // attach to specified ch with inverted pwm
 - free channels exist, 253 *(uint8_t)*
 - If attached, the channel number (0-15) *(uint8_t)*
 - If not attached, 255 *(uint8_t)*
+
+</details>
+
+<details>
+
+
+<summary><h3>attachedPin()</h3></summary>
+
+##### Description
+
+This function returns the pin that's attached to the specified channel.
+
+**Syntax**
+
+```c++
+myservo.attachedPin(ch)
+```
+
+##### Parameters
+
+- **pin**  The pin number *(uint8_t)
+
+##### Returns
+
+- If attached, the pin number *(uint8_t)*
+- If the channel is free, 255 *(uint8_t)*
 
 </details>
 
