@@ -90,7 +90,6 @@ After a new servo position is programmed, repeatedly call the servoWrite functio
 </details>
 
 <details>
-
 <summary><h3>Examples</h3></summary>
 
 [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/351231798778266200)  [Note Explorer ♩ ♪ ♫ ♬](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Note_Explorer/Note_Explorer.ino)   Plays all 96 ledc notes that are available, non blocking
@@ -101,11 +100,11 @@ After a new servo position is programmed, repeatedly call the servoWrite functio
 
 [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334722465700774482)  [Pwm_ESP32_3phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_ESP32_3phase_10kHz/Pwm_ESP32_3phase_10kHz.ino)   ESP32 3 Phase PWM Outputs (10kHz, 10-bit)
 
-[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334856585002091092)  [Pwm_ESP32_C3_3phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_ESP32_C3_3phase_10kHz/Pwm_ESP32_C3_3phase_10kHz.ino)   ESP32 C3 3 Phase PWM Outputs (10kHz, 10-bit)
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334856585002091092)  [Pwm_ESP32_C3_3phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_ESP32_3phase_10kHz/Pwm_ESP32_3phase_10kHz.ino)   ESP32 C3 3 Phase PWM Outputs (10kHz, 10-bit)
 
 [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/334765722024542804)  [Pwm_ESP32_S2_3phase_10kHz](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_ESP32_S2_3phase_10kHz/Pwm_ESP32_S2_3phase_10kHz.ino)   ESP32 S2 3 Phase PWM Outputs (10kHz, 10-bit)
 
-[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349978851105833554)  [Pwm_Fade_Servo](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_Fade_Servo/Pwm_Fade_Servo)   ESP32 fading 14 pairs of LEDs and controlling 2 servo motors
+[![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349978851105833554)  [Pwm_Fade_Servo](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_Fade_Servo/Pwm_Fade_Servo.ino)   ESP32 fading 14 pairs of LEDs and controlling 2 servo motors
 
 [![Wokwi_badge](https://user-images.githubusercontent.com/63488701/212449119-a8510897-c860-4545-8c1a-794169547ba1.svg)](https://wokwi.com/projects/349232255258853970)  [Pwm_Fade16](https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite/blob/main/examples/Pwm_Fade16/Pwm_Fade16.ino)   ESP32 fading 16 pairs of LEDs
 
