@@ -212,15 +212,15 @@ myservo.write(pin, value, speed, ke)
 
 ##### Parameters
 
-- **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
-- **value**  This value is converted to the pwm duty. See above table for range and units *(float)
-- **speed**  This value has units degrees/second (float). For example, if `speed` is set to 100 deg/s and the servo position value is changed from 0 to 180 deg, then the servo will take 1.8 sec (1800 ms) to complete its travel. Its motion (response) will be determined by `ke`,
+- **pin**  The pin number which (if necessary) will be attached to the next free channel *(int)*
+- **value**  This value is converted to the pwm duty. See above table for range and units *(double)
+- **speed**  This value has units degrees/second (double). For example, if `speed` is set to 100 deg/s and the servo position value is changed from 0 to 180 deg, then the servo will take 1.8 sec (1800 ms) to complete its travel. Its motion (response) will be determined by `ke`,
 - **ke**  Servo easing constant for a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1). A `ke` value of 0.0 represents a linear response. As you increase `ke`, this increases the steepness of a sigmoid response. When `ke` is 1.0, normal "instantaneous" servo response is enabled and the speed parameter is ignored.
 
 ##### Returns
 
 - If the servo easing constant `ke` is 1.0 (default) then the pwm duty value *(uint32_t)* is returned.
-- If  `ke` is less than 1.0, then a normalized float value (0.0 to 1.0) is returned. This represents the programmed servo position from start to stop as it moves over time. When the returned value reaches 0.5, this represents both 50% travel and 50% time duration, no matter what easing constant is set.
+- If  `ke` is less than 1.0, then a normalized double value (0.0 to 1.0) is returned. This represents the programmed servo position from start to stop as it moves over time. When the returned value reaches 0.5, this represents both 50% travel and 50% time duration, no matter what easing constant is set.
 
 </details>
 
@@ -256,7 +256,7 @@ myservo.read(pin)
 
 ##### Parameters
 
-- **pin**  The pin number *(uint8_t)
+- **pin**  The pin number (int)
 
 ##### Returns
 
@@ -280,7 +280,7 @@ myservo.readMicroseconds(pin)
 
 ##### Parameters
 
-- **pin**  The pin number *(uint8_t)
+- **pin**  The pin number (int)
 
 ##### Returns
 
@@ -313,15 +313,15 @@ myservo.attach(pin, ch, minUs, maxUs, speed, ke, invert)  // as above with inver
 
 ##### Parameters
 
-- **pin**  The pin number *(uint8_t)*
+- **pin**  The pin number *(int)*
 
-- **ch**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
+- **ch**  This optional parameter is used to attach the pin to a specific channel *(int)*)
 
-- **minUs**  Minimum timer width in microseconds *(uint16_t)
+- **minUs**  Minimum timer width in microseconds *(int)*
 
-- **maxUs**  Maximum timer width in microseconds *(uint16_t)*
+- **maxUs**  Maximum timer width in microseconds *(int)*
 
-- **speed**  This servo easing parameter has units degrees/second (float). For example, if `speed` is set to 100 deg/s and the servo position value is changed from 0 to 180 deg, then the servo will take 1.8 sec (1800 ms) to complete its travel. Its motion (response) will be determined by `ke`,
+- **speed**  This servo easing parameter has units degrees/second (double). For example, if `speed` is set to 100 deg/s and the servo position value is changed from 0 to 180 deg, then the servo will take 1.8 sec (1800 ms) to complete its travel. Its motion (response) will be determined by `ke`,
 
 - **ke**  Servo easing constant for a [Normalized Tunable Sigmoid](https://www.desmos.com/calculator/ejkcwglzd1). A `ke` value of 0.0 represents a linear response. As you increase `ke`, this increases the steepness of a sigmoid response. When `ke` is 1.0, normal "instantaneous" servo response is enabled and the speed parameter is ignored.
 
@@ -357,7 +357,7 @@ myservo.attach(pin, ch)   // attach to specified channel
 
 ##### Parameters
 
-- **pin**  The pin number *(uint8_t)
+- **pin**  The pin number *(int)*
 
 ##### Returns
 
@@ -384,7 +384,7 @@ myservo.attached(pin)
 
 ##### Parameters
 
-- **pin**  The pin number *(uint8_t)
+- **pin**  The pin number *(int)*
 
 ##### Returns
 
@@ -412,8 +412,8 @@ myservo.attachInvert(pin, ch);  // attach to specified ch with inverted pwm
 
 ##### Parameters
 
-- **pin**  The pin number *(uint8_t)*
-- **ch**  This optional parameter is used to attach the pin to a specific channel *(uint8_t)*)
+- **pin**  The pin number *(int)*
+- **ch**  This optional parameter is used to attach the pin to a specific channel *(int)*
 
 ##### Returns
 
@@ -441,7 +441,7 @@ myservo.attachedPin(ch)
 
 ##### Parameters
 
-- **pin**  The pin number *(uint8_t)
+- **pin**  The pin number *(int)*
 
 ##### Returns
 
@@ -470,7 +470,7 @@ myservo.writePwm(pin, duty, frequency, resolution, phase)
 
 ##### Parameters
 
-- **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
+- **pin**  The pin number which (if necessary) will be attached to the next free channel *(int)*
 - **duty**  This sets the pwm duty. The range is 0 to (2**resolution) - 1 *(uint32_t)*
 - **frequency**  The pwm timer frequency (Hz). The frequency and resolution limits are interdependent *(uint32_t)*. For more details, see [Supported Range of Frequency and Duty Resolutions](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html#ledc-api-supported-range-frequency-duty-resolution).
 - **resolution**  The bit resolution of the pwm duty *(uint8_t)*
@@ -498,7 +498,7 @@ myservo.detachPin(pin)
 
 ##### Parameters
 
-- **pin**  The pin number *(uint8_t)*
+- **pin**  The pin number *(int)*
 
 ##### Returns
 
@@ -572,7 +572,7 @@ myservo.setFrequency(pin, frequency)
 
 ##### Parameters
 
-- **pin**  The pin number  (uint8_t) If the pin is detached (free) and there's a free channel available, the pin will be attached to the first free channel that's found *(uint8_t)*
+- **pin**  The pin number  *(int)* If the pin is detached (free) and there's a free channel available, the pin will be attached to the first free channel that's found *(int)*
 - **frequency**  The frequency in Hz. The default is 1000 Hz *(uint32_t)*
 
 ##### Returns
@@ -597,7 +597,7 @@ myservo.setResolution(pin, resolution)
 
 ##### Parameters
 
-- **pin**  The pin number  (uint8_t) If the pin is detached (free) and there's a free channel available, the pin will be attached to the first free channel that's found *(uint8_t)*
+- **pin**  The pin number  *(int)* If the pin is detached (free) and there's a free channel available, the pin will be attached to the first free channel that's found *(int)*
 - **resolution**  The PWM resolution can be set from 1-bit to 16-bit, default is 8-bit *(uint8_t)*
 
 ##### Returns
@@ -631,7 +631,7 @@ myservo.tone(pin, frequency, duration, interval)
 
 ##### Parameters
 
-- **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
+- **pin**  The pin number which (if necessary) will be attached to the next free channel *(int)*
 - **frequency**  The tone frequency (Hz) with range 1-65535 *(uint16_t)*.
 - **duration**  The duration in milliseconds with range 0-65535 *(uint16_t)*, where 0 is off (default) and 65535 is always on.
 - **interval**  This optional parameter specifies the pause time in milliseconds before the next call to tone becomes ready. *(uint16_t)*, range 0-65535, default = 0.
@@ -666,7 +666,7 @@ pwm.note(pin, note, octave, duration, interval)
 
 ##### Parameters
 
-- **pin**  The pin number which (if necessary) will be attached to the next free channel *(uint8_t)*
+- **pin**  The pin number which (if necessary) will be attached to the next free channel *(int)*
 - **note**  The type is defined in [esp32-hal-ledc.h](https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/esp32-hal-ledc.h) *(note_t)*.
 - **octave**  There are 8 octaves available, 1 to 8 *(uint8_t)* 
 - **duration**  The duration in milliseconds with range 0-65535 *(uint16_t)*, where 0 is off (default) and 65535 is always on.

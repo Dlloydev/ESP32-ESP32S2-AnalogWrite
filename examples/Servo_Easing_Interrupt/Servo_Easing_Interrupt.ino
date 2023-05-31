@@ -38,8 +38,8 @@
 #include <Servo.h>
 
 const int servoPin = 8;
-volatile float ke = 0.0;      // easing curve
-volatile float speed = 100;   // speed control (degrees/second)
+volatile double ke = 0.0;      // easing curve
+volatile double speed = 100;   // speed control (degrees/second)
 volatile float pos = 90;      // servo position (degrees)
 volatile float ye;            // calculated servo position (normalized)
 

@@ -32,7 +32,7 @@ class Pwm {
 #endif
 
     typedef struct mem {
-      uint8_t pin;
+      int pin;
       float frequency;       // pwm frequency (Hz)
       uint32_t duty;         // pwm steps or clock ticks, determines pulse width
       uint8_t resolution;    // bits, determines the number of steps in pwm period
@@ -47,8 +47,8 @@ class Pwm {
       uint32_t startDuty;    // servo easing start duty value
       uint32_t stopDuty;     // servo easing stop duty value
       uint32_t deltaDuty;    // servo easing duty difference
-      float speed;           // servo easing speed (degrees per second)
-      float ke;              // servo easing constant (0.0 linear, >0 and <1 sigmoid, 1.0 no easing)
+      double speed;          // servo easing speed (degrees per second)
+      double ke;             // servo easing constant (0.0 linear, >0 and <1 sigmoid, 1.0 no easing)
       float te;              // servo easing normalized elapsed time (0.0 start - 1.0 stop)
       float ye;              // servo easing normalized position (0.0 start - 1.0 stop)
     } mem_t;
@@ -73,57 +73,57 @@ class Pwm {
     };
 
     // pwm
-    float write(uint8_t pin, uint32_t duty);
-    float write(uint8_t pin, uint32_t duty, uint32_t frequency);
-    float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
-    float write(uint8_t pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
-    uint8_t attach(uint8_t pin);                     // attach pin to next free channel
-    uint8_t attach(uint8_t pin, uint8_t ch);         // attach to specified ch
-    uint8_t attachInvert(uint8_t pin);               // attach pin to next free channel with inverted pwm
-    uint8_t attachInvert(uint8_t pin, uint8_t ch);   // attach to specified ch with inverted pwm
+    float write(int pin, uint32_t duty);
+    float write(int pin, uint32_t duty, uint32_t frequency);
+    float write(int pin, uint32_t duty, uint32_t frequency, uint8_t resolution);
+    float write(int pin, uint32_t duty, uint32_t frequency, uint8_t resolution, uint32_t phase);
+    uint8_t attach(int pin);                 // attach pin to next free channel
+    uint8_t attach(int pin, int ch);         // attach to specified ch
+    uint8_t attachInvert(int pin);           // attach pin to next free channel with inverted pwm
+    uint8_t attachInvert(int pin, int ch);   // attach to specified ch with inverted pwm
 
     // servo
-    uint8_t attachServo(uint8_t pin);
-    uint8_t attachServo(uint8_t pin, bool invert);
-    uint8_t attachServo(uint8_t pin, uint8_t ch);
-    uint8_t attachServo(uint8_t pin, uint8_t ch, bool invert);
-    uint8_t attachServo(uint8_t pin, uint16_t minUs, uint16_t maxUs);
-    uint8_t attachServo(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs);
-    uint8_t attachServo(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, bool invert);
-    uint8_t attachServo(uint8_t pin, uint16_t minUs, uint16_t maxUs, float speed, float ke);
-    uint8_t attachServo(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke);
-    uint8_t attachServo(uint8_t pin, uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed, float ke, bool invert);
-    float read(uint8_t pin);
-    float readMicroseconds(uint8_t pin);
-    float writeServo(uint8_t pin, float value);
-    float writeServo(uint8_t pin, float value, float speed, float ke);
+    uint8_t attachServo(int pin);
+    uint8_t attachServo(int pin, bool invert);
+    uint8_t attachServo(int pin, int ch);
+    uint8_t attachServo(int pin, int ch, bool invert);
+    uint8_t attachServo(int pin, int minUs, int maxUs);
+    uint8_t attachServo(int pin, int ch, int minUs, int maxUs);
+    uint8_t attachServo(int pin, int ch, int minUs, int maxUs, bool invert);
+    uint8_t attachServo(int pin, int minUs, int maxUs, double speed, double ke);
+    uint8_t attachServo(int pin, int ch, int minUs, int maxUs, double speed, double ke);
+    uint8_t attachServo(int pin, int ch, int minUs, int maxUs, double speed, double ke, bool invert);
+    float read(int pin);
+    float readMicroseconds(int pin);
+    float writeServo(int pin, float value);
+    float writeServo(int pin, float value, double speed, double ke);
 
     // tone and note
-    void tone(uint8_t pin, uint32_t frequency, uint16_t duration = 500, uint16_t interval = 0);
-    void note(uint8_t pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval);
+    void tone(int pin, uint32_t frequency, uint16_t duration = 500, uint16_t interval = 0);
+    void note(int pin, note_t note, uint8_t octave, uint16_t duration, uint16_t interval);
 
     // common
-    uint8_t attached(uint8_t pin);     // check if pin is attached
-    uint8_t attachedPin(uint8_t ch);   // get pin on specified channel
-    uint8_t firstFreeCh(void);         // get first free channel
-    void detach(uint8_t pin);          // detach pin
-    bool detached(uint8_t pin);        // check if pin is detached
-    void pause(uint8_t ch = 255);      // pause timer on all or specified channel
-    void resume(uint8_t ch = 255);     // resume timer on all or specified channel
-    void printDebug(void);             // print the status of all channels
-    float setFrequency(uint8_t pin, uint32_t frequency = 1000);
-    uint8_t setResolution(uint8_t pin, uint8_t resolution = 10);
+    uint8_t attached(int pin);     // check if pin is attached
+    uint8_t attachedPin(int ch);   // get pin on specified channel
+    uint8_t firstFreeCh(void);     // get first free channel
+    void detach(int pin);          // detach pin
+    bool detached(int pin);        // check if pin is detached
+    void pause(int ch = 255);      // pause timer on all or specified channel
+    void resume(int ch = 255);     // resume timer on all or specified channel
+    void printDebug(void);         // print the status of all channels
+    float setFrequency(int pin, uint32_t frequency = 1000);
+    uint8_t setResolution(int pin, uint8_t resolution = 10);
 
   private:
-    float duty2deg(uint8_t ch, uint32_t duty, float countPerUs);
-    void ledc_attach_with_invert(uint8_t pin, uint8_t ch);
-    void config_servo(uint8_t ch, uint16_t minUs, uint16_t maxUs, float speed = 0, float ke = 1.0);
-    void wr_servo(uint8_t pin, float value, float speed, float ke);
-    void wr_ch_pair(uint8_t ch, uint32_t frequency, uint8_t resolution);
-    void wr_duty(uint8_t ch, uint32_t duty);
-    void wr_freq_res(uint8_t ch, uint32_t frequency, uint8_t resolution);
-    void wr_phase(uint8_t ch, uint32_t duty, uint32_t phase);
-    void reset_fields(uint8_t ch);
+    float duty2deg(int ch, uint32_t duty, float countPerUs);
+    void ledc_attach_with_invert(int pin, int ch);
+    void config_servo(int ch, int minUs, int maxUs, double speed = 0, double ke = 1.0);
+    void wr_servo(int pin, float value, double speed, double ke);
+    void wr_ch_pair(int ch, uint32_t frequency, uint8_t resolution);
+    void wr_duty(int ch, uint32_t duty);
+    void wr_freq_res(int ch, uint32_t frequency, uint8_t resolution);
+    void wr_phase(int ch, uint32_t duty, uint32_t phase);
+    void reset_fields(int ch);
     bool sync = false;
 };
 

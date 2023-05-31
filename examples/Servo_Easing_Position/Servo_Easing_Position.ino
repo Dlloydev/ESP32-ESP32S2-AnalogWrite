@@ -16,16 +16,16 @@ const int servoPin2 = 19;
 const int servoPin3 = 21;
 
 // units in degrees per second
-float speed1 = 70.0;
-float speed2 = 140.0;
-float speed3 = 180.0;
+double speed1 = 70.0;
+double speed2 = 140.0;
+double speed3 = 180.0;
 
 // When easing constant (ke) < 1.0, return value is normalized, when 1.0, returns pulse width (μs)
 // ke = 0.0 is linear, between 0.0 and 1.0 is tunable sigmoid, 1.0 is normal response
 // Normalized Tunable Sigmoid: https://www.desmos.com/calculator/ejkcwglzd1
-float ke1 = 0.0;
-float ke2 = 0.6;
-float ke3 = 0.8;
+double ke1 = 0.0;
+double ke2 = 0.6;
+double ke3 = 0.8;
 
 // go to position (degrees)
 uint8_t pos1 = 90;
