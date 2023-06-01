@@ -1,5 +1,5 @@
 /*
-   ESP32 PWM, SERVO and TONE Library, Version 5.0.1
+   ESP32 PWM, SERVO and TONE Library, Version 5.0.2
    by dlloydev https://github.com/Dlloydev/ESP32-ESP32S2-AnalogWrite
    License: MIT
 */
@@ -43,6 +43,121 @@ float Pwm::write(int pin, uint32_t duty, uint32_t frequency, uint8_t resolution,
     wr_duty(ch, duty);
   }
   return mem[ch].frequency;
+}
+
+uint8_t Pwm::attach(int pin) {
+  uint8_t ch = attached(pin);
+  if (ch == 253) { // free channels exist
+    for (uint8_t c = 0; c < chMax; c++) {
+      if (mem[c].pin == 255 && ch == 253) { //first free ch
+        mem[c].pin = pin;
+        ch = c;
+        ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
+        if (sync) pause(ch);
+        ledcAttachPin(pin, ch);
+        return ch;
+      }
+    }
+  }
+  return ch;
+}
+
+uint8_t Pwm::attach(int pin, int ch) {
+  if (mem[ch].pin == 255) {
+    mem[ch].pin = pin;
+    ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
+    if (sync) pause(ch);
+    ledcAttachPin(pin, ch);
+  }
+  return ch;
+}
+
+uint8_t Pwm::attachInvert(int pin) {
+  uint8_t ch = firstFreeCh();
+  if (ch < chMax) mem[ch].pin = pin;
+  ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
+  if (sync) pause(ch);
+  ledc_attach_with_invert(pin, ch);
+  return ch;
+}
+
+uint8_t Pwm::attachInvert(int pin, int ch) {
+  if (mem[ch].pin == 255) {
+    mem[ch].pin = pin;
+    ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
+    if (sync) pause(ch);
+    ledc_attach_with_invert(pin, ch);
+  }
+  return ch;
+}
+
+uint8_t Pwm::attachServo(int pin) {
+  uint8_t ch = firstFreeCh();
+  if (ch < chMax) config_servo(ch, mem[ch].servoMinUs, mem[ch].servoMaxUs);
+  return attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, bool invert) {
+  uint8_t ch = firstFreeCh();
+  if (ch < chMax) config_servo(ch, mem[ch].servoMinUs, mem[ch].servoMaxUs);
+  return (invert) ? attachInvert(pin, ch) : attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, int ch) {
+  if (ch < chMax) config_servo(ch, mem[ch].servoMinUs, mem[ch].servoMaxUs);
+  return attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, int ch, bool invert) {
+  if (ch < chMax) config_servo(ch, mem[ch].servoMinUs, mem[ch].servoMaxUs);
+  return (invert) ? attachInvert(pin, ch) : attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, int minUs, int maxUs) {
+  uint8_t ch = firstFreeCh();
+  if (ch < chMax) config_servo(ch, minUs, maxUs);
+  return attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, int ch, int minUs, int maxUs) {
+  config_servo(ch, minUs, maxUs);
+  return attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, int ch, int minUs, int maxUs, bool invert) {
+  config_servo(ch, minUs, maxUs);
+  return (invert) ? attachInvert(pin, ch) : attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, int minUs, int maxUs, double speed, double ke) {
+  uint8_t ch = firstFreeCh();
+  if (ch < chMax) config_servo(ch, minUs, maxUs, speed, ke);
+  return attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, int ch, int minUs, int maxUs, double speed, double ke) {
+  config_servo(ch, minUs, maxUs, speed, ke);
+  return attach(pin, ch);
+}
+
+uint8_t Pwm::attachServo(int pin, int ch, int minUs, int maxUs, double speed, double ke, bool invert) {
+  config_servo(ch, minUs, maxUs, speed, ke);
+  return (invert) ? attachInvert(pin, ch) : attach(pin, ch);
+}
+
+float Pwm::read(int pin) {
+  uint8_t ch = attached(pin);
+  if (ch < chMax) {
+    float deg = (readMicroseconds(pin) - mem[ch].servoMinUs) / (mem[ch].servoMaxUs - mem[ch].servoMinUs) * 180.0;
+    return deg < 0 ? 0 : deg;
+  }
+  else return 0;
+}
+
+float Pwm::readMicroseconds(int pin) {
+  uint8_t ch = attached(pin);
+  if (ch < chMax) return mem[ch].duty * ((1000000.0 / mem[ch].frequency) / ((1 << mem[ch].resolution) - 1.0)); // μs
+  else return 0;
 }
 
 float Pwm::writeServo(int pin, float value, double speed, double ke) {
@@ -108,116 +223,6 @@ void Pwm::note(int pin, note_t note, uint8_t octave, uint16_t duration, uint16_t
   if (octave <= 8 || note <= NOTE_MAX) tone(pin, noteFreq, duration, interval);
 }
 
-float Pwm::read(int pin) {
-  uint8_t ch = attached(pin);
-  if (ch < chMax) {
-    float deg = (readMicroseconds(pin) - mem[ch].servoMinUs) / (mem[ch].servoMaxUs - mem[ch].servoMinUs) * 180.0;
-    return deg < 0 ? 0 : deg;
-  }
-  else return 0;
-}
-
-float Pwm::readMicroseconds(int pin) {
-  uint8_t ch = attached(pin);
-  if (ch < chMax) return mem[ch].duty * ((1000000.0 / mem[ch].frequency) / ((1 << mem[ch].resolution) - 1.0)); // μs
-  else return 0;
-}
-
-uint8_t Pwm::attach(int pin) {
-  uint8_t ch = firstFreeCh();
-  if (ch < chMax) mem[ch].pin = pin;
-  ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
-  if (sync) pause(ch);
-  ledcAttachPin(pin, ch);
-  return ch;
-}
-
-uint8_t Pwm::attach(int pin, int ch) {
-  if (mem[ch].pin == 255) {
-    mem[ch].pin = pin;
-    ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
-    if (sync) pause(ch);
-    ledcAttachPin(pin, ch);
-  }
-  return ch;
-}
-
-uint8_t Pwm::attachInvert(int pin) {
-  uint8_t ch = firstFreeCh();
-  if (ch < chMax) mem[ch].pin = pin;
-  ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
-  if (sync) pause(ch);
-  ledc_attach_with_invert(pin, ch);
-  return ch;
-}
-
-uint8_t Pwm::attachInvert(int pin, int ch) {
-  if (mem[ch].pin == 255) {
-    mem[ch].pin = pin;
-    ledcSetup(ch, mem[ch].frequency, mem[ch].resolution);
-    if (sync) pause(ch);
-    ledc_attach_with_invert(pin, ch);
-  }
-  return ch;
-}
-
-uint8_t Pwm::attachServo(int pin) {
-  uint8_t ch = firstFreeCh();
-  if (ch < chMax) config_servo(ch, mem[ch].servoMinUs, mem[ch].servoMaxUs);
-  return attach(pin, ch);
-}
-
-uint8_t Pwm::attachServo(int pin, bool invert) {
-  uint8_t ch = firstFreeCh();
-  if (ch < chMax) config_servo(ch, mem[ch].servoMinUs, mem[ch].servoMaxUs);
-  return (invert) ? attachInvert(pin, ch) : attach(pin, ch);
-}
-
-uint8_t Pwm::attachServo(int pin, int ch) {
-  if (ch < chMax) config_servo(ch, mem[ch].servoMinUs, mem[ch].servoMaxUs);
-  return attach(pin, ch);
-}
-
-uint8_t Pwm::attachServo(int pin, int ch, bool invert) {
-  if (ch < chMax) config_servo(ch, mem[ch].servoMinUs, mem[ch].servoMaxUs);
-  uint8_t chan = (invert) ? attachInvert(pin, ch) : attach(pin, ch);
-  return chan;
-}
-
-uint8_t Pwm::attachServo(int pin, int minUs, int maxUs) {
-  uint8_t ch = firstFreeCh();
-  if (ch < chMax) config_servo(ch, minUs, maxUs);
-  return attach(pin, ch);
-}
-
-uint8_t Pwm::attachServo(int pin, int ch, int minUs, int maxUs) {
-  config_servo(ch, minUs, maxUs);
-  return attach(pin, ch);
-}
-
-uint8_t Pwm::attachServo(int pin, int ch, int minUs, int maxUs, bool invert) {
-  config_servo(ch, minUs, maxUs);
-  uint8_t chan = (invert) ? attachInvert(pin, ch) : attach(pin, ch);
-  return chan;
-}
-
-uint8_t Pwm::attachServo(int pin, int minUs, int maxUs, double speed, double ke) {
-  uint8_t ch = firstFreeCh();
-  if (ch < chMax) config_servo(ch, minUs, maxUs, speed, ke);
-  return attach(pin, ch);
-}
-
-uint8_t Pwm::attachServo(int pin, int ch, int minUs, int maxUs, double speed, double ke) {
-  config_servo(ch, minUs, maxUs, speed, ke);
-  return attach(pin, ch);
-}
-
-uint8_t Pwm::attachServo(int pin, int ch, int minUs, int maxUs, double speed, double ke, bool invert) {
-  config_servo(ch, minUs, maxUs, speed, ke);
-  uint8_t chan = (invert) ? attachInvert(pin, ch) : attach(pin, ch);
-  return chan;
-}
-
 uint8_t Pwm::attached(int pin) {
   if (!((pinMask >> pin) & 1)) return 254; // not a pwm pin
   bool freeCh = false;
@@ -243,9 +248,9 @@ void Pwm::detach(int pin) {
   uint8_t ch = attached(pin);
   if (ch < chMax) {
     reset_fields(ch);
-    if (digitalRead(pin) == HIGH) delay (3); // wait until low
-    ledcWrite(ch, 4); // minimal duty for jitterless detach
-    ledcDetachPin(mem[ch].pin);
+    if (digitalRead(pin) == HIGH) delayMicroseconds(mem[ch].servoMaxUs); // wait until LOW
+    ledcWrite(ch, 4); // set minimal duty
+    ledcDetachPin(mem[ch].pin); // jitterless
     REG_SET_FIELD(GPIO_PIN_MUX_REG[pin], MCU_SEL, GPIO_MODE_DEF_DISABLE);
   }
 }
